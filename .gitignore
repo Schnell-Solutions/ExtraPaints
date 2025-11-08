@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# Django media/uploads
+media/ides
+media/portfolio
+media/products
+
+## Django migrations
+**/migrations/
+**/migrations/*.pyc
+**/migrations/__pycache__/
+
+
+# PyCharm project files
+.idea/
+
+db.sqlite3

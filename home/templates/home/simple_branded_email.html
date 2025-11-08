@@ -1,0 +1,20 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 0 4px rgba(0,0,0,0.05);">
+
+    <div style="background-color: #060024; color: #fff; padding: 15px 20px; text-align: left">
+        <h1 style="margin: 0; font-size: 20px;">{{ subject }}</h1>
+    </div>
+
+    <div style="padding: 20px 25px; line-height: 1.6; color: #333; background-color: #ffffff;">
+        <p style="margin-bottom: 20px;">Hello Sales Team,</p>
+
+        <p style="margin-bottom: 20px;">A new inquiry has been submitted via the website. Please review the details below:</p>
+
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; background-color: #f9f9f9;">
+            {{ content|linebreaksbr }}
+        </div>
+    </div>
+
+    <div style="background-color: #f8fbff; color: #6b7280; padding: 15px; font-size: 12px; text-align: center; border-top: 1px solid #e5e7eb;">
+        This is an automated notification from the {{ site_name }} website.
+    </div>
+</div>

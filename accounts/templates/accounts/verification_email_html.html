@@ -1,0 +1,21 @@
+<div style="font-family: 'Montserrat', sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 4px; background-color: #ffffff;">
+    <h2 style="color: #060024; text-align: left;">Welcome to <b>ExtraPaints</b>!</h2>
+    <p style="font-size: 16px; color: #333;">Hello <b>{{ user_name }}</b>,</p>
+
+    <p style="font-size: 16px; color: #333;">
+        Thank you for registering. Please click the button below to verify your email address.
+    </p>
+
+    <div style="text-align: left; margin: 30px 0;">
+        <a href="{{ verify_url }}" style="display: inline-block; padding: 10px 25px; background-color: #060024; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+            Verify My Account
+        </a>
+    </div>
+
+    <p style="font-size: 14px; color: #6b7280;">If the button above does not work, copy and paste the following link into your browser:</p>
+    <p style="font-size: 14px; color: #6b7280; word-break: break-all;">{{ verify_url }}</p>
+
+    <p style="font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; margin-top: 20px; padding-top: 15px;text-align: center;">
+        The {{ site_name }} Team
+    </p>
+</div>

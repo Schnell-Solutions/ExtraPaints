@@ -1,0 +1,520 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ color.name }} - Details{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 bg-white">
+  <div class="container mx-auto px-4 max-w-6xl">
+
+    <div class="grid md:grid-cols-2 gap-12 lg:gap-16">
+
+      <div class="w-full relative">
+        <div class="h-96 w-full rounded overflow-hidden border border-gray-200 mb-4">
+          {% if color.hex_code %}
+            <div class="w-full h-full" style="background-color: {{ color.hex_code }}"></div>
+          {% else %}
+            <img src="{{ MEDIA_URL }}default.jpg" alt="Default image" class="w-full h-full object-cover">
+          {% endif %}
+        </div>
+
+        {% if color.main_image and color.hex_code %}
+        <div class="flex items-center gap-4 p-4 bg-primary-50 rounded border border-gray-200">
+          <div class="w-20 h-20 rounded shadow-sm border" style="background-color: {{ color.hex_code }}"></div>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Color Swatch</p>
+            <p class="text-lg font-semibold text-primary-900">{{ color.hex_code }}</p>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <button
+              {# REMOVED p-2, rounded-full, and simplified class list #}
+              class="save-color-btn absolute top-4 left-4 z-10 transition-all
+                     {# Button should be invisible container, no background, no padding #}"
+              data-color-id="{{ color.id }}"
+              data-is-saved="{{ is_saved|yesno:'true,false' }}"
+              data-url="{% url 'save_color_toggle' %}"
+              title="Save Color"
+          >
+              <span class="heart-icon shadow">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24"
+                       fill="{% if is_saved %}red{% else %}currentColor{% endif %}"
+                       stroke="currentColor" stroke-width="1.5">
+                    <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                  </svg>
+              </span>
+          </button>
+        {% endif %}
+      </div>
+
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-4">{{ color.name }}</h1>
+        <p class="text-base md:text-lg text-gray-600 mb-6">{{ color.description|default:"A stunning, versatile color for any space." }}</p>
+
+        <div class="border-t border-b border-gray-200 divide-y divide-gray-200 mb-8">
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">Color Code</span>
+            <span class="font-semibold text-primary-900">{{ color.code }}</span>
+          </div>
+          {% if color.hex_code %}
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">HEX</span>
+            <span class="font-semibold text-gray-800">{{ color.hex_code }}</span>
+          </div>
+          {% endif %}
+          {% if color.rgb_value %}
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">RGB</span>
+            <span class="font-semibold text-gray-800">{{ color.rgb_value }}</span>
+          </div>
+          {% endif %}
+          {% if color.lrv %}
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">LRV (Light Reflectance Value)</span>
+            <span class="font-semibold text-gray-800">{{ color.lrv }}%</span>
+          </div>
+          {% endif %}
+          {% if color.undertone %}
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">Undertone</span>
+            <span class="font-semibold text-gray-800">{{ color.get_undertone_display }}</span>
+          </div>
+          {% endif %}
+          {% if color.collection %}
+          <div class="py-3 flex justify-between text-sm">
+            <span class="font-medium text-gray-500">Collection</span>
+            <span class="font-semibold text-gray-800">{{ color.collection.name }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+           <button
+              type="button"
+              id="open-drawer-btn"
+              class="w-full sm:w-auto flex-1 px-6 py-3 bg-primary-900 text-white rounded text-sm font-medium hover:bg-primary-500 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+              Shop Products in this Color
+           </button>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 lg:mt-16 pt-8 border-t">
+      <div class="grid md:grid-cols-2 gap-12">
+        <div>
+          <h3 class="text-xl font-semibold text-primary-900 mb-4">Available Finishes</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for f in color.available_finishes.all %}
+              <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                {{ f.name }}
+              </span>
+            {% empty %}
+              <p class="text-gray-500 text-sm">No finishes specified for this color.</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-primary-900 mb-4">Recommended Surfaces</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for s in color.recommended_surfaces.all %}
+              <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                {{ s.name }}
+              </span>
+            {% empty %}
+              <p class="text-gray-500 text-sm">No surfaces specified for this color.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if color.inspiration_images.exists %}
+      <div class="mt-12 lg:mt-16 pt-8 border-t">
+        <h2 class="text-2xl md:text-3xl font-bold text-primary-900 mb-6 text-center">
+          Inspiration Gallery
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {% for img in color.inspiration_images.all %}
+              <div class="group">
+                <div class="overflow-hidden rounded border border-gray-200 group-hover:shadow transition-all duration-300">
+                  {% if img.image %}
+                    <img src="{{ img.image.url }}"
+                         alt="{{ img.caption|default:'Inspiration image' }}"
+                         class="w-full h-64 object-cover">
+                  {% else %}
+                    <img src="{{ MEDIA_URL }}default.jpg"
+                         alt="Default image"
+                         class="w-full h-64 object-cover">
+                  {% endif %}
+                </div>
+
+                {% if img.caption %}
+                  <p class="text-sm text-center text-gray-600 mt-3">{{ img.caption }}</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{# --- Drawer Modal --- #}
+<div id="drawer-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 ease-in-out opacity-0"></div>
+<div id="drawer-panel" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out">
+  <div class="flex flex-col h-full">
+
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-xl font-semibold text-primary-900">Shop '{{ color.name }}'</h2>
+      <button id="close-drawer-btn" class="p-2 text-gray-500 hover:text-gray-900">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <div class="p-4 border-b">
+      <label for="category-filter" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
+      <select id="category-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+        <option value="">All Categories</option>
+        {% for category in all_categories %}
+          <option value="{{ category.slug }}">{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div id="drawer-loader" class="text-center py-10">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-900 mx-auto"></div>
+      <p class="mt-2 text-gray-500">Loading Products...</p>
+    </div>
+
+    <div id="drawer-product-list" class="flex-1 overflow-y-auto p-4 space-y-4">
+      </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- GLOBAL CSRF TOKEN ---
+  const csrfTokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+
+  // --- GLOBAL CONSTANTS ---
+  const COLOR_ID = {{ color.id }};
+  const QUOTE_ADD_URL = "{% url 'quote_add' %}";
+  const productsUrl = `{% url 'ajax_get_color_products' color.id %}`;
+
+  // --- NAVBAR QUOTE COUNT ELEMENTS ---
+  const navbarQuoteCountDesktop = document.getElementById("navbar-quote-count-desktop");
+  const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
+
+  // --- DRAWER ELEMENTS ---
+  const openBtn = document.getElementById('open-drawer-btn');
+  const closeBtn = document.getElementById('close-drawer-btn');
+  const overlay = document.getElementById('drawer-overlay');
+  const panel = document.getElementById('drawer-panel');
+  const categoryFilter = document.getElementById('category-filter');
+  const productListContainer = document.getElementById('drawer-product-list');
+  const loader = document.getElementById('drawer-loader');
+
+  // --- DRAWER STATE (No changes to this logic) ---
+  function openDrawer() {
+    overlay.classList.remove('hidden');
+    panel.classList.remove('translate-x-full');
+    requestAnimationFrame(() => {
+        overlay.classList.add('opacity-100');
+    });
+    document.body.style.overflow = 'hidden';
+    loadProducts();
+  }
+  function closeDrawer() {
+    overlay.classList.remove('opacity-100');
+    panel.classList.add('translate-x-full');
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+  }
+  openBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  // --- DATA LOADING (DRAWER) ---
+  categoryFilter.addEventListener('change', loadProducts);
+  async function loadProducts() {
+    loader.style.display = 'block';
+    productListContainer.innerHTML = '';
+    const categorySlug = categoryFilter.value;
+    const url = `${productsUrl}?category=${categorySlug}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const products = await response.json();
+      loader.style.display = 'none';
+      if (products.length === 0) {
+        productListContainer.innerHTML = '<p class="text-gray-500 text-center">No products found for this selection.</p>';
+        return;
+      }
+      products.forEach(product => {
+        const productHtml = createProductCard(product);
+        productListContainer.insertAdjacentHTML('beforeend', productHtml);
+      });
+      lucide.createIcons();
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      loader.style.display = 'none';
+      productListContainer.innerHTML = '<p class="text-red-500 text-center">Failed to load products. Please try again.</p>';
+    }
+  }
+
+  // --- HTML BUILDER (DRAWER) ---
+  function createProductCard(product) {
+    let sizeOptions = '<option value="">Select size...</option>';
+    let hasSizes = product.sizes && product.sizes.length > 0;
+    let sizeId = '';
+
+    if (hasSizes) {
+      // Assuming size object in product.sizes is {id: X, name: 'Y'}
+      product.sizes.forEach(size => {
+        sizeOptions += `<option value="${size.id}">${size.name}</option>`;
+      });
+      sizeId = product.sizes[0].id; // Pre-select first size for simplicity
+    } else {
+      sizeOptions = '<option value="">No sizes available</option>';
+    }
+
+    // Determine initial save state styling
+    const saveClass = product.is_saved ? 'bg-red-100 text-red-700' : 'text-gray-700 hover:bg-gray-50';
+    const heartFill = product.is_saved ? 'red' : 'none';
+
+    return `
+      <div class="product-card-drawer border rounded-lg p-4 shadow-sm transition-all">
+          <div class="flex gap-4">
+            <img src="${product.image_url}" alt="${product.name}" class="w-20 h-20 object-cover rounded border">
+            <div class="flex-1">
+              <p class="font-semibold text-primary-900">${product.name}</p>
+
+              <div class="mt-3">
+                  <label class="text-xs font-medium text-gray-600 mb-1" for="size-select-${product.id}">Select Size:</label>
+                  <select
+                    id="size-select-${product.id}"
+                    class="drawer-size-select w-full border border-gray-300 rounded text-sm py-1.5 px-2 focus:outline-none focus:ring-1 focus:border-primary-500 focus:ring-primary-500"
+                    data-pre-selected-size="${sizeId}"
+                    ${!hasSizes ? 'disabled' : ''}
+                  >
+                    ${sizeOptions}
+                  </select>
+                </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2 mt-4">
+            <a href="${product.url}" class="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded text-xs font-medium hover:bg-gray-50 text-center transition-colors">
+              View Details
+            </a>
+            <button
+              type="button"
+              class="drawer-add-to-quote-btn flex-1 px-3 py-2 bg-primary-900 text-white rounded text-xs font-medium hover:bg-primary-700 text-center transition-colors disabled:bg-gray-400"
+              data-product-id="${product.id}"
+              ${!hasSizes ? 'disabled' : ''}
+            >
+              Add to Quote
+            </button>
+            <button
+              type="button"
+              class="js-save-product-toggle w-10 h-10 p-2 border rounded-lg ${saveClass}"
+              data-product-id="${product.id}"
+              data-is-saved="${product.is_saved}"
+              data-url="{% url 'save_product_toggle' %}"
+              title="Save Product"
+            >
+              <i data-lucide="heart" class="w-full h-full" fill="${heartFill}"></i>
+            </button>
+          </div>
+      </div>
+    `;
+  }
+
+  // --- DRAWER EVENT LISTENER FOR ADDING TO QUOTE ---
+  productListContainer.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.drawer-add-to-quote-btn');
+    if (btn) {
+      e.preventDefault();
+      await handleAddToQuote(btn);
+    }
+  });
+
+  // --- DRAWER ADD TO QUOTE HANDLER ---
+  async function handleAddToQuote(btn) {
+    const card = btn.closest('.product-card-drawer');
+    const select = card.querySelector('.drawer-size-select');
+
+    const productId = btn.dataset.productId;
+    // FIXED: Ensure we get the currently selected value, falling back to pre-selected if available
+    const sizeId = select.value || select.dataset.preSelectedSize;
+    const quantity = 1;
+
+    if (!sizeId) {
+      select.classList.add('border-red-500', 'ring-red-500');
+      setTimeout(() => select.classList.remove('border-red-500', 'ring-red-500'), 2000);
+      return;
+    }
+
+    const originalBtnHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>`;
+
+    const body = new URLSearchParams();
+    body.append('product_id', productId);
+    body.append('color_id', COLOR_ID);
+    body.append('size_id', sizeId);
+    body.append('quantity', quantity);
+    body.append('csrfmiddlewaretoken', csrfToken); // Ensure CSRF token is included
+
+    try {
+      const response = await fetch(QUOTE_ADD_URL, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: body.toString()
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        btn.innerHTML = `Added!`;
+
+        const count = data.quote_item_count;
+        if (navbarQuoteCountDesktop) {
+          navbarQuoteCountDesktop.textContent = count;
+          navbarQuoteCountDesktop.classList.remove("hidden");
+        }
+        if (navbarQuoteCountMobile) {
+          navbarQuoteCountMobile.textContent = count;
+          navbarQuoteCountMobile.classList.remove("hidden");
+        }
+      } else {
+        btn.innerHTML = `Error!`;
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      btn.innerHTML = `Error!`;
+    }
+
+    // Reset button
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalBtnHTML;
+    }, 2000);
+  }
+
+  // --- NEW: GENERIC SAVE/UNSAVE TOGGLE HANDLER (FOR PRODUCTS IN DRAWER) ---
+  productListContainer.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.js-save-product-toggle');
+      if (btn) {
+          e.preventDefault();
+
+          const productId = btn.dataset.productId;
+          const url = btn.dataset.url;
+
+          if (!productId || !url) return;
+
+          btn.disabled = true;
+
+          try {
+              const response = await fetch(url, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                      'X-CSRFToken': csrfToken,
+                      'X-Requested-With': 'XMLHttpRequest'
+                  },
+                  body: `product_id=${productId}`
+              });
+
+              const data = await response.json();
+
+              if (data.status === 'success') {
+                  const icon = btn.querySelector('i[data-lucide="heart"]');
+
+                  if (data.is_saved) {
+                      icon.classList.add('text-red-700', 'fill-red-600');
+                      icon.classList.remove('text-gray-700', 'fill-none');
+                      btn.classList.add('bg-red-100');
+                      btn.classList.remove('bg-white');
+                  } else {
+                      icon.classList.remove('text-red-700', 'fill-red-600');
+                      icon.classList.add('text-gray-700', 'fill-none');
+                      btn.classList.remove('bg-red-100');
+                      btn.classList.add('bg-white');
+                  }
+                  btn.dataset.isSaved = data.is_saved;
+              }
+          } catch (error) {
+              console.error('Failed to toggle save:', error);
+          } finally {
+              btn.disabled = false;
+          }
+      }
+  });
+
+
+  // --- SAVE COLOR BUTTON HANDLER (MAIN PAGE) ---
+  const saveColorBtn = document.querySelector('.save-color-btn');
+  if (saveColorBtn) {
+    saveColorBtn.addEventListener('click', async () => {
+      const colorId = saveColorBtn.dataset.colorId;
+      const url = saveColorBtn.dataset.url;
+      if (!colorId || !url) return;
+      saveColorBtn.disabled = true;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: `color_id=${colorId}`
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          // Changed to select the direct SVG element for maximum compatibility with the original icon block
+          const iconSVG = saveColorBtn.querySelector('.heart-icon svg');
+
+          if (data.is_saved) {
+             // Saved State: Set the icon to filled red and add background
+             iconSVG.setAttribute('fill', 'red');
+             iconSVG.style.stroke = 'red';
+             saveColorBtn.dataset.isSaved = 'true';
+          } else {
+             iconSVG.setAttribute('fill', 'currentColor'); // Uses default text color (gray)
+             iconSVG.style.stroke = 'currentColor';
+          }
+          saveColorBtn.dataset.isSaved = data.is_saved;
+        }
+      } catch (error) {
+        console.error('Failed to toggle save:', error);
+      } finally {
+        saveColorBtn.disabled = false;
+      }
+    });
+  }
+
+});
+</script>
+
+{% csrf_token %}
+{% endblock %}'

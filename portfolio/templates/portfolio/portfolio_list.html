@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Our Portfolio{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 bg-neutral-50">
+  <div class="container mx-auto px-4">
+
+    <div class="text-center mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-2">
+        Our Portfolio
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        See how our products have transformed spaces, from cozy homes to large-scale commercial properties.
+      </p>
+    </div>
+
+    <div class="mb-8 flex justify-center">
+      <form method="get" class="flex flex-wrap gap-4 items-center">
+        {% csrf_token %} <label for="type-filter" class="text-sm font-medium text-gray-700">Filter by type:</label>
+
+        <div class="relative filter-select-wrapper">
+          <select
+            name="type"
+            id="type-filter"
+            class="pl-4 pr-10 py-2 border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none"
+            onchange="this.form.submit()"
+          >
+            <option value="">All Project Types</option>
+            {% for value, display_name in project.PROJECT_TYPES %}
+              {% if value in project_types %}
+                <option value="{{ value }}" {% if value == selected_type %}selected{% endif %}>
+                  {{ display_name }}
+                </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+            <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+            </svg>
+          </div>
+        </div>
+
+        {% if selected_type %}
+          <a href="{% url 'portfolio_list' %}" class="px-4 py-2 border border-primary-900 text-primary-900 rounded text-sm font-medium hover:bg-primary-900 hover:text-white transition-colors">
+            Clear
+          </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for project in projects %}
+        <a href="{{ project.get_absolute_url }}" class="group block bg-white rounded border border-neutral-200 overflow-hidden transition-all duration-300 hover:shadow flex flex-col">
+          <div class="h-60 w-full overflow-hidden">
+            <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+          </div>
+
+          <div class="p-5 flex flex-col flex-grow">
+            <span class="text-xs font-semibold uppercase tracking-wider text-primary-700 bg-primary-50 px-2 py-0.5 rounded">
+              {{ project.get_project_type_display }}
+            </span>
+            <h3 class="text-xl font-semibold text-primary-900 mt-3 mb-2">
+              {{ project.title }}
+            </h3>
+            <p class="text-sm text-gray-600 mt-auto pt-4">
+              {{ project.location|default:"Location not specified" }}
+            </p>
+          </div>
+        </a>
+      {% empty %}
+        <p class="text-gray-600 sm:col-span-2 lg:col-span-3 text-center">
+          No portfolio projects match your criteria.
+        </p>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- ANIMATE SELECT ARROWS ---
+  document.querySelectorAll('.filter-select-wrapper').forEach(wrapper => {
+    const select = wrapper.querySelector('select');
+    const svg = wrapper.querySelector('svg');
+
+    if (select && svg) {
+      select.addEventListener('focus', () => {
+        svg.classList.add('rotate-180');
+      });
+      select.addEventListener('blur', () => {
+        svg.classList.remove('rotate-180');
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

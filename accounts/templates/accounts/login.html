@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto bg-white p-8 rounded shadow my-8 mb-[200px]">
+
+    <h2 class="text-2xl font-bold text-center text-primary-900 mb-6">Login</h2>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- General form errors (e.g., "Invalid credentials") -->
+        {% if form.non_field_errors %}
+            <div class="p-4 bg-red-50 text-red-700 rounded" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Render each field manually for styling -->
+
+        <!-- Username -->
+        <div>
+            <!-- Using placeholder, no label, 'rounded' border -->
+            <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Username"
+                   required>
+            <!-- Field-specific errors -->
+            {% if form.username.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div>
+            <!-- Using placeholder, no label, 'rounded' border -->
+            <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Password"
+                   required>
+            <!-- Field-specific errors -->
+            {% if form.password.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="text-sm text-right">
+            <a href="#" class="font-medium text-primary-900 hover:text-primary-500 hover:underline">
+                Forgot password?
+            </a>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <!-- 'rounded' border -->
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                Login
+            </button>
+        </div>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+        Don’t have an account?
+        <a href="{% url 'register' %}" class="font-medium text-primary-900 hover:text-primary-500 hover:underline">
+            Register here
+        </a>
+    </p>
+
+</div>
+{% endblock %}

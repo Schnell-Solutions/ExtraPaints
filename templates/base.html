@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Paint Company{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+                sans: ['Montserrat', 'sans-serif'],
+              },
+            colors: {
+              primary: {
+                  10: '#fbfdff',
+                  25: '#f8fbff',
+                  50: '#eff6ff',
+                  200: '#bfdbfe',
+                  300: '#93c5fd',
+                  500: '#3b82f6',
+                  900: '#060024'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Montserrat', sans-serif;
+      }
+      .product-scrollbar::-webkit-scrollbar { height: 8px; }
+      .product-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+      .product-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      .product-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      .product-card { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; opacity: 0; transform: translateY(10px); }
+      .product-card.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-primary-50 border-b text-primary-900 sticky top-0 z-50">
+
+  <div class="bg-primary-900 py-2 px-4 text-sm text-primary-50">
+    <div class="container mx-auto flex justify-between items-center max-w-6xl">
+      <span class='sm:inline hidden'>Free Delivery on orders over KES 50,000</span>
+      <div class="flex space-x-4 items-center justify-end">
+        {% if user.is_authenticated %}
+          <a href="{% url 'my_collection' %}" class="hover:text-primary-300 transition-colors">
+            My Collection
+          </a>
+            <span>|</span>
+          <a href="{% url 'logout' %}" class="hover:text-primary-300 transition-colors">
+            Logout
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:text-primary-300 transition-colors">
+            Login
+          </a>
+            <span>|</span>
+          <a href="{% url 'register' %}" class="hover:text-primary-300 transition-colors">
+            Register
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <nav class="container mx-auto px-4 py-4 max-w-6xl">
+    <div class="flex items-center justify-between">
+
+      <a href="{% url 'home' %}">
+        <img src="{% static 'home/images/logo.svg' %}" alt="Paint Company Logo" style="height: 40px; width: auto;"
+             onerror="this.onerror=null; this.src='https://placehold.co/120x40/1e3a8a/ffffff?text=LOGO';">
+      </a>
+
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="{% url 'color_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+          Colors
+        </a>
+        <a href="{% url 'product_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+          Products
+        </a>
+        <a href="{% url 'idea_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+          Ideas
+        </a>
+        <a href="{% url 'portfolio_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+          Our Portfolio
+        </a>
+      </div>
+
+      <div class="hidden md:flex items-center space-x-4">
+        <button id="search-open-btn-desktop" class="p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="Search">
+            <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+
+        <a href="{% url 'quote_detail' %}" class="relative p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="View Quote Request">
+          <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+
+          <span id="navbar-quote-count-desktop" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center
+                       {% if quote_list|length == 0 %}hidden{% endif %}">
+            {{ quote_list|length }}
+          </span>
+        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="Profile">
+            <i data-lucide="user" class="w-5 h-5"></i>
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}">
+            <button class="bg-primary-900 text-primary-50 px-6 py-2 rounded-sm hover:bg-primary-500 cursor-pointer transition-colors">
+              Login
+            </button>
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="flex items-center space-x-2 md:hidden">
+        <button id="search-open-btn-mobile" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full" title="Search">
+          <i data-lucide="search" class="w-6 h-6"></i>
+        </button>
+
+        <a href="{% url 'quote_detail' %}" class="relative p-2 hover:bg-primary-200 rounded-full cursor-pointer" title="View Quote Request">
+          <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+          <span id="navbar-quote-count-mobile" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center
+                       {% if quote_list|length == 0 %}hidden{% endif %}">
+            {{ quote_list|length }}
+          </span>
+        </a>
+        <button
+          id="mobile-menu-button"
+          class="p-2 cursor-pointer hover:bg-primary-200 rounded-full"
+          >
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobile-menu" class="md:hidden bg-white border-t mt-6 p-2 pb-4 hidden">
+      <div class="flex flex-col space-y-4">
+        <a href="{% url 'color_list' %}" class="font-medium">Colors</a>
+        <a href="{% url 'product_list' %}" class="font-medium">Products</a>
+        <a href="{% url 'idea_list' %}" class="font-medium">Ideas</a>
+        <a href="{% url 'portfolio_list' %}" class="font-medium">Our Portfolio</a>
+
+        <div class="pt-4 border-t mt-4">
+          {% if user.is_authenticated %}
+            <div class="flex flex-col space-y-3">
+              <a href="{% url 'my_collection' %}" class="flex items-center space-x-2 font-medium">
+                <i data-lucide="heart" class="w-5 h-5 text-primary-900"></i>
+                <span>My Collections</span>
+              </a>
+              <a href="{% url 'logout' %}" class="flex items-center space-x-2 text-red-600 font-medium" title="Logout">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          {% else %}
+            <div class="flex flex-col space-y-3">
+              <a href="{% url 'login' %}" class="font-medium text-primary-900">
+                Login
+              </a>
+              <a href="{% url 'register' %}" class="font-medium text-primary-900">
+                Register
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div id="search-modal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm" aria-modal="true" role="dialog">
+    <div class="bg-white max-w-xl md:max-w-lg w-[90%] mx-auto mt-16 rounded-xl shadow-2xl overflow-hidden">
+        <div class="p-4 border-b flex items-center">
+            <i data-lucide="search" class="w-5 h-5 text-gray-400 mr-3"></i>
+            <input
+                type="text"
+                id="live-search-input"
+                placeholder="Search colors, products, and more..."
+                class="w-full text-lg focus:outline-none placeholder-gray-500"
+                autofocus
+            >
+            <button id="search-close-btn" class="p-2 ml-3 text-gray-500 hover:bg-gray-100 rounded-full">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div id="search-results-container" class="max-h-96 overflow-y-auto p-4 space-y-4">
+            <p id="search-placeholder" class="text-gray-500 text-center py-8">Start typing to see results...</p>
+        </div>
+    </div>
+</div>
+
+    <main class="flex-grow">
+        <div>
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-primary-900 text-primary-50">
+        <div class="container mx-auto max-w-6xl px-4 py-16 pb-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+
+                <div class="md:col-span-1">
+                    <h3 class="text-xl font-bold text-white mb-4">Paint Company</h3>
+                    <p class="text-primary-200 text-sm mb-6">
+                        Colors that inspire, quality that lasts.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-primary-200 hover:text-white transition-colors" aria-label="Facebook">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-primary-200 hover:text-white transition-colors" aria-label="Instagram">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-primary-200 hover:text-white transition-colors" aria-label="Twitter">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-primary-200 hover:text-white transition-colors" aria-label="LinkedIn">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-lg text-white mb-4">Shop</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'color_list' %}" class="text-primary-200 hover:text-white hover:underline">Colors</a></li>
+                        <li><a href="{% url 'product_list' %}" class="text-primary-200 hover:text-white hover:underline">Products</a></li>
+
+                        <li><a href="{% url 'quote_detail' %}" class="text-primary-200 hover:text-white hover:underline">View Quote List</a></li>
+                        </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-lg text-white mb-4">Company</h4>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'idea_list' %}" class="text-primary-200 hover:text-white hover:underline">Inspiration</a></li>
+                        <li><a href="{% url 'portfolio_list' %}" class="text-primary-200 hover:text-white hover:underline">Portfolio</a></li>
+                        <li><a href="{% url 'about' %}" class="text-primary-200 hover:text-white hover:underline">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-primary-200 hover:text-white hover:underline">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-1">
+                    <h4 class="font-semibold text-lg text-white mb-4">Join Our Newsletter</h4>
+                    <p class="text-primary-200 text-sm mb-4">Get sales, new product alerts, and expert tips.</p>
+
+                    <form id="newsletter-form" action="{% url 'subscribe_newsletter' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="flex">
+                            <input
+                                type="email"
+                                name="email"
+                                id="newsletter-email-input"
+                                placeholder="Your email"
+                                class="w-full px-4 py-2 text-primary-900 rounded-l-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                required
+                            >
+                            <button
+                                type="submit"
+                                id="newsletter-submit-btn"
+                                class="bg-primary-500 text-white px-4 py-2 rounded-r-sm hover:bg-primary-300 transition-colors font-medium"
+                            >
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <p id="newsletter-message" class="mt-2 text-sm font-medium"></p>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="border-t border-primary-500 mt-12 pt-8 text-center">
+                <p class="text-primary-300 text-sm">&copy; {% now "Y" %} ExtraPaints. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- 0. CRITICAL GLOBAL ELEMENTS & UTILITIES ---
+  const csrfTokenInput = document.querySelector("input[name=csrfmiddlewaretoken]");
+  // Use a reliable token variable (will be empty if not present, causing AJAX failure)
+  const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+
+  // --- 1. MOBILE MENU TOGGLE ---
+  const menuBtn = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      mobileMenu.classList.toggle('hidden');
+
+      const icon = menuBtn.querySelector('i');
+      if (icon) {
+        const current = icon.getAttribute('data-lucide');
+        icon.setAttribute('data-lucide', current === 'menu' ? 'x' : 'menu');
+      }
+      try { lucide.createIcons(); } catch (err) { /* ignore */ }
+    });
+  }
+
+  // --- 2. LIVE SEARCH ELEMENTS & LOGIC (RESTORED) ---
+  const searchModal = document.getElementById('search-modal');
+  const searchOpenBtnDesktop = document.getElementById('search-open-btn-desktop');
+  const searchOpenBtnMobile = document.getElementById('search-open-btn-mobile');
+  const searchCloseBtn = document.getElementById('search-close-btn');
+  const searchInput = document.getElementById('live-search-input');
+  const resultsContainer = document.getElementById('search-results-container');
+  const searchPlaceholder = document.getElementById('search-placeholder');
+
+  const navbarQuoteCountDesktop = document.getElementById("navbar-quote-count-desktop");
+  const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
+
+  let searchTimeout;
+  const SEARCH_DELAY = 300;
+
+  // Search Helpers
+  const openSearchModal = () => {
+      searchModal.classList.remove('hidden');
+      searchInput.focus();
+  };
+
+  searchCloseBtn.addEventListener('click', () => {
+      searchModal.classList.add('hidden');
+      searchInput.value = '';
+      resultsContainer.innerHTML = '';
+      searchPlaceholder.textContent = "Start typing to see results...";
+      searchPlaceholder.classList.remove('hidden');
+  });
+
+  searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) {
+          searchCloseBtn.click();
+      }
+  });
+
+  searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      const query = searchInput.value.trim();
+
+      if (query.length < 2) {
+          resultsContainer.innerHTML = '';
+          searchPlaceholder.textContent = "Start typing to see results...";
+          searchPlaceholder.classList.remove('hidden');
+          return;
+      }
+
+      searchPlaceholder.textContent = "Searching...";
+      searchTimeout = setTimeout(fetchResults, SEARCH_DELAY, query);
+  });
+
+  async function fetchResults(query) {
+      try {
+          const response = await fetch(`{% url 'live_search' %}?q=${encodeURIComponent(query)}`);
+          const data = await response.json();
+          displayResults(data);
+      } catch (error) {
+          console.error("Live search failed:", error);
+          resultsContainer.innerHTML = `<p class="text-red-500 text-center py-8">An error occurred while searching.</p>`;
+      }
+  }
+
+  function displayResults(data) {
+      resultsContainer.innerHTML = '';
+      const totalResults = data.colors.length + data.products.length;
+
+      if (totalResults === 0) {
+          resultsContainer.innerHTML = `<p class="text-gray-500 text-center py-8">No results found for "${searchInput.value}".</p>`;
+          return;
+      }
+      searchPlaceholder.classList.add('hidden');
+
+      if (data.colors.length > 0) {
+          resultsContainer.innerHTML += `<h3 class="text-sm font-semibold text-primary-500 uppercase border-b pb-2 mb-2">Colors (${data.colors.length})</h3>`;
+          data.colors.forEach(color => {
+              resultsContainer.innerHTML += `
+                  <a href="${color.url}" class="flex items-center p-2 rounded-lg hover:bg-primary-50 transition-colors" onclick="searchCloseBtn.click()">
+                      <div style="background-color: ${color.hex_code};" class="w-8 h-8 rounded-full border border-gray-200 mr-4 flex-shrink-0"></div>
+                      <div>
+                          <p class="font-medium text-primary-900">${color.name}</p>
+                          <p class="text-xs text-gray-500">Code: ${color.code}</p>
+                      </div>
+                  </a>
+              `;
+          });
+      }
+
+      if (data.products.length > 0) {
+          if (data.colors.length > 0) {
+               resultsContainer.innerHTML += `<div class="pt-4 mt-4"></div>`;
+          }
+
+          resultsContainer.innerHTML += `<h3 class="text-sm font-semibold text-primary-500 uppercase border-b pb-2 mb-2">Products (${data.products.length})</h3>`;
+          data.products.forEach(product => {
+              resultsContainer.innerHTML += `
+                  <a href="${product.url}" class="flex items-center p-2 rounded-lg hover:bg-primary-50 transition-colors" onclick="searchCloseBtn.click()">
+                      <img src="${product.image_url}" alt="${product.name}" class="w-10 h-10 object-cover rounded-md mr-4 flex-shrink-0">
+                      <div>
+                          <p class="font-medium text-primary-900">${product.name}</p>
+                          <p class="text-xs text-gray-500">${product.category}</p>
+                      </div>
+                  </a>
+              `;
+          });
+      }
+  }
+
+  // --- ATTACH SEARCH HANDLERS ---
+  if (searchOpenBtnDesktop) {
+      searchOpenBtnDesktop.addEventListener('click', openSearchModal);
+  }
+  if (searchOpenBtnMobile) {
+      searchOpenBtnMobile.addEventListener('click', openSearchModal);
+  }
+
+  // --- 3. SAVE/UNSAVE BUTTON LOGIC (General) ---
+  if (csrfToken) {
+    const saveButtons = document.querySelectorAll(".js-save-toggle-btn");
+
+    saveButtons.forEach(button => {
+      button.addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
+
+        if (btn.disabled) return;
+        btn.disabled = true;
+
+        const icon = btn.querySelector("[data-lucide='heart']");
+        const text = btn.querySelector(".btn-save-text");
+        const originalText = text.textContent;
+
+        text.textContent = "Updating...";
+
+        const formData = new FormData();
+        formData.append(btn.dataset.formKey, btn.dataset.itemId);
+        formData.append("csrfmiddlewaretoken", csrfToken);
+
+        try {
+          const response = await fetch(btn.dataset.url, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            }
+          });
+
+          const data = await response.json();
+
+          if (data.status === "success") {
+            if (data.is_saved) {
+              text.textContent = "Saved";
+              icon.classList.add("fill-current", "text-red-600");
+              btn.classList.add("bg-red-100", "text-red-700", "border-red-200");
+              btn.classList.remove("bg-white", "text-gray-700", "border-gray-300", "hover:bg-gray-50");
+            } else {
+              text.textContent = "Save";
+              icon.classList.remove("fill-current", "text-red-600");
+              btn.classList.remove("bg-red-100", "text-red-700", "border-red-200");
+              btn.classList.add("bg-white", "text-gray-700", "border-gray-300", "hover:bg-gray-50");
+            }
+          } else {
+            console.error("Save failed:", data.message);
+            text.textContent = "Error";
+            setTimeout(() => { text.textContent = originalText; }, 2000);
+          }
+
+        } catch (error) {
+          console.error("Network error:", error);
+          text.textContent = "Error";
+          setTimeout(() => { text.textContent = originalText; }, 2000);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+  } else {
+      // console.warn("General save buttons disabled: CSRF token missing.");
+  }
+
+
+  // --- 4. NEWSLETTER SUBSCRIPTION LOGIC ---
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterMessage = document.getElementById('newsletter-message');
+  const newsletterSubmitBtn = document.getElementById('newsletter-submit-btn');
+  const newsletterEmailInput = document.getElementById('newsletter-email-input');
+
+  if (newsletterForm) {
+      newsletterForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          newsletterSubmitBtn.disabled = true;
+          newsletterMessage.textContent = "Processing...";
+          newsletterMessage.className = "mt-2 text-sm font-medium text-primary-300";
+
+          const formData = new FormData(newsletterForm);
+          formData.append("csrfmiddlewaretoken", csrfToken);
+
+          try {
+              const response = await fetch(newsletterForm.action, {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                      "X-Requested-With": "XMLHttpRequest",
+                  }
+              });
+
+              const data = await response.json();
+
+              if (data.status === 'success') {
+                  newsletterMessage.textContent = data.message;
+                  newsletterMessage.className = "mt-2 text-sm font-medium text-green-400";
+                  newsletterEmailInput.value = '';
+              } else if (data.status === 'info') {
+                  newsletterMessage.textContent = data.message;
+                  newsletterMessage.className = "mt-2 text-sm font-medium text-yellow-400";
+              } else {
+                  newsletterMessage.textContent = data.message || "An error occurred.";
+                  newsletterMessage.className = "mt-2 text-sm font-medium text-red-400";
+              }
+
+          } catch (error) {
+              console.error("Newsletter submission error:", error);
+              newsletterMessage.textContent = "Network error. Please try again.";
+              newsletterMessage.className = "mt-2 text-sm font-medium text-red-400";
+          } finally {
+              newsletterSubmitBtn.disabled = false;
+          }
+      });
+  }
+
+  // --- 5. INITIALIZE ICONS ---
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+});
+</script>
+</body>
+</html>

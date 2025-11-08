@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<!-- Changed rounded-lg to rounded -->
+<div class="max-w-lg mx-auto bg-white p-8 rounded shadow my-8 mb-[200px]">
+
+    <h2 class="text-2xl font-bold text-center text-primary-900 mb-6">Create an Account</h2>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- General form errors (e.g., "passwords don't match") -->
+        {% if form.non_field_errors %}
+            <!-- Changed rounded-md to rounded -->
+            <div class="p-4 bg-red-50 text-red-700 rounded" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Render each field manually for styling -->
+
+        <!-- Username -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Username"
+                   required>
+            <!-- Field-specific errors -->
+            {% if form.username.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Full Name -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="text" name="{{ form.full_name.name }}" id="{{ form.full_name.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Full Name"
+                   required>
+            {% if form.full_name.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.full_name.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Email -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Email Address"
+                   required>
+            {% if form.email.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Phone -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="text" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Phone (Optional)">
+            {% if form.phone.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.phone.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Password 1 -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Password"
+                   required>
+            {% if form.password1.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.password1.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- Removed detailed password help text -->
+        </div>
+
+        <!-- Password 2 -->
+        <div>
+            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
+            <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   placeholder="Confirm Password"
+                   required>
+            {% if form.password2.errors %}
+                <div class="mt-1 text-sm text-red-600">
+                    {% for error in form.password2.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <!-- Changed rounded-lg to rounded -->
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                Create Account
+            </button>
+        </div>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+        Already have an account?
+        <a href="{% url 'login' %}" class="font-medium text-primary-900 hover:text-primary-500 hover:underline">
+            Login here
+        </a>
+    </p>
+
+</div>
+{% endblock %}
+

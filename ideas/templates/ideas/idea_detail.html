@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ idea.title }} - Inspiration{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 bg-white">
+  <div class="container mx-auto px-4 max-w-6xl">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <span class="text-sm text-gray-500 uppercase tracking-wider mb-2 block">
+        {{ idea.category.name|default:"General Idea" }}
+      </span>
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+        {{ idea.title }}
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl">
+        {{ idea.description }}
+      </p>
+    </div>
+
+    <!-- Main Image & Save Button -->
+    <div class="relative mb-8">
+      <div class="w-full h-[300px] md:h-[500px] rounded-lg shadow-lg overflow-hidden border border-gray-200">
+        <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-full object-cover">
+      </div>
+      <!-- Save Button -->
+      {% if user.is_authenticated %}
+      <button 
+        class="save-idea-btn absolute top-4 right-4 px-4 py-2 bg-white/90 rounded-md shadow-md text-primary-900 hover:bg-white hover:text-red-500 transition-colors flex items-center gap-2"
+        data-idea-id="{{ idea.id }}"
+        data-is-saved="{{ is_saved|yesno:'true,false' }}"
+      >
+        <span class="heart-icon">
+          {% if is_saved %}
+            <script>document.write(lucide.icons.Heart.toSvg({ fill: 'red', color: 'red', class: 'w-5 h-5' }))</script>
+          {% else %}
+            <script>document.write(lucide.icons.Heart.toSvg({ class: 'w-5 h-5' }))</script>
+          {% endif %}
+        </span>
+        <span class="font-medium text-sm">Save</span>
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- 
+      =================================
+      SHOPPABLE COLORS SECTION
+      =================================
+    -->
+    {% if idea.paint_colors.exists %}
+    <div class="py-8 my-8 border-t border-b">
+      <h2 class="text-2xl font-semibold text-primary-900 mb-5">Shop the Look</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {% for color in idea.paint_colors.all %}
+          <a href="{% url 'color_detail' color.slug %}" class="group block text-center">
+            <div class="w-full h-24 rounded shadow-sm border" style="background-color: {{ color.hex_code|default:'#eee' }};"></div>
+            <p class="mt-2 text-sm font-medium text-gray-800 group-hover:text-primary-700 group-hover:underline">
+              {{ color.name }}
+            </p>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Gallery -->
+    {% if idea.images.exists %}
+    <div class="my-8">
+      <h3 class="text-xl font-semibold text-primary-900 mb-4">Gallery</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {% for img in idea.images.all %}
+          <div class="group">
+            <div class="overflow-hidden rounded shadow-sm border border-gray-200 group-hover:shadow-lg transition-all duration-300">
+              <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Inspiration image' }}" class="w-full h-64 object-cover">
+            </div>
+            {% if img.caption %}
+              <p class="text-sm text-center text-gray-600 mt-3">{{ img.caption }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Tags -->
+    {% if idea.tags.exists %}
+    <div class="my-8 pt-8 border-t">
+      <h3 class="text-xl font-semibold text-primary-900 mb-4">Tags</h3>
+      <div class="flex flex-wrap gap-2">
+        {% for tag in idea.tags.all %}
+          <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+            {{ tag.name }}
+          </span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- Related Ideas -->
+    {% if related_ideas %}
+    <div class="my-8 pt-8 border-t">
+      <h2 class="text-2xl font-semibold text-primary-900 mb-6">You Might Also Like</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for related_idea in related_ideas %}
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden group border border-gray-200">
+            <a href="{{ related_idea.get_absolute_url }}">
+              <img src="{{ related_idea.get_display_image }}" alt="{{ related_idea.title }}" class="w-full h-48 object-cover group-hover:opacity-80 transition-opacity duration-300">
+            </a>
+            <div class="p-4">
+              <a href="{{ related_idea.get_absolute_url }}" class="block text-md font-semibold text-primary-900 hover:underline mb-1">{{ related_idea.title }}</a>
+              <p class="text-gray-500 text-xs">
+                {{ related_idea.category.name|default:"" }}
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- This page just needs the 'save' part of the script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- AJAX SAVE/UNSAVE IDEA ---
+  const saveToggleUrl = "{% url 'save_idea_toggle' %}";
+  const csrfToken = "{{ csrf_token }}"; // Django renders a token
+  
+  const saveButton = document.querySelector('.save-idea-btn');
+
+  if (saveButton) {
+    saveButton.addEventListener('click', async () => {
+      const ideaId = saveButton.dataset.ideaId;
+      if (!ideaId) return;
+      
+      saveButton.disabled = true; 
+
+      try {
+        const response = await fetch(saveToggleUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+          },
+          body: `idea_id=${ideaId}`
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          const heartIcon = saveButton.querySelector('.heart-icon');
+          const heartText = saveButton.querySelector('span:last-child');
+          
+          if (data.is_saved) {
+            heartIcon.innerHTML = lucide.icons.Heart.toSvg({ fill: 'red', color: 'red', class: 'w-5 h-5' });
+            heartText.textContent = "Saved";
+            saveButton.dataset.isSaved = 'true';
+          } else {
+            heartIcon.innerHTML = lucide.icons.Heart.toSvg({ class: 'w-5 h-5' });
+            heartText.textContent = "Save";
+            saveButton.dataset.isSaved = 'false';
+          }
+        }
+      } catch (error) {
+        console.error('Failed to toggle save:', error);
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 bg-white">
+  <div class="container mx-auto px-4 max-w-6xl">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <span class="text-sm font-semibold uppercase tracking-wider text-primary-700">
+        {{ project.get_project_type_display }}
+      </span>
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mt-2 mb-4">
+        {{ project.title }}
+      </h1>
+      <p class="text-lg text-gray-600">{{ project.location }}</p>
+    </div>
+
+    <!-- Featured Image -->
+    <div class="w-full h-[300px] md:h-[500px] rounded-lg shadow-lg overflow-hidden border border-gray-200 mb-12">
+      <!-- Use the safe get_display_image property -->
+      <img src="{{ project.get_display_image }}" alt="{{ project.title }} featured image" class="w-full h-full object-cover">
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+      <!-- Left Column (Description) -->
+      <div class="lg:col-span-2">
+        <h2 class="text-2xl font-semibold text-primary-900 mb-4">Project Details</h2>
+        <div class="prose prose-lg max-w-none text-gray-700">
+          {{ project.description|linebreaks|default:"No project description available." }}
+        </div>
+        
+        <!-- Gallery -->
+        {% if project.gallery_images.exists %}
+          <div class="mt-12 pt-8 border-t">
+            <h3 class="text-2xl font-semibold text-primary-900 mb-6">Project Gallery</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {% for image in project.gallery_images.all %}
+                <div class="overflow-hidden rounded-md shadow-sm border border-gray-200">
+                  <img src="{{ image.image.url }}" alt="{{ image.caption|default:project.title }}" class="w-full h-64 object-cover">
+                  {% if image.caption %}
+                    <p class="text-sm text-gray-600 p-3 bg-gray-50 text-center">{{ image.caption }}</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Right Column (Sidebar) -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 sticky top-28">
+          <h3 class="text-xl font-semibold text-primary-900 mb-5">At a Glance</h3>
+          
+          <ul class="space-y-4">
+            {% if project.client_name %}
+            <li>
+              <span class="block text-sm font-medium text-gray-500">Client</span>
+              <span class="text-base font-semibold text-gray-800">{{ project.client_name }}</span>
+            </li>
+            {% endif %}
+            
+            {% if project.completion_date %}
+            <li>
+              <span class="block text-sm font-medium text-gray-500">Completed</span>
+              <span class="text-base font-semibold text-gray-800">{{ project.completion_date|date:"F Y" }}</span>
+            </li>
+            {% endif %}
+
+            <!-- Products Used -->
+            {% if project.products_used.exists %}
+            <li>
+              <span class="block text-sm font-medium text-gray-500 mb-2">Products Used</span>
+              <div class="flex flex-wrap gap-2">
+                {% for product in project.products_used.all %}
+                  <a href="{{ product.get_absolute_url }}" class="px-3 py-1 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-primary-50 hover:border-primary-600 hover:text-primary-800 transition-colors">
+                    {{ product.name }}
+                  </a>
+                {% endfor %}
+              </div>
+            </li>
+            {% endif %}
+            
+            <!-- Colors Used -->
+            {% if project.colors_used.exists %}
+            <li>
+              <span class="block text-sm font-medium text-gray-500 mb-2">Colors Used</span>
+              <div class="flex flex-wrap gap-2">
+                {% for color in project.colors_used.all %}
+                  <a href="{{ color.get_absolute_url }}" class="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-primary-50 hover:border-primary-600 hover:text-primary-800 transition-colors">
+                    <span class="w-4 h-4 rounded-full border border-gray-400" style="background-color: {{ color.hex_code|default:'#fff' }}"></span>
+                    {{ color.name }}
+                  </a>
+                {% endfor %}
+              </div>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+
+  </div>
+</section>
+{% endblock %}

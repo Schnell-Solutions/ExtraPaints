@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Extra Paints - Quality Paints for Every Project{% endblock %}
+
+{% block content %}
+
+    <main>
+
+        <section class="bg-primary-25">
+            <div class="container mx-auto px-4 lg:px-12 py-16 md:py-24">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left">
+                        <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-900 leading-tight">
+                            Find Your Perfect Shade
+                        </h1>
+                        <p class="mt-6 text-lg text-gray-600 max-w-lg mx-auto lg:mx-0">
+                            Discover premium, eco-friendly paints for every project. From vibrant interiors to durable exteriors, find the quality you need in the colors you love.
+                        </p>
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <a href="{% url 'product_list' %}" class="px-10 py-3 bg-primary-900 text-white text-base font-medium rounded hover:bg-primary-800 transition-all transform hover:-translate-y-0.5">
+                                Shop All Products
+                            </a>
+                            <a href="{% url 'idea_list' %}" class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded border border-gray-200 hover:bg-gray-50 transition-all transform hover:-translate-y-0.5">
+                                Get Inspired
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <img src="{% static 'home/images/hero.png' %}"
+                             alt="ExtraPaints"
+                             class="w-full max-w-md lg:max-w-full rounded-lg">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 bg-primary-10">
+            <div class="container mx-auto px-4 lg:px-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
+                    Our Products
+                </h2>
+
+                <div id="category-filters" class="flex justify-center flex-wrap gap-3 mb-10">
+                    </div>
+
+                <div id="product-row-container" class="product-scrollbar flex overflow-x-auto space-x-6 pb-6 -mb-6">
+                    </div>
+                <div class="mt-8 flex justify-center">
+                  <a href="{% url 'product_list' %}"
+                    class="px-6 py-3 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
+                    Browse Products
+                  </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 bg-gray-50">
+          <div class="container mx-auto px-4 lg:px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
+              Most Loved Colors
+            </h2>
+
+            <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-2">
+              {% for color in most_loved_colors %}
+              <a href="{{ color.get_absolute_url }}" class="group block overflow-hidden rounded">
+                <div
+                  class="relative w-full h-48 overflow-hidden rounded-lg md:h-56 group-hover:shadow-lg group-hover:-translate-y-1 transition-all duration-300"
+                  style="background-color: {{ color.hex_code|default:'#f1f5f9' }}">
+                  {% if not color.hex_code %}
+                  <img
+                    src="https://placehold.co/400x400/f1f5f9/9ca3af?text={{ color.name|urlencode }}"
+                    alt="{{ color.name }}"
+                    class="w-full h-full object-cover">
+                  {% endif %}
+
+                  <div class="absolute bottom-0 left-0 right-0 p-3 text-center bg-black/20 backdrop-blur-sm">
+                    <h3 class="font-semibold text-white">{{ color.name }}</h3>
+                    <p class="mt-1 inline-block rounded-full bg-white/80 px-2 py-0.5 text-xs font-bold text-gray-800">
+                      {{ color.code }}
+                    </p>
+                  </div>
+                </div>
+              </a>
+              {% endfor %}
+
+              {% if not most_loved_colors %}
+              <p class="col-span-2 text-center text-gray-500 md:col-span-4">No colors to display yet.</p>
+              {% endif %}
+            </div>
+
+            <div class="mt-8 flex justify-center">
+              <a href="{% url 'color_list' %}"
+                class="px-6 py-3 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
+                View All Colors
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class=" bg-primary-900 py-16 md:py-24">
+          <div class="container mx-auto max-w-6xl px-4">
+            <div class="text-center mb-16 md:mb-24">
+              <h2 class="text-4xl md:text-5xl font-bold text-white mt-2">Why Choose Us</h2>
+            </div>
+            <div class="flex flex-col lg:flex-row justify-center gap-16 lg:gap-6">
+              <div class="lg:w-1/3 px-5">
+                <div class="flex justify-between items-center mb-6 h-14 mx-auto">
+                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#060024" d="M21 11c0 5.55-3.84 10.74-9 12c-5.16-1.26-9-6.45-9-12V5l9-4l9 4zm-9 10c3.75-1 7-5.46 7-9.78V6.3l-7-3.12L5 6.3v4.92C5 15.54 8.25 20 12 21"/></svg>
+                  </div>
+                  <span class="text-md text-gray-200">01</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-white">Superior Durability</h3>
+                  <p class="text-white mt-2 text-sm">
+                    Our paints resist stains, fading, and chipping — keeping your walls fresh and vibrant for years.
+                  </p>
+                </div>
+              </div>
+                <div class="lg:w-1/3 px-5">
+                <div class="flex justify-between items-center mb-6 h-22">
+                  <div class="flex-shrink-0 bg-white text-black w-20 h-20 flex items-center justify-center rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="#060024" d="M11.5 3a4.5 4.5 0 0 1 4.336 3.292l.052.205l1.87-.467a1 1 0 0 1 1.233.84L19 7v1.81a6.5 6.5 0 0 1 1.364 1.882l.138.308H21a1 1 0 0 1 .993.883L22 12v3a1 1 0 0 1-.445.832l-.108.062l-1.168.585a6.5 6.5 0 0 1-2.02 2.325l-.259.174V20a1 1 0 0 1-.883.993L17 21h-3a1 1 0 0 1-.993-.883L13 20h-1a1 1 0 0 1-.883.993L11 21H8a1 1 0 0 1-.993-.883L7 20v-1.022a6.5 6.5 0 0 1-2.854-4.101a3 3 0 0 1-2.14-2.693L2 12v-.5a1 1 0 0 1 1.993-.117L4 11.5v.5q.002.224.09.415a6.5 6.5 0 0 1 2.938-4.411A4.5 4.5 0 0 1 11.5 3M17 8.28l-2.758.69l-.12.023L14 9h-3.5a4.5 4.5 0 0 0-2.045 8.51a1 1 0 0 1 .537.766L9 18.4v.6h1a1 1 0 0 1 .883-.993L11 18h3a1 1 0 0 1 .993.883L15 19h1v-.6a1 1 0 0 1 .545-.89a4.52 4.52 0 0 0 2.068-2.18a1 1 0 0 1 .347-.417l.119-.07l.921-.461V13h-.207a1 1 0 0 1-.962-.728a4.5 4.5 0 0 0-1.468-2.244a1 1 0 0 1-.355-.644L17 9.257zM16 11a1 1 0 1 1 0 2a1 1 0 0 1 0-2m-4.5-6a2.5 2.5 0 0 0-2.478 2.169A6.5 6.5 0 0 1 10.5 7h3.377l.07-.017A2.5 2.5 0 0 0 11.5 5"/></g></svg>
+                  </div>
+                  <span class="text-md text-gray-200">02</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-white">Exceptional Coverage</h3>
+                  <p class="text-white mt-2 text-sm">
+                    High-pigment formulas ensure a rich, even finish in fewer coats — saving time, effort, and cost.
+                  </p>
+                </div>
+              </div>
+                <div class="lg:w-1/3 px-5">
+                <div class="flex justify-between items-center mb-6 h-14">
+                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"><path fill="#060024" d="M19.95 5.97a2.02 2.02 0 0 0-1.92-1.92c-.7-.03-1.37-.05-2.02-.05c-5.03 0-8.52.97-10.46 2.91c-3.68 3.68-3.15 8.9.09 11.9h.01a16 16 0 0 1 7.67-8.8c-.21.18-4.7 3.58-5.51 10.25c1.05.48 2.2.75 3.36.75c2.05 0 4.16-.8 5.92-2.55c2.19-2.2 3.14-6.36 2.86-12.49"/></svg>
+                  </div>
+                  <span class="text-md text-gray-200">03</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-white">Eco-Friendly & Safe</h3>
+                  <p class="text-white mt-2 text-sm">
+                    Our low-VOC paints offer cleaner air and a safer environment — for you and your family.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-16 md:py-24 bg-primary-50">
+            <div class="container mx-auto px-4 lg:px-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
+                    What Our Customers Say
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded border border-gray-200">
+                        <div class="flex text-yellow-500 mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <blockquote class="text-gray-600 italic mb-4">
+                            "The quality of the paint is phenomenal. Our living room looks brand new, and the 'Ocean Breeze' color is so calming. Will be buying all my paint from here!"
+                        </blockquote>
+                        <p class="font-semibold text-primary-900">- J. Doe</p>
+                    </div>
+                    <div class="bg-white p-8 rounded border border-gray-200">
+                        <div class="flex text-yellow-500 mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <blockquote class="text-gray-600 italic mb-4">
+                            "I used the exterior paint for my fence, and it's held up beautifully against the weather. Great coverage and a fantastic finish. Highly recommend."
+                        </blockquote>
+                        <p class="font-semibold text-primary-900">- A. Smith</p>
+                    </div>
+                    <div class="bg-white p-8 rounded border border-gray-200">
+                        <div class="flex text-yellow-500 mb-4">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star-half" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <blockquote class="text-gray-600 italic mb-4">
+                            "The website was easy to use, and the color swatches were very accurate. The primer worked perfectly. Good value for the price."
+                        </blockquote>
+                        <p class="font-semibold text-primary-900">- M. Kim</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    {{ categories_json|json_script:"categories-data" }}
+    {{ products_json|json_script:"products-data" }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // --- Dynamic Product Section Logic ---
+
+            // 1. GET DATA FROM DJANGO (Unchanged)
+            const categories = JSON.parse(document.getElementById('categories-data').textContent);
+            const products = JSON.parse(document.getElementById('products-data').textContent);
+
+            const categoryFilterContainer = document.getElementById('category-filters');
+            const productRowContainer = document.getElementById('product-row-container');
+
+            // 2. Function to render category buttons (Unchanged)
+            function renderCategoryFilters() {
+                if (!categoryFilterContainer) return;
+
+                let html = '';
+                if (!Array.isArray(categories) || categories.length === 0) {
+                    categoryFilterContainer.innerHTML = '<p class="text-gray-500">No product categories found.</p>';
+                    return;
+                }
+
+                categories.forEach((category, index) => {
+                    const isActive = index === 0;
+                    html += `
+                        <button
+                            class="category-btn px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                                   ${isActive ? 'bg-primary-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                            data-category="${category}">
+                            ${category}
+                        </button>
+                    `;
+                });
+                categoryFilterContainer.innerHTML = html;
+            }
+
+            // 3. Function to render product cards
+            function renderProducts(category) {
+                if (!productRowContainer) return;
+
+                const productsToRender = products[category] || [];
+                productRowContainer.innerHTML = '';
+
+                if (productsToRender.length === 0) {
+                    productRowContainer.innerHTML = '<p class="text-gray-500 pl-4">No products found in this category.</p>';
+                    return;
+                }
+
+                productsToRender.forEach((product, index) => {
+                    const card = document.createElement('a');
+                    card.href = product.url;
+                    card.className = 'product-card group flex-shrink-0 w-72 rounded border border-gray-200 overflow-hidden bg-white hover:shadow transition-all duration-300';
+
+                    // --- UPDATED: card.innerHTML ---
+                    // I removed the <p> tag that displayed the price.
+                    card.innerHTML = `
+                        <div>
+                            <div class="w-full h-48 overflow-hidden">
+                                <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f1f5f9/9ca3af?text=Image+Error'; this.onerror=null;">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-base font-semibold text-gray-800 group-hover:text-primary-900">${product.name}</h3>
+                                <button class="w-full mt-4 px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
+                                    View Options
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    // --- END OF UPDATE ---
+
+                    productRowContainer.appendChild(card);
+
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                });
+            }
+
+            // 4. Event Listener (Unchanged)
+            if (categoryFilterContainer) {
+                categoryFilterContainer.addEventListener('click', (e) => {
+                    const clickedButton = e.target.closest('.category-btn');
+                    if (!clickedButton) return;
+
+                    categoryFilterContainer.querySelectorAll('.category-btn').forEach(btn => {
+                        btn.classList.remove('bg-primary-900', 'text-white', 'shadow-md');
+                        btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                    });
+
+                    clickedButton.classList.add('bg-primary-900', 'text-white', 'shadow-md');
+                    clickedButton.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+
+                    const category = clickedButton.dataset.category;
+                    renderProducts(category);
+                });
+            }
+
+            // 5. Initial Load (Unchanged)
+            renderCategoryFilters();
+            if (Array.isArray(categories) && categories.length > 0) {
+                renderProducts(categories[0]);
+            } else if (productRowContainer) {
+                productRowContainer.innerHTML = '<p class="text-gray-500 pl-4">No products to display.</p>';
+            }
+        });
+    </script>
+{% endblock %}'

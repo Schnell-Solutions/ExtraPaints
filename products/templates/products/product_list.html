@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50">
+  <div class="container mx-auto px-4 max-w-7xl">
+   <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+  <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
+    Our Products
+  </h1>
+
+  <form method="get" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search products..."
+      value="{{ query|default:'' }}"
+      class="px-4 py-2 border rounded text-sm w-full sm:w-64"
+    >
+    <button
+      type="submit"
+      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-500 transition-colors"
+    >
+      Search
+    </button>
+  </form>
+</div>
+
+<div class="flex flex-wrap gap-2 sm:gap-4 mb-6 justify-center md:justify-start">
+  <a
+    href="{% url 'product_list' %}"
+    class="px-4 py-2 rounded-full border {% if not selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %}"
+  >
+    All
+  </a>
+
+  {% for cat in categories %}
+    <a
+      href="?category={{ cat.slug }}"
+      class="px-4 py-2 rounded-full border {% if cat.slug == selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %}"
+    >
+      {{ cat.name }}
+    </a>
+  {% endfor %}
+</div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for product in products %}
+      <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+
+        <div class="h-48 bg-neutral-100 relative flex items-center justify-center rounded overflow-hidden">
+          {% if product.main_image %}
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="object-contain w-full h-full">
+          {% else %}
+            <img src="../media/default.jpg" alt="{{ product.name }}" class="object-cover w-full h-full">
+          {% endif %}
+            {% if user.is_authenticated %}
+              <button
+                class="save-product-btn absolute top-3 right-3 text-neutral-600 hover:text-red-500 z-10"
+                data-product-id="{{ product.id }}"
+                data-is-saved="{{ product.is_saved|yesno:'true,false' }}"
+              >
+                <span class="heart-icon shadow">
+                  {% if product.is_saved %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="red">
+                      <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                    </svg>
+                  {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                    </svg>
+                  {% endif %}
+                </span>
+              </button>
+            {% endif %}
+        </div>
+
+        <div class="p-6 flex flex-col flex-grow">
+          <h3 class="text-xl font-semibold mb-2 text-primary-900">
+            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+          </h3>
+          <p class="text-base text-neutral-600 mb-4 line-clamp-2">{{ product.description|truncatewords:15 }}</p>
+
+          <div class="flex justify-between items-center mt-auto">
+            <span class="text-sm text-neutral-500">{{ product.category.name }}</span>
+            <a href="{{ product.get_absolute_url }}" class="px-4 py-2 text-sm text-white font-medium rounded bg-primary-900 hover:bg-primary-500">
+              View
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p>No products found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- AJAX SAVE/UNSAVE PRODUCT ---
+  const saveToggleUrl = "{% url 'save_product_toggle' %}";
+  const csrfToken = "{{ csrf_token }}"; // This is fine for an inline script
+
+  document.querySelectorAll('.save-product-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+      const productId = button.dataset.productId;
+      if (!productId) return;
+
+      button.disabled = true;
+
+      try {
+        const response = await fetch(saveToggleUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+          },
+          body: `product_id=${productId}`
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          // --- THIS IS THE UPDATED PART ---
+          const heartIcon = button.querySelector('.heart-icon');
+          const svgElement = heartIcon.querySelector('svg'); // Find the <svg>
+
+          if (svgElement) { // Check if we found it
+            if (data.is_saved) {
+              svgElement.setAttribute('fill', 'red'); // Set fill to red
+              button.dataset.isSaved = 'true';
+            } else {
+              svgElement.setAttribute('fill', 'currentColor'); // Set fill to text color
+              button.dataset.isSaved = 'false';
+            }
+          }
+          // --- END OF UPDATED PART ---
+        }
+      } catch (error) {
+        console.error('Failed to toggle save:', error);
+      } finally {
+        button.disabled = false; // Re-enable button
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

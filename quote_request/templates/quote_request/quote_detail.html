@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Quote Request{% endblock %}
+
+{% block content %}
+<section class="py-12 md:py-16 bg-white">
+  <div class="container mx-auto px-4 max-w-6xl">
+
+    {% if quote_list %}
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-8">My Quote Request</h1>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        
+        <div class="lg:col-span-2 space-y-6">
+          <h2 class="text-xl font-semibold text-primary-900">Items to Inquire</h2>
+          
+          {% for item in quote_list %}
+          <div class="flex items-start gap-4 p-4 border rounded-lg shadow-sm">
+            <a href="{{ item.product.get_absolute_url }}">
+              {% if item.product.main_image %}
+                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="w-24 h-24 object-cover rounded border">
+              {% else %}
+                <div class="w-24 h-24 bg-gray-100 rounded border flex items-center justify-center text-gray-400">
+                  <i data-lucide="image" class="w-8 h-8"></i>
+                </div>
+              {% endif %}
+            </a>
+            
+            <div class="flex-1">
+              <a href="{{ item.product.get_absolute_url }}" class="hover:underline">
+                <h3 class="text-lg font-semibold text-primary-900">{{ item.product.name }}</h3>
+              </a>
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">Color:</span> {{ item.color.name }}
+              </p>
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">Size:</span> {{ item.size.name }}
+              </p>
+
+              <form action="{% url 'quote_update' %}" method="POST" class="mt-2 flex items-center gap-2">
+                {% csrf_token %}
+                <input type="hidden" name="item_key" value="{{ item.key }}">
+                <label for="quantity-{{ item.key }}" class="text-sm font-medium text-gray-600">Qty:</label>
+                <input type="number" name="quantity" id="quantity-{{ item.key }}"
+                       value="{{ item.quantity }}" min="1"
+                       class="w-16 border rounded px-2 py-1 text-center text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                <button type="submit" class="text-xs text-primary-700 hover:underline font-medium">Update</button>
+              </form>
+              </div>
+            
+            <div>
+              <form action="{% url 'quote_remove' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="item_key" value="{{ item.key }}">
+                <button type="submit" class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full" title="Remove item">
+                  <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <div class="lg:col-span-1">
+          <div class="lg:sticky lg:top-24 bg-gray-50 p-6 rounded-lg border">
+            <h2 class="text-xl font-semibold text-primary-900 mb-6">Submit Your Request</h2>
+            <p class="text-sm text-gray-600 mb-6">
+              Please provide your contact details, and our team will get back to you with a quote.
+            </p>
+            
+            <form action="{% url 'quote_detail' %}" method="POST" class="space-y-4">
+              {% csrf_token %}
+              
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                <input type="text" name="name" id="name" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+              </div>
+              
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+              </div>
+              
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input type="tel" name="phone" id="phone" required
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+              </div>
+              
+              <div>
+                <label for="message" class="block text-sm font-medium text-gray-700">Message (Optional)</label>
+                <textarea name="message" id="message" rows="4"
+                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="Any specific instructions or questions?"></textarea>
+              </div>
+              
+              <button type="submit"
+                      class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                Send Quote Request
+              </button>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    {% else %}
+      <div class="text-center py-16">
+        <i data-lucide="inbox" class="w-16 h-16 mx-auto text-primary-300"></i>
+        <h1 class="mt-4 text-3xl font-bold text-primary-900">Your Quote List is Empty</h1>
+        <p class="mt-2 text-gray-600">
+          You haven't added any products to your request list yet.
+        </p>
+        <div class="mt-6">
+          <a href="{% url 'product_list' %}"
+             class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-900 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            Browse Products
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Verify Your Email{% endblock %}
+
+{% block content %}
+<!-- Card layout, matches login/register pages with 'rounded' -->
+<div class="max-w-lg mx-auto bg-white p-8 rounded shadow my-8 text-center mb-[200px]">
+
+    <h2 class="text-2xl font-bold text-primary-900 mb-4">Account Created!</h2>
+
+    <p class="text-gray-700 mb-4">
+        We’ve sent a verification link to your email. Please check your inbox to activate your account.
+    </p>
+
+    <p class="text-gray-700 mb-6">
+        If you didn’t receive the email, you can resend it below.
+    </p>
+
+    <!-- Styled as a button -->
+    <a href="{% url 'resend_verification' %}" class="inline-block w-full py-2 px-4 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+        Resend Verification Email
+    </a>
+
+</div>
+{% endblock %}

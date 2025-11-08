@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Explore Our Colors{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50">
+  <div class="container mx-auto px-4 max-w-7xl">
+<div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+  <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
+    Explore Our Colors
+  </h1>
+
+  <form id="search-form" method="get" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+    <input
+      type="text"
+      name="q"
+      value="{{ search_query|default:'' }}"
+      placeholder="Search by name or code..."
+      class="px-4 py-2 border rounded text-sm w-full sm:w-64"
+    >
+    <button
+      type="submit"
+      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-500 transition-colors"
+    >
+      Search
+    </button>
+  </form>
+</div>
+
+<form id="filters-form" method="get" class="flex flex-wrap items-center gap-2 sm:gap-4 mb-12 justify-center md:justify-start">
+
+  <div class="relative filter-select-wrapper">
+    <select name="undertone" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="">All Undertones</option>
+      <option value="warm" {% if selected_undertone == "warm" %}selected{% endif %}>Warm</option>
+      <option value="cool" {% if selected_undertone == "cool" %}selected{% endif %}>Cool</option>
+      <option value="neutral" {% if selected_undertone == "neutral" %}selected{% endif %}>Neutral</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative filter-select-wrapper">
+    <select name="collection" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="">All Collections</option>
+      {% for c in collections %}
+        <option value="{{ c.slug }}" {% if selected_collection == c.slug %}selected{% endif %}>
+          {{ c.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative filter-select-wrapper">
+    <select name="finish" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="">All Finishes</option>
+      {% for f in finishes %}
+        <option value="{{ f.id }}" {% if selected_finish == f.id|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>
+      {% endfor %}
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative filter-select-wrapper">
+    <select name="surface" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="">All Surfaces</option>
+      {% for s in surfaces %}
+        <option value="{{ s.id }}" {% if selected_surface == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative filter-select-wrapper">
+    <select name="room" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="">All Rooms</option>
+      {% for r in rooms %}
+        <option value="{{ r.id }}" {% if selected_room == r.id|stringformat:"s" %}selected{% endif %}>{{ r.name }}</option>
+      {% endfor %}
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="relative filter-select-wrapper">
+    <select name="sort" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+      <option value="name" {% if sort == "name" %}selected{% endif %}>Sort: Name</option>
+      <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
+      <option value="lrv_high" {% if sort == "lrv_high" %}selected{% endif %}>LRV High → Low</option>
+      <option value="lrv_low" {% if sort == "lrv_low" %}selected{% endif %}>LRV Low → High</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <svg class="w-5 h-5 text-primary-900 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <a href="{% url 'color_list' %}" class="px-4 py-2 border border-primary-900 text-primary-900 rounded text-sm font-medium hover:bg-primary-900 hover:text-white transition-colors">
+    Clear All
+  </a>
+  {% csrf_token %}
+  <input type="hidden" name="q" value="{{ search_query|default:'' }}">
+</form>
+
+    <div id="colors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+      {% for color in colors %}
+        <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+
+          <div class="h-60 relative rounded overflow-hidden">
+            {% if color.hex_code %}
+              <div class="w-full h-full" style="background-color: {{ color.hex_code }}"></div>
+            {% else %}
+              <img src="{{ MEDIA_URL }}default.jpg" alt="Default image" class="w-full h-full object-cover">
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <button
+              class="save-color-btn absolute top-3 right-3 text-neutral-600 hover:text-red-500 z-10"
+              data-color-id="{{ color.id }}"
+              data-is-saved="{{ color.is_saved|yesno:'true,false' }}"
+              aria-label="Save color"
+            >
+              <span class="heart-icon shadow">
+                {% if color.is_saved %}
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="red">
+                    <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                  </svg>
+                {% else %}
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                  </svg>
+                {% endif %}
+              </span>
+            </button>
+            {% endif %}
+            <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
+              <span class="text-sm font-semibold text-gray-800">
+                {{ color.code }}
+              </span>
+            </div>
+          </div>
+
+          <div class="p-6 flex flex-col flex-grow">
+            <h3 class="text-xl font-semibold text-primary-900 mb-2 truncate">
+              {{ color.name }}
+            </h3>
+            <div class="flex items-center justify-between pt-4 mt-auto"> {% if color.collection %}
+              <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
+                {{ color.collection.name }}
+              </span>
+              {% else %}
+              <span></span> {% endif %}
+              <a href="{{ color.get_absolute_url }}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 transition-colors">
+                View
+              </a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-span-full text-center py-12">
+          </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- 1. DYNAMIC FILTERING ---
+  const filtersForm = document.getElementById('filters-form');
+  const searchForm = document.getElementById('search-form');
+  const searchInput = searchForm.querySelector('input[name="q"]');
+  const selectInputs = filtersForm.querySelectorAll('select');
+
+  function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+  }
+
+  // Submit filter form when a select changes
+  selectInputs.forEach(select => {
+    select.addEventListener('change', () => filtersForm.submit());
+  });
+
+  // Debounce search input submission
+  const debouncedSearchSubmit = debounce(() => searchForm.submit(), 500);
+  if (searchInput) {
+    searchInput.addEventListener('input', debouncedSearchSubmit);
+  }
+
+  // Prevent debounced search from submitting when a filter is changed
+  filtersForm.addEventListener('submit', (e) => {
+    // Manually copy the search query from the top form into the hidden field
+    const mainQuery = searchInput.value;
+    const hiddenQueryInput = filtersForm.querySelector('input[name="q"]');
+    if (hiddenQueryInput) {
+      hiddenQueryInput.value = mainQuery;
+    }
+  });
+
+
+  // --- 2. SAVE COLOR SCRIPT ---
+  const saveToggleUrl = "{% url 'save_color_toggle' %}"; // Correct URL
+  const colorsGrid = document.getElementById('colors-grid');
+
+  function getCsrfToken() {
+    const csrfInput = filtersForm.querySelector('input[name="csrfmiddlewaretoken"]');
+    return csrfInput ? csrfInput.value : '';
+  }
+
+  async function toggleColorSave(colorId, buttonElement) {
+    const heartIcon = buttonElement.querySelector('.heart-icon');
+    if (!heartIcon) return;
+
+    buttonElement.disabled = true;
+
+    try {
+      const response = await fetch(saveToggleUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': getCsrfToken()
+        },
+        body: `color_id=${colorId}`
+      });
+      if (!response.ok) {
+        throw new Error('Server responded with an error.');
+      }
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        // --- 4. JAVASCRIPT: Updated to control SVG fill attribute ---
+        const svgElement = heartIcon.querySelector('svg'); // Find the <svg>
+        if (svgElement) {
+          if (data.is_saved) {
+            svgElement.setAttribute('fill', 'red'); // Set fill to red
+            buttonElement.dataset.isSaved = 'true';
+          } else {
+            svgElement.setAttribute('fill', 'currentColor'); // Set fill to text color
+            buttonElement.dataset.isSaved = 'false';
+          }
+        }
+        // --- End of updated JS block ---
+      }
+    } catch (error) {
+      console.error('Failed to toggle save:', error);
+    } finally {
+      buttonElement.disabled = false;
+    }
+  }
+
+  // Event delegation on the grid
+  if (colorsGrid) {
+    colorsGrid.addEventListener('click', (e) => {
+      const saveButton = e.target.closest('.save-color-btn');
+      if (saveButton) {
+        const colorId = saveButton.dataset.colorId;
+        if (colorId) {
+          toggleColorSave(colorId, saveButton);
+        }
+      }
+    });
+  }
+});
+
+document.querySelectorAll('.filter-select-wrapper').forEach(wrapper => {
+    const select = wrapper.querySelector('select');
+    const svg = wrapper.querySelector('svg');
+
+    if (select && svg) {
+      select.addEventListener('focus', () => {
+        svg.classList.add('rotate-180');
+      });
+      select.addEventListener('blur', () => {
+        svg.classList.remove('rotate-180');
+      });
+    }
+  });
+</script>
+{% endblock %}

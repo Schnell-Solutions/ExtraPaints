@@ -1,0 +1,10 @@
+{% load static %}
+<div class="text-center p-4 border border-gray-300 rounded-xl shadow-sm bg-white">
+    <div class="w-28 h-28 mx-auto mb-4 overflow-hidden rounded-full border-4 border-primary-500">
+        <img src="{% static image_url %}" alt="{{ name }}" class="w-full h-full object-cover">
+    </div>
+
+    <h4 class="text-lg font-bold text-primary-900 mb-1">{{ name }}</h4>
+    <p class="text-sm font-medium text-primary-500 uppercase tracking-wider mb-3">{{ title }}</p>
+    <p class="text-xs text-gray-500 italic">{{ bio }}</p>
+</div>
