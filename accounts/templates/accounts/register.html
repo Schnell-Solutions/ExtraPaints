@@ -3,36 +3,48 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<!-- Changed rounded-lg to rounded -->
-<div class="max-w-lg mx-auto bg-white p-8 rounded shadow my-8 mb-[200px]">
+<section class="bg-neutral-50 flex justify-center pt-12 pb-[200px] sm:pb-[400px]">
+  <div class="w-full max-w-md bg-white p-6 sm:p-8 rounded border border-gray-200 mx-4">
+    <h2 class="text-2xl font-bold text-center text-gray-900 mb-6">Create an Account</h2>
 
-    <h2 class="text-2xl font-bold text-center text-primary-900 mb-6">Create an Account</h2>
+    <!-- Django Messages Block -->
+    {% if messages %}
+        <div class="mb-4 space-y-2">
+            {% for message in messages %}
+                <div class="p-3 rounded border text-sm
+                    {% if message.tags == 'error' or message.tags == 'warning' %}
+                        bg-red-100 text-red-800 border-red-200
+                    {% elif message.tags == 'success' %}
+                        bg-green-100 text-green-800 border-green-200
+                    {% else %}
+                        bg-blue-100 text-blue-800 border-blue-200
+                    {% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <form method="post" class="space-y-4">
         {% csrf_token %}
 
-        <!-- General form errors (e.g., "passwords don't match") -->
         {% if form.non_field_errors %}
-            <!-- Changed rounded-md to rounded -->
-            <div class="p-4 bg-red-50 text-red-700 rounded" role="alert">
+            <div class="p-3 bg-red-100 text-red-800 rounded border text-sm mb-2" role="alert">
                 {% for error in form.non_field_errors %}
                     <p>{{ error }}</p>
                 {% endfor %}
             </div>
         {% endif %}
 
-        <!-- Render each field manually for styling -->
-
         <!-- Username -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
                    placeholder="Username"
+                   value="{{ form.username.value|default:'' }}"
                    required>
-            <!-- Field-specific errors -->
             {% if form.username.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.username.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
@@ -42,13 +54,13 @@
 
         <!-- Full Name -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="text" name="{{ form.full_name.name }}" id="{{ form.full_name.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
                    placeholder="Full Name"
+                   value="{{ form.full_name.value|default:'' }}"
                    required>
             {% if form.full_name.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.full_name.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
@@ -58,13 +70,13 @@
 
         <!-- Email -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
                    placeholder="Email Address"
+                   value="{{ form.email.value|default:'' }}"
                    required>
             {% if form.email.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.email.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
@@ -74,12 +86,12 @@
 
         <!-- Phone -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="text" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                   placeholder="Phone (Optional)">
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
+                   placeholder="Phone (Optional)"
+                   value="{{ form.phone.value|default:'' }}">
             {% if form.phone.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.phone.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
@@ -89,30 +101,27 @@
 
         <!-- Password 1 -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
                    placeholder="Password"
                    required>
             {% if form.password1.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.password1.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
                 </div>
             {% endif %}
-            <!-- Removed detailed password help text -->
         </div>
 
         <!-- Password 2 -->
         <div>
-            <!-- Removed label, added placeholder, removed mt-1, changed rounded-md to rounded -->
             <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
                    placeholder="Confirm Password"
                    required>
             {% if form.password2.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-xs text-red-600">
                     {% for error in form.password2.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
@@ -122,8 +131,7 @@
 
         <!-- Submit Button -->
         <div>
-            <!-- Changed rounded-lg to rounded -->
-            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+            <button type="submit" class="w-full py-2 px-4 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors">
                 Create Account
             </button>
         </div>
@@ -131,11 +139,10 @@
 
     <p class="mt-6 text-center text-sm text-gray-600">
         Already have an account?
-        <a href="{% url 'login' %}" class="font-medium text-primary-900 hover:text-primary-500 hover:underline">
+        <a href="{% url 'login' %}" class="text-gray-800 hover:text-gray-600 hover:underline font-medium transition-colors">
             Login here
         </a>
     </p>
-
-</div>
+  </div>
+</section>
 {% endblock %}
-

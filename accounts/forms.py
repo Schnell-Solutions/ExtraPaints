@@ -16,3 +16,10 @@ class UserRegisterForm(UserCreationForm):
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(label="Username or Email")
     password = forms.CharField(widget=forms.PasswordInput)
+
+class UserUpdateForm(forms.ModelForm):
+    # Only include fields the user is allowed to edit from the profile page
+    class Meta:
+        model = User
+        fields = ['username', 'full_name', 'email', 'phone']
+

@@ -7,6 +7,8 @@
     <title>{% block title %}Paint Company{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
@@ -48,27 +50,31 @@
 
   <div class="bg-primary-900 py-2 px-4 text-sm text-primary-50">
     <div class="container mx-auto flex justify-between items-center max-w-6xl">
-      <span class='sm:inline hidden'>Free Delivery on orders over KES 50,000</span>
-      <div class="flex space-x-4 items-center justify-end">
-        {% if user.is_authenticated %}
-          <a href="{% url 'my_collection' %}" class="hover:text-primary-300 transition-colors">
-            My Collection
-          </a>
-            <span>|</span>
-          <a href="{% url 'logout' %}" class="hover:text-primary-300 transition-colors">
-            Logout
-          </a>
-        {% else %}
-          <a href="{% url 'login' %}" class="hover:text-primary-300 transition-colors">
-            Login
-          </a>
-            <span>|</span>
-          <a href="{% url 'register' %}" class="hover:text-primary-300 transition-colors">
-            Register
-          </a>
-        {% endif %}
-      </div>
-    </div>
+  <span class="hidden sm:inline">Free Delivery on orders over KES 50,000</span>
+
+  <span class="sm:hidden"></span>
+
+  <div class="flex space-x-4 items-center justify-end">
+    {% if user.is_authenticated %}
+      <a href="{% url 'my_collection' %}" class="hover:text-primary-300 transition-colors">
+        My Collection
+      </a>
+      <span>|</span>
+      <a href="{% url 'logout' %}" class="hover:text-primary-300 transition-colors">
+        Logout
+      </a>
+    {% else %}
+      <a href="{% url 'login' %}" class="hover:text-primary-300 transition-colors">
+        Login
+      </a>
+      <span>|</span>
+      <a href="{% url 'register' %}" class="hover:text-primary-300 transition-colors">
+        Register
+      </a>
+    {% endif %}
+  </div>
+</div>
+
   </div>
 
   <nav class="container mx-auto px-4 py-4 max-w-6xl">
@@ -80,16 +86,16 @@
       </a>
 
       <div class="hidden md:flex items-center space-x-8">
-        <a href="{% url 'color_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+        <a href="{% url 'color_list' %}" class="font-medium hover:text-primary-500">
           Colors
         </a>
-        <a href="{% url 'product_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+        <a href="{% url 'product_list' %}" class="font-medium hover:text-primary-500">
           Products
         </a>
-        <a href="{% url 'idea_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+        <a href="{% url 'idea_list' %}" class="font-medium hover:text-primary-500">
           Ideas
         </a>
-        <a href="{% url 'portfolio_list' %}" class="font-medium hover:text-primary-500 hover:underline">
+        <a href="{% url 'portfolio_list' %}" class="font-medium hover:text-primary-500">
           Our Portfolio
         </a>
       </div>
@@ -156,6 +162,10 @@
                 <i data-lucide="heart" class="w-5 h-5 text-primary-900"></i>
                 <span>My Collections</span>
               </a>
+                <a href="{% url 'profile' %}" class="flex items-center space-x-2 font-medium">
+                <i data-lucide="user" class="w-5 h-5 text-primary-900"></i>
+                <span>My Profile</span>
+              </a>
               <a href="{% url 'logout' %}" class="flex items-center space-x-2 text-red-600 font-medium" title="Logout">
                 <i data-lucide="log-out" class="w-5 h-5"></i>
                 <span>Logout</span>
@@ -210,7 +220,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
 
                 <div class="md:col-span-1">
-                    <h3 class="text-xl font-bold text-white mb-4">Paint Company</h3>
+                    <h2 class="text-2xl font-bold text-white mb-4">ExtraPaints</h2>
                     <p class="text-primary-200 text-sm mb-6">
                         Colors that inspire, quality that lasts.
                     </p>
@@ -233,20 +243,20 @@
                 <div>
                     <h4 class="font-semibold text-lg text-white mb-4">Shop</h4>
                     <ul class="space-y-3">
-                        <li><a href="{% url 'color_list' %}" class="text-primary-200 hover:text-white hover:underline">Colors</a></li>
-                        <li><a href="{% url 'product_list' %}" class="text-primary-200 hover:text-white hover:underline">Products</a></li>
+                        <li><a href="{% url 'color_list' %}" class="text-primary-200 hover:text-white">Colors</a></li>
+                        <li><a href="{% url 'product_list' %}" class="text-primary-200 hover:text-white">Products</a></li>
 
-                        <li><a href="{% url 'quote_detail' %}" class="text-primary-200 hover:text-white hover:underline">View Quote List</a></li>
+                        <li><a href="{% url 'quote_detail' %}" class="text-primary-200 hover:text-white">View Quote List</a></li>
                         </ul>
                 </div>
 
                 <div>
                     <h4 class="font-semibold text-lg text-white mb-4">Company</h4>
                     <ul class="space-y-3">
-                        <li><a href="{% url 'idea_list' %}" class="text-primary-200 hover:text-white hover:underline">Inspiration</a></li>
-                        <li><a href="{% url 'portfolio_list' %}" class="text-primary-200 hover:text-white hover:underline">Portfolio</a></li>
-                        <li><a href="{% url 'about' %}" class="text-primary-200 hover:text-white hover:underline">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-primary-200 hover:text-white hover:underline">Contact Us</a></li>
+                        <li><a href="{% url 'idea_list' %}" class="text-primary-200 hover:text-white">Inspiration</a></li>
+                        <li><a href="{% url 'portfolio_list' %}" class="text-primary-200 hover:text-white">Portfolio</a></li>
+                        <li><a href="{% url 'about' %}" class="text-primary-200 hover:text-white">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-primary-200 hover:text-white">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -320,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultsContainer = document.getElementById('search-results-container');
   const searchPlaceholder = document.getElementById('search-placeholder');
 
+  // Use these if you plan to update counts dynamically, otherwise they are just defined
   const navbarQuoteCountDesktop = document.getElementById("navbar-quote-count-desktop");
   const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
 
@@ -358,7 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       searchPlaceholder.textContent = "Searching...";
-      searchTimeout = setTimeout(fetchResults, SEARCH_DELAY, query);
+      // Improved compatibility for setTimeout callback
+      searchTimeout = setTimeout(() => fetchResults(query), SEARCH_DELAY);
   });
 
   async function fetchResults(query) {

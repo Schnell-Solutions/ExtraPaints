@@ -1,0 +1,32 @@
+services:
+  web:
+    build: .
+    container_name: extrapaints_web
+    command: gunicorn ExtraPaints.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    env_file:
+      - .env
+    expose:
+      - 8000
+    restart: always
+
+  nginx:
+    image: nginx:1.25
+    container_name: extrapaints_nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - ./nginx:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    restart: always
+
+volumes:
+  static_volume:
+  media_volume:

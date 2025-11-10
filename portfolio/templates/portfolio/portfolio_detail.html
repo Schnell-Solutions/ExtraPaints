@@ -3,7 +3,7 @@
 {% block title %}{{ project.title }}{% endblock %}
 
 {% block content %}
-<section class="py-12 md:py-16 bg-white">
+<section class="py-12 lg:px-12 md:py-16 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
 
     <!-- Header -->
@@ -20,7 +20,11 @@
     <!-- Featured Image -->
     <div class="w-full h-[300px] md:h-[500px] rounded-lg shadow-lg overflow-hidden border border-gray-200 mb-12">
       <!-- Use the safe get_display_image property -->
-      <img src="{{ project.get_display_image }}" alt="{{ project.title }} featured image" class="w-full h-full object-cover">
+        {% if project.get_display_image %}
+            <img src="{{ project.get_display_image }}" alt="{{ project.title }} featured image" class="w-full p-2 h-full object-cover">
+        {% else %}
+            <img src="{{ MEDIA_URL }}default.jpg" alt="{{ project.title }} featured image" class="w-full h-full object-cover">
+        {% endif %}
     </div>
     
     <!-- Main Content Grid -->
@@ -40,7 +44,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {% for image in project.gallery_images.all %}
                 <div class="overflow-hidden rounded-md shadow-sm border border-gray-200">
-                  <img src="{{ image.image.url }}" alt="{{ image.caption|default:project.title }}" class="w-full h-64 object-cover">
+                {% if image.image.url %}
+                    <img src="{{ image.image.url }}" alt="{{ image.caption|default:project.title }}" class="w-full h-64 object-cover">
+                {% else %}
+                    <img src="{{ MEDIA_URL }}default.jpg" alt="{{ image.caption|default:project.title }}" class="w-full h-64 object-cover">
+                {% endif %}
                   {% if image.caption %}
                     <p class="text-sm text-gray-600 p-3 bg-gray-50 text-center">{{ image.caption }}</p>
                   {% endif %}

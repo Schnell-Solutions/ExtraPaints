@@ -4,7 +4,7 @@
 {% block title %}Inspiration Ideas{% endblock %}
 
 {% block content %}
-<section class="py-12 md:py-16 bg-neutral-50">
+<section class="py-12 lg:px-12 md:py-16 bg-neutral-50">
   <div class="container mx-auto px-4">
 
     <div class="text-center mb-12">
@@ -16,7 +16,7 @@
       </p>
     </div>
 
-    <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+    <form id="filters-form" method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
       {% csrf_token %} <div>
         <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
         <div class="relative filter-select-wrapper">
@@ -68,13 +68,20 @@
         <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
           <div class="relative">
             <a href="{{ idea.get_absolute_url }}">
-              <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-64 object-cover">
+                {% if idea.get_display_image %}
+                    <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-64 object-cover">
+                {% else %}
+                    <img src="{{ MEDIA_URL }}default.jpg" alt="{{ idea.title }}" class="w-full h-64 object-cover">
+                {% endif %}
+
             </a>
+
             {% if user.is_authenticated %}
             <button
               class="save-idea-btn absolute top-3 right-3 p-2 bg-transparent border-none rounded-full text-neutral-600 hover:text-red-500 z-10"
               data-idea-id="{{ idea.id }}"
               data-is-saved="{{ idea.is_saved|yesno:'true,false' }}"
+              aria-label="Save inspiration idea"
             >
               <span class="heart-icon">
                 {% if idea.is_saved %}
@@ -106,7 +113,31 @@
           </div>
         </div>
       {% empty %}
-        <p class="text-gray-600 col-span-full text-center">No inspiration ideas found matching your criteria.</p>
+        {# --- Empty State Logic for Ideas --- #}
+        {% if ideas|length == 0 and not search_query and not selected_category and not selected_tag %}
+          {# No ideas in the database (initial state) #}
+          <div class="col-span-full py-12 flex justify-center items-center h-full">
+            <div id="ideas-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-sparkles"><path d="M9.9 10.9L17.7 3.1"/><path d="M12.7 20.7L10.9 22.5"/><path d="M16 8l3 3"/><path d="M15 15l2 2"/><path d="M12 2v2"/><path d="M4 12H2"/><path d="M20 12h2"/><path d="M6 6L4 4"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Inspiration Yet</h3>
+              <p class="text-gray-600">
+                It looks like our gallery is currently under construction. Please check back soon for new inspiration!
+              </p>
+            </div>
+          </div>
+        {% else %}
+          {# No results found due to search or filter criteria #}
+          <div class="col-span-full py-12">
+            <div id="ideas-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-frown"><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><circle cx="12" cy="12" r="10"/><path d="M15 9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/><path d="M9 9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">Nothing Matches Your Search</h3>
+              <p class="text-gray-600">
+                We couldn't find any ideas matching your **filters** or **search query**.
+                Try broadening your criteria or selecting **All Categories**.
+              </p>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
 

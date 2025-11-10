@@ -7,36 +7,50 @@
 
     <main>
 
-        <section class="bg-primary-25">
-            <div class="container mx-auto px-4 lg:px-12 py-16 md:py-24">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div class="text-center lg:text-left">
-                        <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-900 leading-tight">
-                            Find Your Perfect Shade
-                        </h1>
-                        <p class="mt-6 text-lg text-gray-600 max-w-lg mx-auto lg:mx-0">
-                            Discover premium, eco-friendly paints for every project. From vibrant interiors to durable exteriors, find the quality you need in the colors you love.
-                        </p>
-                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                            <a href="{% url 'product_list' %}" class="px-10 py-3 bg-primary-900 text-white text-base font-medium rounded hover:bg-primary-800 transition-all transform hover:-translate-y-0.5">
-                                Shop All Products
-                            </a>
-                            <a href="{% url 'idea_list' %}" class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded border border-gray-200 hover:bg-gray-50 transition-all transform hover:-translate-y-0.5">
-                                Get Inspired
-                            </a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-center">
-                        <img src="{% static 'home/images/hero.png' %}"
-                             alt="ExtraPaints"
-                             class="w-full max-w-md lg:max-w-full rounded-lg">
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section class="relative bg-primary-900 overflow-hidden">
+  <div class="container mx-auto px-12 lg:px-12 py-20 md:py-28">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <div class="text-center lg:text-left space-y-3 lg:order-1">
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight tracking-tight">
+          Find Your Perfect Shade
+        </h1>
+        <p class="text-xl text-gray-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+          Explore eco-friendly paints for every space, from lively interiors to durable exteriors, crafted for lasting color and quality.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+          <a href="{% url 'product_list' %}"
+             class="px-10 py-3 bg-white/30 text-white text-base font-medium rounded-md hover:bg-primary-800 shadow-sm transition-transform transform hover:-translate-y-0.5">
+            Shop All Products
+          </a>
+          <a href="{% url 'idea_list' %}"
+             class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded-md border border-gray-200 hover:bg-gray-50 shadow-sm transition-transform transform hover:-translate-y-0.5">
+            Get Inspired
+          </a>
+        </div>
+      </div>
+
+      <div class="flex items-start justify-center relative lg:order-2">
+  <img
+    src="{% static 'home/images/hero.png' %}"
+    alt="ExtraPaints"
+    class="md:w-3/5 lg:w-[80%] w-[300px] md:max-w-[350px] max-h-[500px] rounded-xl shadow-2xl object-cover z-10"
+  >
+
+  <img
+    src="{% static 'home/images/hero2.png' %}"
+    alt="ExtraPaints"
+    class="absolute md:w-2/5 lg:w-1/2 w-[250px] md:max-w-[280px] max-h-[450px] rounded-xl shadow-2xl object-cover top-1/2 left-1/2 -translate-x-1/12 translate-y-1/4 md:translate-y-1/3 lg:translate-x-full lg:translate-y-0 lg:top-1/2 lg:-right-2 xl:top-1/4 xl:-right-12 z-20 transform scale-90 sm:scale-100"
+  >
+</div>
+
+
+    </div>
+  </div>
+</section>
 
         <section class="py-16 md:py-24 bg-primary-10">
-            <div class="container mx-auto px-4 lg:px-6">
+            <div class="container mx-auto px-4 lg:px-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
                     Our Products
                 </h2>
@@ -56,11 +70,12 @@
         </section>
 
         <section class="py-16 md:py-24 bg-gray-50">
-          <div class="container mx-auto px-4 lg:px-6">
+          <div class="container mx-auto px-4 lg:px-12">
             <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
               Most Loved Colors
             </h2>
 
+            {% if most_loved_colors %}
             <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-2">
               {% for color in most_loved_colors %}
               <a href="{{ color.get_absolute_url }}" class="group block overflow-hidden rounded">
@@ -69,7 +84,7 @@
                   style="background-color: {{ color.hex_code|default:'#f1f5f9' }}">
                   {% if not color.hex_code %}
                   <img
-                    src="https://placehold.co/400x400/f1f5f9/9ca3af?text={{ color.name|urlencode }}"
+                    src="{{ MEDIA_URL }}default.jpg"
                     alt="{{ color.name }}"
                     class="w-full h-full object-cover">
                   {% endif %}
@@ -83,20 +98,27 @@
                 </div>
               </a>
               {% endfor %}
-
-              {% if not most_loved_colors %}
-              <p class="col-span-2 text-center text-gray-500 md:col-span-4">No colors to display yet.</p>
-              {% endif %}
             </div>
 
             <div class="mt-8 flex justify-center">
               <a href="{% url 'color_list' %}"
-                class="px-6 py-3 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
+                 class="px-6 py-3 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
                 View All Colors
               </a>
             </div>
+            {% else %}
+            <div id="colors-empty-state"
+                 class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50">
+              <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
+              <p class="text-red-600 text-lg font-medium">
+                No colors in the website yet.
+              </p>
+            </div>
+            {% endif %}
+
           </div>
         </section>
+
 
         <section class=" bg-primary-900 py-16 md:py-24">
           <div class="container mx-auto max-w-6xl px-4">
@@ -150,53 +172,112 @@
           </div>
         </section>
 
-        <section class="py-16 md:py-24 bg-primary-50">
-            <div class="container mx-auto px-4 lg:px-6">
-                <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
-                    What Our Customers Say
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-white p-8 rounded border border-gray-200">
-                        <div class="flex text-yellow-500 mb-4">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                        </div>
-                        <blockquote class="text-gray-600 italic mb-4">
-                            "The quality of the paint is phenomenal. Our living room looks brand new, and the 'Ocean Breeze' color is so calming. Will be buying all my paint from here!"
-                        </blockquote>
-                        <p class="font-semibold text-primary-900">- J. Doe</p>
-                    </div>
-                    <div class="bg-white p-8 rounded border border-gray-200">
-                        <div class="flex text-yellow-500 mb-4">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                        </div>
-                        <blockquote class="text-gray-600 italic mb-4">
-                            "I used the exterior paint for my fence, and it's held up beautifully against the weather. Great coverage and a fantastic finish. Highly recommend."
-                        </blockquote>
-                        <p class="font-semibold text-primary-900">- A. Smith</p>
-                    </div>
-                    <div class="bg-white p-8 rounded border border-gray-200">
-                        <div class="flex text-yellow-500 mb-4">
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
-                            <i data-lucide="star-half" class="w-5 h-5 fill-current"></i>
-                        </div>
-                        <blockquote class="text-gray-600 italic mb-4">
-                            "The website was easy to use, and the color swatches were very accurate. The primer worked perfectly. Good value for the price."
-                        </blockquote>
-                        <p class="font-semibold text-primary-900">- M. Kim</p>
-                    </div>
-                </div>
+        <section class="py-16 bg-primary-50">
+          <div class="container mx-auto px-6 lg:px-12">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-extrabold text-primary-900 uppercase mb-4">Find a Store</h2>
+              <p class="text-lg text-primary-700 max-w-2xl mx-auto">
+                Discover our locations near you for expert advice, delivery, and color matching.
+              </p>
             </div>
+
+            <div class="flex justify-center mb-8">
+              <div class="inline-flex rounded-full overflow-hidden border border-primary-900">
+                <button
+                  id="listBtn"
+                  type="button"
+                  class="px-6 py-2 font-medium transition-all duration-200 bg-primary-900 text-white focus:outline-none"
+                  onclick="toggleView('list')"
+                >
+                  List View
+                </button>
+                <button
+                  id="mapBtn"
+                  type="button"
+                  class="px-6 py-2 font-medium transition-all duration-200 bg-white text-primary-900 focus:outline-none"
+                  onclick="toggleView('map')"
+                >
+                  Map View
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="listView"
+              class="flex flex-col items-center justify-center gap-6
+                     md:flex-row md:justify-center md:items-stretch md:gap-8"
+            >
+              <!-- Card 1 -->
+              <div
+                class="bg-white rounded-md p-6 border border-neutral-200
+                       hover:shadow hover:border-primary-200 transition-all duration-300
+                       w-full max-w-sm md:w-96 flex flex-col"
+              >
+                <div class="flex-grow">
+                  <h3 class="text-xl font-bold text-primary-900 mb-3 border-b border-primary-50 pb-2">
+                    Extra Paints HQ
+                  </h3>
+
+                  <div class="space-y-2 text-primary-700 text-base">
+                    <p class="flex items-center">
+                      <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-primary-600"></i>
+                      Orion House, Orion Drive, Donholm, Nairobi
+                    </p>
+                    <p class="flex items-center">
+                      <i data-lucide="phone" class="w-4 h-4 mr-2 text-primary-600"></i>
+                      +254 729 086 036
+                    </p>
+                    <p class="text-sm pt-2 border-t border-gray-100">
+                      <strong>Hours:</strong> Mon–Fri: 8AM–6PM | Sat: 9AM–5PM | Sun: Closed
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex justify-center gap-2 flex-wrap pt-4 mt-4 border-t border-gray-100">
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Color Matching</span>
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Delivery</span>
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Expert Advice</span>
+                </div>
+              </div>
+
+              <!-- Card 2 -->
+              <div
+                class="bg-white rounded-md p-6 border border-neutral-200
+                       hover:shadow hover:border-primary-200 transition-all duration-300
+                       w-full max-w-sm md:w-96 flex flex-col"
+              >
+                <div class="flex-grow">
+                  <h3 class="text-xl font-bold text-primary-900 mb-3 border-b border-primary-50 pb-2">
+                    Extra Paints Eldoret
+                  </h3>
+
+                  <div class="space-y-2 text-primary-700 text-base">
+                    <p class="flex items-center">
+                      <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-primary-600"></i>
+                      Location, Eldoret
+                    </p>
+                    <p class="flex items-center">
+                      <i data-lucide="phone" class="w-4 h-4 mr-2 text-primary-600"></i>
+                      +254 729 086 036
+                    </p>
+                    <p class="text-sm pt-2 border-t border-gray-100">
+                      <strong>Hours:</strong> Mon–Fri: 8AM–6PM | Sat: 9AM–5PM | Sun: Closed
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex justify-center gap-2 flex-wrap pt-4 mt-4 border-t border-gray-100">
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Color Matching</span>
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Delivery</span>
+                  <span class="bg-primary-100 text-primary-900 px-3 py-1 text-xs font-medium rounded-full">Expert Advice</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="mapView" class="hidden mt-10 rounded-xl border overflow-hidden shadow">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d997.1962053852611!2d36.889473269446846!3d-1.3041436591597835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMTgnMTQuOSJTIDM2wrA1MycyNC40IkU!5e0!3m2!1sen!2ske!4v1762793268275!5m2!1sen!2ske" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </div>
         </section>
 
     </main>
@@ -205,112 +286,167 @@
     {{ products_json|json_script:"products-data" }}
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+// Moved toggleView outside DOMContentLoaded to make it accessible to inline onclick handlers
+function toggleView(view) {
+    const listBtn = document.getElementById('listBtn');
+    const mapBtn = document.getElementById('mapBtn');
+    const listView = document.getElementById('listView');
+    const mapView = document.getElementById('mapView');
 
-            // --- Dynamic Product Section Logic ---
+    if (!listBtn || !mapBtn || !listView || !mapView) return; // Safety check
 
-            // 1. GET DATA FROM DJANGO (Unchanged)
-            const categories = JSON.parse(document.getElementById('categories-data').textContent);
-            const products = JSON.parse(document.getElementById('products-data').textContent);
+    const activeClasses = ['bg-primary-900', 'text-white'];
+    const inactiveClasses = ['bg-white', 'text-primary-900'];
 
-            const categoryFilterContainer = document.getElementById('category-filters');
-            const productRowContainer = document.getElementById('product-row-container');
+    if (view === 'list') {
+      // Show list, hide map
+      listView.classList.remove('hidden');
+      mapView.classList.add('hidden');
 
-            // 2. Function to render category buttons (Unchanged)
-            function renderCategoryFilters() {
-                if (!categoryFilterContainer) return;
+      // Update button styles
+      listBtn.classList.add(...activeClasses);
+      listBtn.classList.remove(...inactiveClasses);
+      mapBtn.classList.remove(...activeClasses);
+      mapBtn.classList.add(...inactiveClasses);
+    } else {
+      // Show map, hide list
+      mapView.classList.remove('hidden');
+      listView.classList.add('hidden');
 
-                let html = '';
-                if (!Array.isArray(categories) || categories.length === 0) {
-                    categoryFilterContainer.innerHTML = '<p class="text-gray-500">No product categories found.</p>';
-                    return;
-                }
+      // Update button styles
+      mapBtn.classList.add(...activeClasses);
+      mapBtn.classList.remove(...inactiveClasses);
+      listBtn.classList.remove(...activeClasses);
+      listBtn.classList.add(...inactiveClasses);
+    }
+  }
 
-                categories.forEach((category, index) => {
-                    const isActive = index === 0;
-                    html += `
-                        <button
-                            class="category-btn px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-                                   ${isActive ? 'bg-primary-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                            data-category="${category}">
-                            ${category}
-                        </button>
-                    `;
-                });
-                categoryFilterContainer.innerHTML = html;
-            }
 
-            // 3. Function to render product cards
-            function renderProducts(category) {
-                if (!productRowContainer) return;
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 
-                const productsToRender = products[category] || [];
-                productRowContainer.innerHTML = '';
+    const categories = JSON.parse(document.getElementById('categories-data').textContent);
+    const products = JSON.parse(document.getElementById('products-data').textContent);
 
-                if (productsToRender.length === 0) {
-                    productRowContainer.innerHTML = '<p class="text-gray-500 pl-4">No products found in this category.</p>';
-                    return;
-                }
+    const categoryFilterContainer = document.getElementById('category-filters');
+    const productRowContainer = document.getElementById('product-row-container');
 
-                productsToRender.forEach((product, index) => {
-                    const card = document.createElement('a');
-                    card.href = product.url;
-                    card.className = 'product-card group flex-shrink-0 w-72 rounded border border-gray-200 overflow-hidden bg-white hover:shadow transition-all duration-300';
+    // Initial load for toggle buttons handled by inline onclick and function call below
 
-                    // --- UPDATED: card.innerHTML ---
-                    // I removed the <p> tag that displayed the price.
-                    card.innerHTML = `
-                        <div>
-                            <div class="w-full h-48 overflow-hidden">
-                                <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f1f5f9/9ca3af?text=Image+Error'; this.onerror=null;">
-                            </div>
-                            <div class="p-4">
-                                <h3 class="text-base font-semibold text-gray-800 group-hover:text-primary-900">${product.name}</h3>
-                                <button class="w-full mt-4 px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
-                                    View Options
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    // --- END OF UPDATE ---
+    // Default to list view on load - this is still useful for initial styling/state
+    toggleView('list');
 
-                    productRowContainer.appendChild(card);
+    function renderCategoryFilters() {
+        if (!categoryFilterContainer) return;
 
-                    setTimeout(() => {
-                        card.classList.add('visible');
-                    }, index * 100);
-                });
-            }
+        if (!Array.isArray(categories) || categories.length === 0) {
+            categoryFilterContainer.innerHTML = '';
+            productRowContainer.innerHTML = `
+                <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
+                    <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
+                    <p class="text-red-600 text-lg font-medium">No products in the website yet.</p>
+                </div>
+            `;
+            return;
+        }
 
-            // 4. Event Listener (Unchanged)
-            if (categoryFilterContainer) {
-                categoryFilterContainer.addEventListener('click', (e) => {
-                    const clickedButton = e.target.closest('.category-btn');
-                    if (!clickedButton) return;
-
-                    categoryFilterContainer.querySelectorAll('.category-btn').forEach(btn => {
-                        btn.classList.remove('bg-primary-900', 'text-white', 'shadow-md');
-                        btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                    });
-
-                    clickedButton.classList.add('bg-primary-900', 'text-white', 'shadow-md');
-                    clickedButton.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-
-                    const category = clickedButton.dataset.category;
-                    renderProducts(category);
-                });
-            }
-
-            // 5. Initial Load (Unchanged)
-            renderCategoryFilters();
-            if (Array.isArray(categories) && categories.length > 0) {
-                renderProducts(categories[0]);
-            } else if (productRowContainer) {
-                productRowContainer.innerHTML = '<p class="text-gray-500 pl-4">No products to display.</p>';
-            }
+        let html = '';
+        categories.forEach((category, index) => {
+            const isActive = index === 0;
+            html += `
+                <button
+                    class="category-btn px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                           ${isActive ? 'bg-primary-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                    data-category="${category}">
+                    ${category}
+                </button>
+            `;
         });
-    </script>
-{% endblock %}'
+        categoryFilterContainer.innerHTML = html;
+    }
+
+    function renderProducts(category) {
+        if (!productRowContainer) return;
+
+        const productsToRender = products[category] || [];
+        productRowContainer.innerHTML = '';
+
+        if (productsToRender.length === 0) {
+            productRowContainer.innerHTML = `
+                <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
+                    <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
+                    <p class="text-red-600 text-lg font-medium">No products in this category yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Center cards container - Removed this, as it breaks the scrollbar flow
+        // productRowContainer.classList.add('justify-center');
+
+        productsToRender.forEach((product, index) => {
+            const card = document.createElement('a');
+            card.href = product.url;
+            card.className = 'product-card group flex-shrink-0 w-72 rounded border border-gray-200 overflow-hidden bg-white hover:shadow transition-all duration-300';
+
+            card.innerHTML = `
+                <div>
+                    <div class="w-full h-48 overflow-hidden">
+                        <img src="${product.img}" alt="${product.name}" class="w-full h-full object-contain p-2 bg-white transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f1f5f9/9ca3af?text=Image+Error'; this.onerror=null;">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-base font-semibold text-gray-800 group-hover:text-primary-900">${product.name}</h3>
+                        <button class="w-full mt-4 px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-900/80 transition-colors">
+                            View Options
+                        </button>
+                    </div>
+                </div>
+            `;
+            productRowContainer.appendChild(card);
+
+            setTimeout(() => {
+                card.classList.add('visible');
+            }, index * 100);
+        });
+    }
+
+    // Category button click
+    if (categoryFilterContainer) {
+        categoryFilterContainer.addEventListener('click', (e) => {
+            const clickedButton = e.target.closest('.category-btn');
+            if (!clickedButton) return;
+
+            categoryFilterContainer.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-900', 'text-white', 'shadow-md');
+                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            });
+
+            clickedButton.classList.add('bg-primary-900', 'text-white', 'shadow-md');
+            clickedButton.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+
+            const category = clickedButton.dataset.category;
+
+            // Remove previous centering
+            // productRowContainer.classList.remove('justify-center');
+
+            renderProducts(category);
+        });
+    }
+
+    // Initial load
+    renderCategoryFilters();
+    if (Array.isArray(categories) && categories.length > 0) {
+        renderProducts(categories[0]);
+    } else if (productRowContainer) {
+        productRowContainer.innerHTML = `
+            <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
+                <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
+                <p class="text-red-600 text-lg font-medium">No products in the website yet.</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

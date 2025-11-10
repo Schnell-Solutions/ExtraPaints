@@ -6,7 +6,7 @@ __pycache__/
 venv/
 .venv/
 
-# Environment variables
+# Environment variables (never copy .env into the image)
 .env
 
 # Django media/uploads
@@ -21,8 +21,12 @@ media/products
 **/migrations/*.pyc
 **/migrations/__pycache__/
 
-# PyCharm project files
+# SQLite DB (if using local sqlite, don't include it in the image)
+db.sqlite3
+
+# IDE/project files
 .idea/
 
-# SQLite DB
-db.sqlite3
+# Docker files (optional)
+Dockerfile
+docker-compose.yml

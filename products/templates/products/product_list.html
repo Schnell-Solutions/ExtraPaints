@@ -4,14 +4,14 @@
 {% block title %}Products{% endblock %}
 
 {% block content %}
-<section class="py-12 bg-neutral-50">
+<section class="py-12 lg:px-12 bg-neutral-50">
   <div class="container mx-auto px-4 max-w-7xl">
    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
   <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
     Our Products
   </h1>
 
-  <form method="get" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+  <form id="search-form" method="get" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
     <input
       type="text"
       name="q"
@@ -21,46 +21,47 @@
     >
     <button
       type="submit"
-      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-500 transition-colors"
+      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-900/80 transition-colors"
     >
       Search
     </button>
   </form>
 </div>
 
-<div class="flex flex-wrap gap-2 sm:gap-4 mb-6 justify-center md:justify-start">
+<div class="flex flex-wrap gap-2 sm:gap-4 mb-12 justify-center md:justify-start">
   <a
     href="{% url 'product_list' %}"
-    class="px-4 py-2 rounded-full border {% if not selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %}"
+    class="px-4 py-2 rounded-full border {% if not selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %} hover:bg-primary-900 hover:text-white transition-colors"
   >
-    All
+    All Products
   </a>
 
   {% for cat in categories %}
     <a
       href="?category={{ cat.slug }}"
-      class="px-4 py-2 rounded-full border {% if cat.slug == selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %}"
+      class="px-4 py-2 rounded-full border {% if cat.slug == selected_category %}bg-primary-900 text-white{% else %}text-primary-900{% endif %} hover:bg-primary-900 hover:text-white transition-colors"
     >
       {{ cat.name }}
     </a>
   {% endfor %}
 </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="products-grid">
       {% for product in products %}
       <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
 
         <div class="h-48 bg-neutral-100 relative flex items-center justify-center rounded overflow-hidden">
           {% if product.main_image %}
-            <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="object-contain w-full h-full">
+            <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="object-contain p-2 w-full h-full">
           {% else %}
-            <img src="../media/default.jpg" alt="{{ product.name }}" class="object-cover w-full h-full">
+            <img src="{{ MEDIA_URL }}default.jpg" alt="{{ product.name }} default image" class="object-cover w-full h-full">
           {% endif %}
             {% if user.is_authenticated %}
               <button
                 class="save-product-btn absolute top-3 right-3 text-neutral-600 hover:text-red-500 z-10"
                 data-product-id="{{ product.id }}"
                 data-is-saved="{{ product.is_saved|yesno:'true,false' }}"
+                aria-label="Save product"
               >
                 <span class="heart-icon shadow">
                   {% if product.is_saved %}
@@ -92,7 +93,32 @@
         </div>
       </div>
       {% empty %}
-        <p>No products found.</p>
+        {# --- Empty State Logic for Products --- #}
+        {% if products|length == 0 and not query and not selected_category %}
+          {# No products in the database (initial state) #}
+          <div class="col-span-full py-12 flex justify-center items-center h-full">
+            <div id="products-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-package-open"><path d="M12.583 2.502a1 1 0 0 0-.166 0l-7.246 3.623A2 2 0 0 0 4 8.05v6.9a2 2 0 0 0 1.171 1.79l6.5 3.25a1 1 0 0 0 1.83 0l6.5-3.25A2 2 0 0 0 20 14.95v-6.9a2 2 0 0 0-1.25-1.792L12.583 2.502z"/><path d="m4.91 8.05 7.09 3.55 7.09-3.55"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Products Available</h3>
+              <p class="text-gray-600">
+                It looks like our product catalog is currently empty. Please check back later, or
+                <a href="#" class="text-primary-500 hover:underline font-medium">contact us</a> for more information.
+              </p>
+            </div>
+          </div>
+        {% else %}
+          {# No results found due to search or filter criteria #}
+          <div class="col-span-full py-12">
+            <div id="products-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-filter-x"><path d="M21 10H5"/><path d="M10 6h11"/><path d="M3 14h18"/><path d="M10 18h11"/><path d="m3 2 4 4"/><path d="m3 14 4 4"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Products Match</h3>
+              <p class="text-gray-600">
+                We couldn't find any products matching your current **search** or **category filter**.
+                Try selecting **All Products** or refining your search term.
+              </p>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -102,10 +128,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   // --- AJAX SAVE/UNSAVE PRODUCT ---
   const saveToggleUrl = "{% url 'save_product_toggle' %}";
-  const csrfToken = "{{ csrf_token }}"; // This is fine for an inline script
+  const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]') ? document.querySelector('input[name="csrfmiddlewaretoken"]').value : "{{ csrf_token }}";
 
-  document.querySelectorAll('.save-product-btn').forEach(button => {
-    button.addEventListener('click', async () => {
+  // Event delegation approach is better for dynamically loaded content or large lists
+  const productsGrid = document.getElementById('products-grid');
+
+  if (productsGrid) {
+    productsGrid.addEventListener('click', async (e) => {
+      const button = e.target.closest('.save-product-btn');
+      if (!button) return;
+
       const productId = button.dataset.productId;
       if (!productId) return;
 
@@ -128,28 +160,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (data.status === 'success') {
-          // --- THIS IS THE UPDATED PART ---
           const heartIcon = button.querySelector('.heart-icon');
-          const svgElement = heartIcon.querySelector('svg'); // Find the <svg>
+          const svgElement = heartIcon.querySelector('svg');
 
-          if (svgElement) { // Check if we found it
+          if (svgElement) {
             if (data.is_saved) {
-              svgElement.setAttribute('fill', 'red'); // Set fill to red
+              svgElement.setAttribute('fill', 'red');
               button.dataset.isSaved = 'true';
             } else {
-              svgElement.setAttribute('fill', 'currentColor'); // Set fill to text color
+              svgElement.setAttribute('fill', 'currentColor');
               button.dataset.isSaved = 'false';
             }
           }
-          // --- END OF UPDATED PART ---
         }
       } catch (error) {
         console.error('Failed to toggle save:', error);
       } finally {
-        button.disabled = false; // Re-enable button
+        button.disabled = false;
       }
     });
-  });
+  }
 });
 </script>
 {% endblock %}

@@ -1,122 +1,231 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
-{% block title %}Your Profile{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-<section class="py-12 md:py-16 bg-gray-50">
+<section class="py-12 bg-neutral-50 pb-[40px] sm:pb-[80px]">
   <div class="container mx-auto px-4 max-w-5xl">
 
-    <!-- Profile Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 pb-4 border-b">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-200 pb-6">
       <div>
-        <h1 class="text-3xl font-bold text-primary-900">Your Profile</h1>
-        <p class="text-lg text-gray-600 mt-1">Hello, {{ user.full_name|default:user.username }}!</p>
+        <h1 class="text-2xl font-bold text-gray-900">
+          Hello, {{ user.full_name|default:user.username }}
+        </h1>
+        <p class="text-gray-600 mt-1">Manage your account and settings</p>
       </div>
-      <a href="{% url 'logout' %}" class="mt-4 sm:mt-0 px-4 py-2 bg-gray-200 text-gray-800 rounded-md text-sm font-medium hover:bg-gray-300">
+      <a href="{% url 'logout' %}" class="mt-3 md:mt-0 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition">
         Logout
       </a>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <!-- Flash messages -->
+    <div id="message-container" class="mb-6"></div>
 
-      <!-- Left: Profile Details -->
-      <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border">
-        <h2 class="text-xl font-semibold text-primary-900 mb-4">Your Details</h2>
-        <ul class="space-y-3">
-          <li>
-            <span class="block text-sm font-medium text-gray-500">Username</span>
-            <span class="text-base text-gray-800">{{ user.username }}</span>
-          </li>
-          <li>
-            <span class="block text-sm font-medium text-gray-500">Full Name</span>
-            <span class="text-base text-gray-800">{{ user.full_name|default:"-" }}</span>
-          </li>
-          <li>
-            <span class="block text-sm font-medium text-gray-500">Email</span>
-            <span class="text-base text-gray-800">{{ user.email }}</span>
-          </li>
-          <li>
-            <span class="block text-sm font-medium text-gray-500">Phone</span>
-            <span class="text-base text-gray-800">{{ user.phone|default:"-" }}</span>
-          </li>
-        </ul>
-        <!-- Add a link to edit profile if you have one -->
-        <!--
-        <a href="#" class="mt-6 inline-block w-full text-center px-4 py-2 border border-primary-700 text-primary-700 rounded-md text-sm font-medium hover:bg-primary-50">
-          Edit Profile
-        </a>
-        -->
-      </div>
+    <!-- Profile Details Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+      <!-- Left Column -->
+      <div class="bg-white p-6 rounded border border-gray-200 flex flex-col">
+  <div>
+    <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Account Details</h2>
 
-      <!-- Right: Ideas & Orders -->
-      <div class="lg:col-span-2 space-y-12">
+    <ul class="space-y-3 mb-6 text-sm">
+      <li>
+        <span class="block text-sm font-medium text-gray-500">Username</span>
+        <span class="text-base text-gray-800">{{ user.username }}</span>
+      </li>
+      <li>
+        <span class="block text-sm font-medium text-gray-500">Full Name</span>
+        <span class="text-base text-gray-800" data-field="full_name">{{ user.full_name|default:"-" }}</span>
+      </li>
+      <li>
+        <span class="block text-sm font-medium text-gray-500">Email</span>
+        <span class="text-base text-gray-800" data-field="email">{{ user.email }}</span>
+      </li>
+      <li>
+        <span class="block text-sm font-medium text-gray-500">Phone</span>
+        <span class="text-base text-gray-800" data-field="phone">{{ user.phone|default:"-" }}</span>
+      </li>
+    </ul>
+  </div>
 
-        <!-- Section: Saved Ideas -->
+  <div>
+    <button id="open-update-modal" class="w-full border border-gray-800 text-gray-800 rounded px-4 py-2 hover:bg-gray-800 hover:text-white transition">
+      Update Details
+    </button>
+    <button id="open-password-modal" class="w-full mt-3 bg-gray-100 text-gray-800 rounded px-4 py-2 hover:bg-gray-200 transition">
+      Change Password
+    </button>
+  </div>
+</div>
+
+      <!-- Right Column -->
+      <div class="lg:col-span-2 space-y-12 flex flex-col justify-between">
+
+        <!-- Inspiration Ideas -->
         <div>
-          <h2 class="text-2xl font-semibold text-primary-900 mb-4">Your Saved Ideas</h2>
+          <h2 class="text-2xl font-semibold text-primary-900 mb-6">Inspiration Ideas</h2>
           {% if saved_ideas %}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {% for saved in saved_ideas %}
-                <a href="{{ saved.idea.get_absolute_url }}" class="group block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-                  <div class="h-48 w-full overflow-hidden">
-                    <img src="{{ saved.idea.get_display_image }}" alt="{{ saved.idea.title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+              {% for saved in saved_ideas|slice:":4" %}
+                <a href="{{ saved.idea.get_absolute_url }}" class="group block bg-white rounded border border-neutral-200 overflow-hidden hover:bg-neutral-50 transition">
+                  <div class="h-40 w-full overflow-hidden">
+                    {% if saved.idea.get_display_image %}
+                      <img src="{{ saved.idea.get_display_image }}" alt="{{ saved.idea.title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                    {% else %}
+                      <img src="{{ MEDIA_URL }}default.jpg" alt="{{ saved.idea.title }}" class="w-full h-full object-cover">
+                    {% endif %}
                   </div>
                   <div class="p-4">
-                    <h3 class="text-lg font-semibold text-primary-900 group-hover:underline">{{ saved.idea.title }}</h3>
-                    <p class="text-sm text-gray-500 mt-1">Saved on: {{ saved.saved_at|date:"F d, Y" }}</p>
+                    <h3 class="text-lg font-semibold text-primary-900 group-hover:text-primary-700 transition-colors">
+                      {{ saved.idea.title|truncatechars:30 }}
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">Saved on: {{ saved.saved_at|date:"M d, Y" }}</p>
                   </div>
                 </a>
               {% endfor %}
             </div>
+            {% if saved_ideas|length > 4 %}
+              <div class="text-center mt-6">
+                <a href="{% url 'my_collection' %}#ideas" class="px-6 py-2 border border-primary-900 text-primary-900 rounded text-sm font-medium hover:bg-primary-900 hover:text-white transition-colors">
+                  View All Saved Ideas ({{ saved_ideas|length }})
+                </a>
+              </div>
+            {% endif %}
           {% else %}
-            <p class="text-gray-600">You haven't saved any ideas yet.</p>
-            <a href="{% url 'idea_list' %}" class="mt-2 inline-block text-primary-700 font-semibold hover:underline">
-              Get Inspired &rarr;
-            </a>
-          {% endif %}
-        </div>
-
-        <!-- Section: Order History -->
-        <div>
-          <h2 class="text-2xl font-semibold text-primary-900 mb-4">Your Order History</h2>
-          {% if orders %}
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <ul class="divide-y divide-gray-200">
-                {% for order in orders %}
-                  <li class="p-4 hover:bg-gray-50">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                      <div>
-                        <p class="text-lg font-semibold text-primary-900">Order #{{ order.id }}</p>
-                        <p class="text-sm text-gray-600">Placed on: {{ order.created_at|date:"F d, Y" }}</p>
-                      </div>
-                      <div class="mt-2 sm:mt-0 sm:text-right">
-                        <p class="text-lg font-medium text-gray-800">Ksh {{ order.total_paid|floatformat:2 }}</p>
-                        <span class="px-2 py-0.5 inline-block text-xs font-medium rounded-full
-                          {% if order.status == 'processing' %}bg-blue-100 text-blue-800
-                          {% elif order.status == 'shipped' %}bg-green-100 text-green-800
-                          {% elif order.status == 'delivered' %}bg-green-100 text-green-800
-                          {% elif order.status == 'canceled' %}bg-red-100 text-red-800
-                          {% else %}bg-gray-100 text-gray-800{% endif %}">
-                          {{ order.get_status_display }}
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                {% endfor %}
-              </ul>
+            <div class="bg-white p-8 rounded border border-dashed border-gray-300 text-center">
+              <p class="text-gray-600 mb-3">You haven't saved any <strong>inspiration ideas</strong> yet.</p>
+              <a href="{% url 'idea_list' %}" class="mt-2 inline-block text-primary-700 font-medium hover:underline">
+                Find Inspiration &rarr;
+              </a>
             </div>
-          {% else %}
-            <p class="text-gray-600">You haven't placed any orders yet.</p>
-            <a href="{% url 'product_list' %}" class="mt-2 inline-block text-primary-700 font-semibold hover:underline">
-              Start Shopping &rarr;
-            </a>
           {% endif %}
         </div>
 
+        <!-- Saved Collection -->
+        <div>
+          <h2 class="text-2xl font-semibold text-primary-900 mb-6">Your Saved Collection</h2>
+          <div class="bg-white p-8 rounded border border-neutral-200 text-center">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+              Access All Your Saved Items
+            </h3>
+            <p class="text-gray-600 mb-5">
+              This collection includes all your saved colors, products, and inspiration ideas.
+            </p>
+            <a href="{% url 'my_collection' %}" class="inline-flex items-center justify-center px-6 py-3 rounded text-sm font-semibold text-white bg-primary-900 hover:bg-primary-700 transition-colors">
+              Access My Full Collection &rarr;
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-{% endblock %}
 
+<!-- UPDATE DETAILS MODAL -->
+<div id="update-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded w-full max-w-md p-6 relative">
+    <button id="close-update-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Update Details</h3>
+    <form id="update-form" method="post" action="{% url 'update_profile' %}">
+      {% csrf_token %}
+      <div id="update-form-body" class="space-y-4 text-sm text-gray-700">
+        <input type="text" name="full_name" value="{{ user.full_name }}" placeholder="Full name" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+        <input type="email" name="email" value="{{ user.email }}" placeholder="Email address" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+        <input type="text" name="phone" value="{{ user.phone }}" placeholder="Phone number" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+      </div>
+      <div class="mt-6">
+        <button type="submit" class="w-full bg-gray-800 text-white rounded py-2 hover:bg-gray-700 transition">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div id="password-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded w-full max-w-md p-6 relative">
+    <button id="close-password-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Change Password</h3>
+    <form id="password-form" method="post" action="{% url 'change_password' %}">
+      {% csrf_token %}
+      <div id="password-form-body" class="space-y-4 text-sm text-gray-700">
+        <input type="password" name="old_password" placeholder="Current password" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+        <input type="password" name="new_password1" placeholder="New password" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+        <input type="password" name="new_password2" placeholder="Confirm new password" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:border-gray-800 focus:ring-0">
+      </div>
+      <div class="mt-6">
+        <button type="submit" class="w-full bg-gray-800 text-white rounded py-2 hover:bg-gray-700 transition">Change Password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  const showModal = (id) => document.getElementById(id).classList.remove("hidden");
+  const hideModal = (id) => document.getElementById(id).classList.add("hidden");
+
+  document.getElementById("open-update-modal").onclick = () => showModal("update-modal");
+  document.getElementById("close-update-modal").onclick = () => hideModal("update-modal");
+  document.getElementById("open-password-modal").onclick = () => showModal("password-modal");
+  document.getElementById("close-password-modal").onclick = () => hideModal("password-modal");
+
+  // AJAX profile update
+  document.getElementById("update-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = new FormData(e.target);
+    const res = await fetch(e.target.action, {
+      method: "POST",
+      body,
+      headers: { "X-CSRFToken": csrfToken },
+    });
+    const data = await res.json();
+    if (res.ok && data.status === "success") {
+      hideModal("update-modal");
+      showMessage("Profile updated successfully.", "success");
+      if (data.full_name) document.querySelector('[data-field="full_name"]').textContent = data.full_name;
+      if (data.email) document.querySelector('[data-field="email"]').textContent = data.email;
+      if (data.phone) document.querySelector('[data-field="phone"]').textContent = data.phone;
+    } else {
+      showMessage("Failed to update profile.", "error");
+    }
+  });
+
+  // AJAX password change
+  document.getElementById("password-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = new FormData(e.target);
+    const res = await fetch(e.target.action, {
+      method: "POST",
+      body,
+      headers: { "X-CSRFToken": csrfToken },
+    });
+    const data = await res.json();
+    if (res.ok && data.status === "success") {
+      hideModal("password-modal");
+      showMessage("Password changed successfully.", "success");
+      e.target.reset();
+    } else {
+      showMessage("Failed to change password.", "error");
+    }
+  });
+
+  // Notification message
+  function showMessage(message, type = "success") {
+    const color = type === "success"
+      ? "bg-green-100 text-green-800 border-green-200"
+      : "bg-red-100 text-red-800 border-red-200";
+    const box = document.createElement("div");
+    box.className = `p-3 rounded border ${color} text-sm mb-4 transition`;
+    box.textContent = message;
+    const container = document.getElementById("message-container");
+    container.innerHTML = "";
+    container.appendChild(box);
+    setTimeout(() => (container.innerHTML = ""), 4000);
+  }
+});
+</script>
+{% endblock %}

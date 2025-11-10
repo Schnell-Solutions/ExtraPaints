@@ -4,7 +4,7 @@
 {% block title %}My Collection{% endblock %}
 
 {% block content %}
-<div id="collection-container" class="container mx-auto max-w-6xl px-4 py-12">
+<div id="collection-container" class="container mx-auto max-w-6xl px-4 lg:px-12 py-12">
     <!-- Global CSRF Token (Needed for JS Fetch) -->
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
@@ -16,7 +16,7 @@
     </header>
 
     {# --- SAVED PRODUCTS --- #}
-    <section class="mb-12 border border-gray-300 rounded-xl p-6 bg-white shadow-sm">
+    <section class="mb-12 border border-gray-300 rounded-xl p-6 bg-white">
         <h2 class="text-2xl font-semibold text-primary-900 mb-6 border-b pb-2">
             <i data-lucide="package" class="w-6 h-6 inline mr-2 text-primary-500"></i> Saved Products
         </h2>
@@ -24,12 +24,12 @@
         {% if saved_products %}
             <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {% for product in saved_products %}
-                    <div id="item-product-{{ product.id }}" class="collection-item flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition duration-300 relative">
+                    <div id="item-product-{{ product.id }}" class="collection-item flex flex-col h-full bg-white rounded-md overflow-hidden border border-gray-200 hover:shadow transition duration-300 relative">
 
                         <!-- REMOVE BUTTON -->
                         <button
                             type="button"
-                            class="js-remove-item absolute top-3 right-3 p-1.5 bg-white rounded-full shadow-md text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
+                            class="js-remove-item absolute top-3 right-3 p-1.5 bg-white rounded-md shadow text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
                             data-item-id="{{ product.id }}"
                             data-item-type="product"
                             title="Remove from collection"
@@ -51,7 +51,7 @@
                             <h5 class="text-xl font-semibold text-primary-900 mb-1">{{ product.name }}</h5>
                             <p class="text-sm text-gray-500 mb-4">{{ product.category.name }}</p>
                             <a href="{% url 'product_detail' product.slug %}"
-                               class="mt-auto inline-flex justify-center items-center py-2 px-4 text-sm font-medium rounded-lg text-white bg-primary-500 hover:bg-primary-700 transition-colors">
+                               class="mt-auto inline-flex justify-center items-center py-2 px-4 text-sm font-medium rounded-md text-white bg-primary-900 hover:bg-primary-900/80 transition-colors">
                                 View Product
                             </a>
                         </div>
@@ -71,7 +71,7 @@
     </section>
 
     {# --- SAVED COLORS --- #}
-    <section class="mb-12 border border-gray-300 rounded-xl p-6 bg-white shadow-sm">
+    <section class="mb-12 border border-gray-300 rounded-xl p-6 bg-white">
         <h2 class="text-2xl font-semibold text-primary-900 mb-6 border-b pb-2">
             <i data-lucide="palette" class="w-6 h-6 inline mr-2 text-primary-500"></i> Saved Colors
         </h2>
@@ -79,12 +79,12 @@
         {% if saved_colors %}
             <div id="colors-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {% for color in saved_colors %}
-                    <div id="item-color-{{ color.id }}" class="collection-item text-center p-3 border border-gray-200 rounded-xl shadow-md flex flex-col h-full hover:shadow-lg transition duration-300 relative">
+                    <div id="item-color-{{ color.id }}" class="collection-item text-center p-3 border border-gray-200 rounded-md flex flex-col h-full hover:shadow transition duration-300 relative">
 
                         <!-- REMOVE BUTTON -->
                         <button
                             type="button"
-                            class="js-remove-item absolute top-1 right-1 p-1 bg-white rounded-full shadow-sm text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
+                            class="js-remove-item absolute top-1 right-1 p-1 bg-white rounded-md shadow text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
                             data-item-id="{{ color.id }}"
                             data-item-type="color"
                             title="Remove from collection"
@@ -93,11 +93,11 @@
                         </button>
 
                         <a href="{% url 'color_detail' color.slug %}" class="flex flex-col flex-grow">
-                            <div class="color-swatch rounded-xl mb-3 flex-shrink-0"
+                            <div class="color-swatch rounded-md mb-3 flex-shrink-0"
                                  style="height: 80px; background-color: {{ color.hex_code|default:'#eee' }}; border: 2px solid #fff; outline: 1px solid #ddd;">
                             </div>
                             <h6 class="font-medium text-primary-900 text-base mb-2 mt-auto">{{ color.name }}</h6>
-                            <span class="inline-block mt-auto py-1.5 text-xs font-medium rounded-lg text-white bg-primary-500 hover:bg-primary-700 transition-colors">
+                            <span class="inline-block mt-auto py-1.5 text-xs font-medium rounded-md text-white bg-primary-900 hover:bg-primary-900/80 transition-colors">
                                 View Color
                             </span>
                         </a>
@@ -117,7 +117,7 @@
     </section>
 
     {# --- SAVED IDEAS --- #}
-    <section class="mb-12 border border-gray-300 rounded-xl p-6 bg-white shadow-sm">
+    <section class="mb-12 border border-gray-300 rounded-md p-6 bg-white">
         <h2 class="text-2xl font-semibold text-primary-900 mb-6 border-b pb-2">
             <i data-lucide="lightbulb" class="w-6 h-6 inline mr-2 text-primary-500"></i> Saved Ideas
         </h2>
@@ -125,12 +125,12 @@
         {% if saved_ideas %}
             <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {% for idea in saved_ideas %}
-                    <div id="item-idea-{{ idea.id }}" class="collection-item flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition duration-300 relative">
+                    <div id="item-idea-{{ idea.id }}" class="collection-item flex flex-col h-full bg-white rounded-md overflow-hidden border border-gray-200 hover:shadow transition duration-300 relative">
 
                         <!-- REMOVE BUTTON -->
                         <button
                             type="button"
-                            class="js-remove-item absolute top-3 right-3 p-1.5 bg-white rounded-full shadow-md text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
+                            class="js-remove-item absolute top-3 right-3 p-1.5 bg-white rounded-md shadow text-red-500 hover:bg-red-50 hover:text-red-700 transition z-10"
                             data-item-id="{{ idea.id }}"
                             data-item-type="idea"
                             title="Remove from collection"
@@ -151,7 +151,7 @@
                         <div class="p-5 flex flex-col flex-grow">
                             <h5 class="text-xl font-semibold text-primary-900 mb-4">{{ idea.title }}</h5>
                             <a href="{% url 'idea_detail' idea.slug %}"
-                               class="mt-auto inline-flex justify-center py-2 px-4 text-sm font-medium rounded-lg text-white bg-primary-500 hover:bg-primary-700 transition-colors">
+                               class="mt-auto inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-primary-900 hover:bg-primary-900/80 transition-colors">
                                 View Idea
                             </a>
                         </div>

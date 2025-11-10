@@ -4,7 +4,7 @@
 {% block title %}Explore Our Colors{% endblock %}
 
 {% block content %}
-<section class="py-12 bg-neutral-50">
+<section class="py-12 px-4 lg:px-12 bg-neutral-50">
   <div class="container mx-auto px-4 max-w-7xl">
 <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
   <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
@@ -21,7 +21,7 @@
     >
     <button
       type="submit"
-      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-500 transition-colors"
+      class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-900/80 transition-colors"
     >
       Search
     </button>
@@ -165,12 +165,14 @@
             <h3 class="text-xl font-semibold text-primary-900 mb-2 truncate">
               {{ color.name }}
             </h3>
-            <div class="flex items-center justify-between pt-4 mt-auto"> {% if color.collection %}
+            <div class="flex items-center justify-between pt-4 mt-auto">
+              {% if color.collection %}
               <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
                 {{ color.collection.name }}
               </span>
               {% else %}
-              <span></span> {% endif %}
+              <span></span>
+              {% endif %}
               <a href="{{ color.get_absolute_url }}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 transition-colors">
                 View
               </a>
@@ -178,8 +180,32 @@
           </div>
         </div>
       {% empty %}
-        <div class="col-span-full text-center py-12">
+        {# --- Empty State Logic --- #}
+        {% if colors|length == 0 and not search_query and not selected_undertone and not selected_collection and not selected_finish and not selected_surface and not selected_room %}
+          {# No colors in the database (initial state) #}
+          <div class="col-span-full py-12 flex justify-center items-center h-full">
+            <div id="ideas-empty-state" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-sparkles"><path d="M9.9 10.9L17.7 3.1"/><path d="M12.7 20.7L10.9 22.5"/><path d="M16 8l3 3"/><path d="M15 15l2 2"/><path d="M12 2v2"/><path d="M4 12H2"/><path d="M20 12h2"/><path d="M6 6L4 4"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Colors Added Yet</h3>
+              <p class="text-gray-600">
+                It looks like there aren't any colors in the system. Check back later or
+                <a href="#" class="text-primary-500 hover:underline font-medium">contact support</a> if you believe this is an error.
+              </p>
+            </div>
           </div>
+        {% else %}
+          {# No results found due to search or filter criteria #}
+          <div class="col-span-full py-12">
+            <div id="ideas-empty-state" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-search-x"><path d="m21 21-4.35-4.35"/><path d="M13.5 8.5a5 5 0 1 1-5-5 5 5 0 0 1 5 5Z"/><path d="m17 11-4-4"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Matches Found</h3>
+              <p class="text-gray-600">
+                We couldn't find any colors matching your current **search** or **filter** criteria.
+                Please try adjusting your filters or clearing the search box.
+              </p>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
 

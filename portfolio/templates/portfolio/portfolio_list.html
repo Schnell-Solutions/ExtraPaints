@@ -3,7 +3,7 @@
 {% block title %}Our Portfolio{% endblock %}
 
 {% block content %}
-<section class="py-12 md:py-16 bg-neutral-50">
+<section class="py-12 lg:px-12 md:py-16 bg-neutral-50">
   <div class="container mx-auto px-4">
 
     <div class="text-center mb-12">
@@ -54,7 +54,11 @@
       {% for project in projects %}
         <a href="{{ project.get_absolute_url }}" class="group block bg-white rounded border border-neutral-200 overflow-hidden transition-all duration-300 hover:shadow flex flex-col">
           <div class="h-60 w-full overflow-hidden">
-            <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+              {% if project.get_display_image %}
+                  <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full p-2 h-full object-cover">
+              {% else %}
+                  <img src="{{ MEDIA_URL }}default.jpg" alt="{{ project.title }}" class="w-full h-full object-cover">
+              {% endif %}
           </div>
 
           <div class="p-5 flex flex-col flex-grow">
@@ -70,9 +74,31 @@
           </div>
         </a>
       {% empty %}
-        <p class="text-gray-600 sm:col-span-2 lg:col-span-3 text-center">
-          No portfolio projects match your criteria.
-        </p>
+        {# --- Empty State Logic for Portfolio --- #}
+        {% if projects|length == 0 and not selected_type %}
+          {# No projects in the database (initial state) #}
+          <div class="col-span-full py-12 flex justify-center items-center h-full">
+            <div id="portfolio-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-gallery-horizontal-end"><path d="M7 2h13a2 2 0 0 1 2 2v13"/><path d="M17 17V7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">Portfolio Under Development</h3>
+              <p class="text-gray-600">
+                We're currently gathering images of our latest projects. Please check back soon to see our work!
+              </p>
+            </div>
+          </div>
+        {% else %}
+          {# No results found due to filter criteria #}
+          <div class="col-span-full py-12">
+            <div id="portfolio-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-list-x"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="m19 10-2 2 2 2"/><path d="m19 14-2-2 2-2"/></svg>
+              <h3 class="text-xl font-semibold text-primary-900 mb-2">No Projects Found</h3>
+              <p class="text-gray-600">
+                There are no completed projects in the selected category (**{{ selected_type|default:'-' }}**).
+                Try selecting **All Project Types** to see the full list.
+              </p>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
 
