@@ -11,19 +11,22 @@ class QuoteList:
     def save(self):
         self.session.modified = True
 
-    def add(self, product, color, size, quantity):
+    def add(self, product, quantity, color=None, size=None):
         """
-        Adds a 'virtual' product variant to the quote list.
-        We create a unique key for the (product, color, size) combo.
+        Adds a product to the quote list. Color and size are optional.
         """
-        # Create a unique key for this specific combination
-        item_key = f"{product.id}_{color.id}_{size.id}"
+        product_id = str(product.id)
+        color_id = str(color.id) if color else 'None'
+        size_id = str(size.id) if size else 'None'
+
+        # Create a unique key: product_ID_color_ID_size_ID
+        item_key = f"{product_id}_{color_id}_{size_id}"
 
         # Add or update the item
         self.quote_list[item_key] = {
             'product_id': product.id,
-            'color_id': color.id,
-            'size_id': size.id,
+            'color_id': color.id if color else None,
+            'size_id': size.id if size else None,
             'quantity': quantity,
         }
         self.save()
@@ -54,36 +57,37 @@ class QuoteList:
             self.save()
 
     def __iter__(self):
-        """
-        This is the new "magic" part.
-        It loops over the session data and fetches the *actual*
-        objects from the database to display them.
-        """
-        # We need to import these models here
         from products.models import Product, Size
         from colors.models import Color
 
-        item_keys = self.quote_list.keys()
-
-        # Go through a copy of the list
-        for item_key in list(item_keys):
+        item_keys = list(self.quote_list.keys())
+        for item_key in item_keys:
             item_data = self.quote_list.get(item_key)
             if not item_data:
-                continue  # Skip if item is malformed
+                continue
 
             try:
-                # Re-create the item for the template
+                product = Product.objects.get(id=item_data['product_id'])
+
+                # Handle optional color
+                color = None
+                if item_data['color_id'] is not None:
+                    color = Color.objects.get(id=item_data['color_id'])
+
+                # Handle optional size
+                size = None
+                if item_data['size_id'] is not None:
+                    size = Size.objects.get(id=item_data['size_id'])
+
                 item = {
                     'key': item_key,
-                    'product': Product.objects.get(id=item_data['product_id']),
-                    'color': Color.objects.get(id=item_data['color_id']),
-                    'size': Size.objects.get(id=item_data['size_id']),
+                    'product': product,
+                    'color': color,
+                    'size': size,
                     'quantity': item_data['quantity']
                 }
                 yield item
             except (Product.DoesNotExist, Color.DoesNotExist, Size.DoesNotExist):
-                # Self-healing: if a product, color, or size was deleted
-                # remove this item from the list.
                 self.remove(item_key)
 
     def __len__(self):

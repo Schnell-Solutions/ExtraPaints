@@ -32,7 +32,8 @@ def portfolio_detail(request, slug):
     project = get_object_or_404(
         PortfolioProject.objects.prefetch_related(
             'gallery_images',
-            'products_used',
+            'products_used__category',  # Prefetch product category
+            'products_used__available_sizes',  # Prefetch product sizes if needed
             'colors_used'
         ),
         slug=slug,

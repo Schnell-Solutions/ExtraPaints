@@ -8,28 +8,35 @@
   <div class="container mx-auto px-4 max-w-6xl">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
+      {# --- PRODUCT IMAGE GALLERY --- #}
       <div class="w-full h-[400px] md:h-[500px] lg:sticky lg:top-24">
-        <div class="relative w-full h-full rounded overflow-hidden border border-gray-200">
+        <div class="relative w-full h-full rounded overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center">
           {% if product.main_image %}
-            <img id="product-image" src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full p-2 h-full object-cover">
+            <img id="product-image" src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-4 mix-blend-multiply">
           {% else %}
-            <img id="product-image" src="{{ MEDIA_URL }}default.jpg" alt="{{ product.name }}" class="w-full h-full object-cover">
+             <div class="text-neutral-300 flex flex-col items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="text-gray-400">No image available</span>
+             </div>
           {% endif %}
 
         {% if user.is_authenticated %}
           <button
-              class="save-product-btn absolute top-4 left-4 text-neutral-600 hover:text-red-500 transition-colors z-10"
+              class="save-product-btn absolute top-4 right-4 text-neutral-400 hover:text-red-500 transition-all z-10 bg-white rounded-full p-2 shadow-sm"
               data-product-id="{{ product.id }}"
               data-is-saved="{{ is_saved|yesno:'true,false' }}"
+              aria-label="Save product"
             >
-              <span class="heart-icon shadow">
+              <span class="heart-icon flex items-center justify-center">
                 {% if is_saved %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="red">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red">
                     <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
                   </svg>
                 {% else %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
                 {% endif %}
               </span>
@@ -38,18 +45,25 @@
           </div>
       </div>
 
-      <div>
-        <span class="text-sm text-gray-500 uppercase tracking-wider mb-2 block">
-          {{ product.category.name|default:"General" }}
-        </span>
+      {# --- PRODUCT DETAILS --- #}
+      <div class="flex flex-col">
+        {# Updated Category Label to show hierarchy #}
+        <div class="mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-primary-700 bg-primary-50 px-3 py-1 rounded-full">
+                {{ product.category.name }}
+                {% if product.subcategory %}
+                 <span class="text-neutral-400 mx-1">/</span> {{ product.subcategory.name }}
+                {% endif %}
+            </span>
+        </div>
 
-        <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 leading-tight">
           {{ product.name }}
         </h1>
 
-        <p class="text-gray-600 mb-8 leading-relaxed">
-          {{ product.description|default:"No description available." }}
-        </p>
+        <div class="prose prose-neutral max-w-none text-neutral-600 mb-8">
+          {{ product.description|linebreaks }}
+        </div>
 
         <form id="add-to-quote-form" method="POST" action="{% url 'quote_add' %}">
           {% csrf_token %}
@@ -58,98 +72,134 @@
           <input type="hidden" name="size_id" id="selected-size-id" value="">
           <input type="hidden" name="quantity" id="form-quantity" value="1">
 
-          <div class="space-y-6 mb-10 border-t pt-6">
+          <div class="space-y-8 mb-10 border-t border-neutral-100 pt-8">
 
-            <div>
-              <h3 class="text-base font-semibold mb-3 text-primary-900">
-                Select Color:
-                <span id="selected-color-name" class="font-normal ml-2 text-gray-700"></span>
+            {# --- CONDITIONAL COLOR SELECTOR --- #}
+            {% if show_colors %}
+            <div id="color-section">
+              <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900 flex items-center">
+                Select Color
+                <span id="selected-color-name" class="font-normal ml-2 text-neutral-500 normal-case"></span>
               </h3>
-              <div id="color-selector" class="flex flex-wrap gap-2">
+              <div id="color-selector" class="flex flex-wrap gap-3">
                 {% for color in colors %}
                   <button
-                    type="button" class="color-btn w-8 h-8 rounded-full border border-gray-300 transition-all hover:ring-2 hover:ring-primary-500 focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed"
-                    style="background-color: {{ color.hex_code|default:'#ccc' }}"
+                    type="button"
+                    class="color-btn w-10 h-10 rounded-full border-2 border-transparent transition-all hover:scale-110 focus:outline-none shadow-sm"
+                    style="background-color: {{ color.hex_code|default:'#ccc' }};"
                     data-color-name="{{ color.name }}"
-                    data-color-id="{{ color.id }}" title="{{ color.name }}"
-                  ></button>
+                    data-color-id="{{ color.id }}"
+                    title="{{ color.name }}"
+                  >
+                    <span class="sr-only">{{ color.name }}</span>
+                  </button>
                 {% empty %}
-                  <p class="text-gray-500 text-sm">No colors available.</p>
+                  <p class="text-neutral-500 text-sm italic">No colors currently available.</p>
                 {% endfor %}
               </div>
             </div>
+            {% endif %}
 
-            <div>
-              <h3 class="text-base font-semibold mb-3 text-primary-900">
-                Select Size:
-                <span id="selected-size-name" class="font-normal ml-2 text-gray-700"></span>
+            {# --- CONDITIONAL SIZE SELECTOR --- #}
+            {% if show_sizes %}
+            <div id="size-section">
+              <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900 flex items-center">
+                Select Size
+                <span id="selected-size-name" class="font-normal ml-2 text-neutral-500 normal-case"></span>
               </h3>
               <div id="size-selector" class="flex flex-wrap gap-2">
                   {% for size in sizes %}
                       <button
-                        type="button" class="size-btn px-3 py-1 border rounded text-sm text-gray-700 focus:outline-none disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+                        type="button"
+                        class="size-btn min-w-[3rem] px-4 py-2 border-2 border-neutral-200 rounded-md text-sm font-medium text-neutral-700 transition-all hover:border-neutral-400 focus:outline-none disabled:opacity-50 disabled:bg-neutral-50 disabled:cursor-not-allowed"
                         data-size-name="{{ size.name }}"
                         data-size-id="{{ size.id }}" >
                         {{ size.name }}
                       </button>
                     {% empty %}
-                      <p class="text-gray-500 text-sm">No sizes available.</p>
+                      <p class="text-neutral-500 text-sm italic">No sizes currently available.</p>
                     {% endfor %}
                   </div>
             </div>
+            {% endif %}
 
+            {# --- QUANTITY SELECTOR --- #}
             <div>
-              <h3 class="text-base font-semibold mb-3 text-primary-900">Quantity:</h3>
-              <input type="number" id="quantity-input" name="visible_quantity" value="1" min="1"
-                     class="border rounded px-3 py-2 w-24 text-center focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+              <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900">Quantity</h3>
+              <div class="flex items-center max-w-[8rem] border-2 border-neutral-200 rounded-md">
+                  <button type="button" id="qty-minus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-100 transition-colors rounded-l-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                    </svg>
+                  </button>
+                  <input type="number" id="quantity-input" name="visible_quantity" value="1" min="1"
+                         class="w-full text-center border-0 focus:ring-0 text-neutral-900 font-medium py-2 appearance-none [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 ps-1">
+                  <button type="button" id="qty-plus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-100 transition-colors rounded-r-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+              </div>
             </div>
 
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex flex-col sm:flex-row gap-4 mt-auto">
             <button
               type="submit"
               id="add-to-quote-btn"
-              class="w-full px-6 py-3 bg-primary-900 text-white rounded text-sm font-medium hover:bg-primary-700 transition-colors text-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+              class="w-full md:w-auto md:flex-1 px-8 py-4 bg-primary-900 text-white rounded-md text-base font-bold hover:bg-primary-800 transition-all transform active:scale-[0.98] disabled:bg-neutral-300 disabled:text-neutral-500 disabled:cursor-not-allowed disabled:hover:bg-neutral-300 disabled:active:scale-100 flex items-center justify-center"
               disabled >
-              <i data-lucide="plus" class="inline-block w-4 h-4 mr-1"></i>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
               Add to Quote List
             </button>
           </div>
 
-        </form> </div>
+        </form>
+      </div>
     </div>
 
     {% if product.safety_documents.exists %}
-    <div class="mt-16 border-t pt-10">
-      <h2 class="text-2xl font-semibold mb-6">Documents & Downloads</h2>
-      <ul class="space-y-4">
+    <div class="mt-20 border-t border-neutral-200 pt-12">
+      <h2 class="text-2xl font-bold text-neutral-900 mb-8">Documents & Downloads</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {% for doc in product.safety_documents.all %}
-        <li class="flex items-center justify-between border-b pb-2">
-          <div>
-            <p class="font-medium">{{ doc.title }}</p>
-            <p class="text-sm text-gray-500">{{ doc.get_doc_type_display }} — {{ doc.language|default:"N/A" }}</p>
+        <a href="{{ doc.file.url }}" target="_blank" class="group flex items-start p-4 rounded-lg border border-neutral-200 hover:border-primary-500 hover:shadow-md transition-all bg-white">
+          <div class="mr-4 p-3 bg-primary-50 text-primary-700 rounded-md group-hover:bg-primary-900 group-hover:text-white transition-colors">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+             </svg>
           </div>
-          <a href="{{ doc.file.url }}" target="_blank" class="text-primary-700 font-semibold hover:underline">Download</a>
-        </li>
+          <div>
+            <h3 class="font-semibold text-neutral-900 group-hover:text-primary-900 transition-colors">{{ doc.title }}</h3>
+            <p class="text-sm text-neutral-500 mt-1">{{ doc.get_doc_type_display }} • {{ doc.language|default:"EN"|upper }}</p>
+          </div>
+        </a>
         {% endfor %}
-      </ul>
+      </div>
     </div>
     {% endif %}
   </div>
 </section>
 
-{{ color_availability_json|json_script:"color-availability-map" }}
-{{ size_availability_json|json_script:"size-availability-map" }}
+{# --- JSON DATA FOR JS (Kept optional if needed later) --- #}
+{% if show_colors and show_sizes %}
+    {{ color_availability_json|json_script:"color-availability-map" }}
+    {{ size_availability_json|json_script:"size-availability-map" }}
+{% endif %}
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 1. GET ALL DOM ELEMENTS ---
-  const colorAvailabilityMap = JSON.parse(document.getElementById("color-availability-map").textContent);
-  const sizeAvailabilityMap = JSON.parse(document.getElementById("size-availability-map").textContent);
-
+  // --- 1. GET DOM ELEMENTS ---
   const colorSelector = document.getElementById("color-selector");
   const sizeSelector = document.getElementById("size-selector");
+
+  // Determine strictly required selections based on what exists on page
+  const isColorRequired = !!colorSelector;
+  const isSizeRequired = !!sizeSelector;
+
   const colorBtns = document.querySelectorAll(".color-btn");
   const sizeBtns = document.querySelectorAll(".size-btn");
 
@@ -166,287 +216,177 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const navbarQuoteCountDesktop = document.getElementById("navbar-quote-count-desktop");
   const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
-
   const saveProductBtn = document.querySelector(".save-product-btn");
 
   // --- 2. STATE VARIABLES ---
-  let selectedColor = null;
-  let selectedSize = null;
   let selectedColorId = null;
   let selectedSizeId = null;
   let selectedQuantity = parseInt(quantityInput.value, 10) || 1;
 
-  // --- 3. HELPER FUNCTIONS ---
+  // --- 3. UI UPDATER ---
+  // Controls the main button state based on selections
   function updateUI() {
-    if (selectedColorId && selectedSizeId && selectedQuantity > 0) {
-      addToQuoteBtn.disabled = false;
-      addToQuoteBtn.innerHTML = `<i data-lucide="plus" class="inline-block w-4 h-4 mr-1"></i> Add to Quote List`;
-    } else {
-      addToQuoteBtn.disabled = true;
-      let reason = "Select Color & Size";
-      if (!selectedColorId && selectedSizeId) reason = "Select a Color";
-      if (selectedColorId && !selectedSizeId) reason = "Select a Size";
-      addToQuoteBtn.innerHTML = reason;
-    }
-    lucide.createIcons();
-  }
+      const colorOk = !isColorRequired || selectedColorId;
+      const sizeOk = !isSizeRequired || selectedSizeId;
+      const qtyOk = selectedQuantity > 0;
 
-  function updateSizeAvailability() {
-    if (!selectedColor) {
-      sizeBtns.forEach(btn => btn.disabled = false);
-      return;
-    }
-    const availableSizes = colorAvailabilityMap[selectedColor] || [];
-    sizeBtns.forEach(btn => {
-      const sizeName = btn.dataset.sizeName;
-      btn.disabled = !availableSizes.includes(sizeName);
-    });
-  }
-
-  function updateColorAvailability() {
-    if (!selectedSize) {
-      colorBtns.forEach(btn => btn.disabled = false);
-      return;
-    }
-    const availableColors = sizeAvailabilityMap[selectedSize] || [];
-    colorBtns.forEach(btn => {
-      const colorName = btn.dataset.colorName;
-      btn.disabled = !availableColors.includes(colorName);
-    });
-  }
-
-  // --- 4. EVENT LISTENERS ---
- colorSelector.addEventListener("click", (e) => {
-  const btn = e.target.closest(".color-btn");
-  if (!btn || btn.disabled) return;
-
-  // Update selected color
-  selectedColor = btn.dataset.colorName;
-  selectedColorId = btn.dataset.colorId;
-
-  selectedColorNameEl.textContent = selectedColor;
-  selectedColorIdInput.value = selectedColorId;
-
-  // Clear all previous highlights
-  colorBtns.forEach(b => {
-    b.classList.remove("ring-2", "ring-primary-500", "ring-offset-1");
-    b.style.color = ""; // reset text color
-  });
-
-  // Highlight current selection
-  btn.classList.add("ring-2", "ring-primary-500", "ring-offset-1");
-  btn.style.color = "#fff"; // ensure text is visible if button has background
-
-  updateSizeAvailability();
-
-  // If selected size becomes unavailable, reset it
-  if (selectedSize) {
-    const selectedSizeBtn = document.querySelector(`.size-btn[data-size-name="${selectedSize}"]`);
-    if (selectedSizeBtn && selectedSizeBtn.disabled) {
-      selectedSize = null;
-      selectedSizeId = null;
-      selectedSizeNameEl.textContent = "";
-      selectedSizeIdInput.value = "";
-      sizeBtns.forEach(b => {
-        b.classList.remove("bg-primary-900", "text-white", "border-primary-900");
-        b.style.color = "";
-      });
-    }
-  }
-
-  updateUI();
-});
-
-sizeSelector.addEventListener("click", (e) => {
-  const btn = e.target.closest(".size-btn");
-  if (!btn || btn.disabled) return;
-
-  // Update selected size
-  selectedSize = btn.dataset.sizeName;
-  selectedSizeId = btn.dataset.sizeId;
-
-  selectedSizeNameEl.textContent = selectedSize;
-  selectedSizeIdInput.value = selectedSizeId;
-
-  // Clear all previous highlights
-  sizeBtns.forEach(b => {
-    b.classList.remove("bg-primary-900", "text-white", "border-primary-900");
-    b.style.color = "";
-  });
-
-  // Highlight current selection
-  btn.classList.add("bg-primary-900", "text-white", "border-primary-900");
-  btn.style.color = "#fff"; // make sure text is visible
-
-  updateColorAvailability();
-
-  // If selected color becomes unavailable, reset it
-  if (selectedColor) {
-    const selectedColorBtn = document.querySelector(`.color-btn[data-color-name="${selectedColor}"]`);
-    if (selectedColorBtn && selectedColorBtn.disabled) {
-      selectedColor = null;
-      selectedColorId = null;
-      selectedColorNameEl.textContent = "";
-      selectedColorIdInput.value = "";
-      colorBtns.forEach(b => {
-        b.classList.remove("ring-2", "ring-primary-500", "ring-offset-1");
-        b.style.color = "";
-      });
-    }
-  }
-
-  updateUI();
-});
-
-  quantityInput.addEventListener("input", () => {
-    let qty = parseInt(quantityInput.value, 10);
-    if (isNaN(qty) || qty < 1) qty = 1;
-    selectedQuantity = qty;
-    formQuantityInput.value = selectedQuantity;
-    updateUI();
-  });
-
-  // --- 5. AJAX FORM SUBMISSION ---
-  addToQuoteForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(addToQuoteForm);
-    const originalBtnHTML = addToQuoteBtn.innerHTML;
-
-    addToQuoteBtn.disabled = true;
-    addToQuoteBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>`;
-
-    try {
-      const response = await fetch(addToQuoteForm.action, {
-        method: "POST",
-        body: formData,
-        headers: { "X-Requested-With": "XMLHttpRequest" }
-      });
-
-      const data = await response.json();
-
-      if (data.status === "success") {
-        addToQuoteBtn.innerHTML = `<i data-lucide="check" class="inline-block w-4 h-4 mr-1"></i> Added!`;
-        lucide.createIcons();
-
-        const count = data.quote_item_count;
-        if (navbarQuoteCountDesktop) {
-          navbarQuoteCountDesktop.textContent = count;
-          navbarQuoteCountDesktop.classList.remove("hidden");
-        }
-        if (navbarQuoteCountMobile) {
-          navbarQuoteCountMobile.textContent = count;
-          navbarQuoteCountMobile.classList.remove("hidden");
-        }
+      if (colorOk && sizeOk && qtyOk) {
+          addToQuoteBtn.disabled = false;
+          // Only update innerHTML if needed to avoid re-rendering icons constantly
+          if (!addToQuoteBtn.querySelector('i') || addToQuoteBtn.textContent.trim() !== "Add to Quote List") {
+               addToQuoteBtn.innerHTML = `<i data-lucide="plus" class="inline-block w-4 h-4 mr-1"></i> Add to Quote List`;
+               if (typeof lucide !== 'undefined') lucide.createIcons();
+          }
       } else {
-        addToQuoteBtn.innerHTML = `Error!`;
+          addToQuoteBtn.disabled = true;
+          let reason = "Add to Quote List";
+          if (!colorOk && !sizeOk) reason = "Select Color & Size";
+          else if (!colorOk) reason = "Select a Color";
+          else if (!sizeOk) reason = "Select a Size";
+          addToQuoteBtn.textContent = reason;
       }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      addToQuoteBtn.innerHTML = `Error!`;
-    }
 
-    setTimeout(() => {
-      addToQuoteBtn.disabled = false;
-      addToQuoteBtn.innerHTML = originalBtnHTML;
-      lucide.createIcons();
+      // Sync hidden inputs for form submission
+      if (selectedColorIdInput) selectedColorIdInput.value = selectedColorId || "";
+      if (selectedSizeIdInput) selectedSizeIdInput.value = selectedSizeId || "";
+      if (formQuantityInput) formQuantityInput.value = selectedQuantity;
+  }
+
+  // --- 4. SELECTION EVENT LISTENERS ---
+
+  // Color Selection
+  if (colorSelector) {
+      colorSelector.addEventListener("click", (e) => {
+          const btn = e.target.closest(".color-btn");
+          if (!btn) return;
+
+          selectedColorId = btn.dataset.colorId;
+
+          // Visual updates
+          if (selectedColorNameEl) selectedColorNameEl.textContent = `: ${btn.dataset.colorName}`;
+          colorBtns.forEach(b => b.classList.remove("ring-2", "ring-primary-500", "ring-offset-1"));
+          btn.classList.add("ring-2", "ring-primary-500", "ring-offset-1");
+
+          updateUI();
+      });
+  }
+
+  // Size Selection
+  if (sizeSelector) {
+      sizeSelector.addEventListener("click", (e) => {
+          const btn = e.target.closest(".size-btn");
+          if (!btn) return;
+
+          selectedSizeId = btn.dataset.sizeId;
+
+          // Visual updates
+          if (selectedSizeNameEl) selectedSizeNameEl.textContent = `: ${btn.dataset.sizeName}`;
+          sizeBtns.forEach(b => b.classList.remove("bg-primary-900", "text-white", "border-primary-900"));
+          btn.classList.add("bg-primary-900", "text-white", "border-primary-900");
+
+          updateUI();
+      });
+  }
+
+  // Quantity Inputs
+  document.getElementById('qty-plus')?.addEventListener('click', () => {
+      quantityInput.value = parseInt(quantityInput.value || 0) + 1;
+      quantityInput.dispatchEvent(new Event('input'));
+  });
+  document.getElementById('qty-minus')?.addEventListener('click', () => {
+      const current = parseInt(quantityInput.value || 0);
+      if (current > 1) {
+           quantityInput.value = current - 1;
+           quantityInput.dispatchEvent(new Event('input'));
+      }
+  });
+  quantityInput.addEventListener("input", () => {
+      let qty = parseInt(quantityInput.value, 10);
+      if (isNaN(qty) || qty < 1) qty = 1;
+      selectedQuantity = qty;
       updateUI();
-    }, 2000);
   });
 
-  // --- 6. SAVE TOGGLE ---
-  if (saveProductBtn) {
-    const saveToggleUrl = "{% url 'save_product_toggle' %}";
-    // Get the CSRF token from the form that's already on the page
-    const csrfToken = document.querySelector('form#add-to-quote-form [name=csrfmiddlewaretoken]').value;
-
-    saveProductBtn.addEventListener('click', async () => {
-      const productId = saveProductBtn.dataset.productId;
-      if (!productId) return;
-
-      saveProductBtn.disabled = true;
+  // --- 5. AJAX ADD TO QUOTE SUBMISSION ---
+  addToQuoteForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const originalBtnHTML = addToQuoteBtn.innerHTML;
+      addToQuoteBtn.disabled = true;
+      addToQuoteBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>`;
 
       try {
-        const response = await fetch(saveToggleUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': csrfToken
-          },
-          body: `product_id=${productId}`
-        });
+          const response = await fetch(addToQuoteForm.action, {
+              method: "POST",
+              body: new FormData(addToQuoteForm),
+              headers: { "X-Requested-With": "XMLHttpRequest" }
+          });
+          const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-
-        if (data.status === 'success') {
-          // --- THIS IS THE UPDATED PART ---
-          const heartIcon = saveProductBtn.querySelector('.heart-icon');
-          const svgElement = heartIcon.querySelector('svg'); // Find the <svg>
-
-          if (svgElement) { // Check if we actually found it
-            if (data.is_saved) {
-              svgElement.setAttribute('fill', 'red'); // Set fill to red
-              saveProductBtn.dataset.isSaved = 'true';
-            } else {
-              svgElement.setAttribute('fill', 'currentColor'); // Set fill to text color
-              saveProductBtn.dataset.isSaved = 'false';
-            }
+          if (data.status === "success") {
+              addToQuoteBtn.innerHTML = `<i data-lucide="check" class="inline-block w-4 h-4 mr-1"></i> Added!`;
+              if (typeof lucide !== 'undefined') lucide.createIcons();
+              // Update navbar counters
+              if (navbarQuoteCountDesktop) { navbarQuoteCountDesktop.textContent = data.quote_item_count; navbarQuoteCountDesktop.classList.remove("hidden"); }
+              if (navbarQuoteCountMobile) { navbarQuoteCountMobile.textContent = data.quote_item_count; navbarQuoteCountMobile.classList.remove("hidden"); }
+          } else {
+              addToQuoteBtn.innerHTML = `Error!`;
           }
-          // --- END OF UPDATED PART ---
-        }
       } catch (error) {
-        console.error('Failed to toggle save:', error);
-      } finally {
-        saveProductBtn.disabled = false; // Re-enable button
+          console.error("Fetch error:", error);
+          addToQuoteBtn.innerHTML = `Error!`;
       }
-    });
+
+      setTimeout(() => {
+          addToQuoteBtn.disabled = false;
+          addToQuoteBtn.innerHTML = originalBtnHTML;
+          updateUI();
+      }, 2000);
+  });
+
+  // --- 6. SAVE PRODUCT TOGGLE ---
+  if (saveProductBtn) {
+      saveProductBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const productId = saveProductBtn.dataset.productId;
+          const csrfToken = addToQuoteForm.querySelector('[name=csrfmiddlewaretoken]').value;
+          saveProductBtn.disabled = true;
+
+          try {
+              const res = await fetch("{% url 'save_product_toggle' %}", {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
+                 body: `product_id=${productId}`
+              });
+              const data = await res.json();
+              if (data.status === 'success') {
+                 const svg = saveProductBtn.querySelector('svg');
+                 if (data.is_saved) {
+                     svg.setAttribute('fill', 'red');
+                     svg.setAttribute('stroke', 'red');
+                     saveProductBtn.dataset.isSaved = 'true';
+                 } else {
+                     svg.setAttribute('fill', 'none');
+                     svg.setAttribute('stroke', 'currentColor');
+                     saveProductBtn.dataset.isSaved = 'false';
+                 }
+              }
+          } catch(err) { console.error(err); }
+          finally { saveProductBtn.disabled = false; }
+      });
   }
 
-  // --- 7. DEFAULT SELECTION (First color and size) ---
-  if (colorBtns.length > 0) {
-  colorBtns.forEach(b => {
-    b.classList.remove("ring-2", "ring-primary-500", "ring-offset-1");
-    b.style.color = "";
-  });
+  // --- 7. INITIALIZATION ---
+  // Auto-select first available options to save user clicks
+  if (isColorRequired && !selectedColorId) {
+      const firstColor = colorSelector.querySelector('.color-btn:not(:disabled)');
+      if (firstColor) firstColor.click();
+  }
+  if (isSizeRequired && !selectedSizeId) {
+      const firstSize = sizeSelector.querySelector('.size-btn:not(:disabled)');
+      if (firstSize) firstSize.click();
+  }
 
-  const firstColorBtn = colorBtns[0];
-  selectedColor = firstColorBtn.dataset.colorName;
-  selectedColorId = firstColorBtn.dataset.colorId;
-  selectedColorNameEl.textContent = selectedColor;
-  selectedColorIdInput.value = selectedColorId;
-
-  firstColorBtn.classList.add("ring-2", "ring-primary-500", "ring-offset-1");
-  firstColorBtn.style.color = "#fff"; // ensure text visible
-}
-
-// Auto-select first available size
-if (sizeBtns.length > 0) {
-  sizeBtns.forEach(b => {
-    b.classList.remove("bg-primary-900", "text-white", "border-primary-900");
-    b.style.color = "";
-  });
-
-  const firstSizeBtn = sizeBtns[0];
-  selectedSize = firstSizeBtn.dataset.sizeName;
-  selectedSizeId = firstSizeBtn.dataset.sizeId;
-  selectedSizeNameEl.textContent = selectedSize;
-  selectedSizeIdInput.value = selectedSizeId;
-
-  firstSizeBtn.classList.add("bg-primary-900", "text-white", "border-primary-900");
-  firstSizeBtn.style.color = "#fff"; // ensure text visible
-}
-
-// Run availability updates
-updateSizeAvailability();
-updateColorAvailability();
-
-  // --- 8. INITIAL UI UPDATE ---
   updateUI();
 });
 </script>
-
 {% endblock %}

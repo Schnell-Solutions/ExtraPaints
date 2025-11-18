@@ -1,76 +1,90 @@
 import json
-
-# ProductVariant import is GONE
-from django.db.models import Prefetch
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models import Q
-from django.core.mail import EmailMultiAlternatives
-
-from colors.models import Color, SavedColor
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+
+# --- Imported Models ---
+from colors.models import Color, SavedColor
 from ideas.models import SavedIdea
-from products.models import Product, Category, SavedProducts
+# NOTE: Ensure 'Category' here refers to your MainCategory model if you renamed it.
+# Based on your previous requests, it seems 'Category' is now the main one.
+from products.models import Product, Category, SubCategory, SavedProducts
 from .models import NewsletterSubscriber, Newsletter
 
 
 def index(request):
     """
-    View for the homepage, fetching products, categories, and colors.
+    View for the homepage.
+    Fetches categories for filter buttons.
+    If a category has subcategories, it uses those for the filter buttons.
+    If it doesn't, it uses the main category itself.
     """
 
-    # 1. Get all categories
-    categories = Category.objects.all().order_by('name')
-    category_names = [cat.name for cat in categories]
+    # 1. Fetch all main categories with their subcategories pre-fetched
+    main_categories = Category.objects.prefetch_related('subcategories').order_by('name')
 
-    # 2. Get all products, structured by category, for the JS
+    # 2. Build the list of filter names (mixed main and sub categories)
+    filter_names = []
+    # We also need a mapping to know which filter name corresponds to which actual DB lookup later
+    filter_map = {}
 
-    # --- DELETED: variants_prefetch ---
-    # We don't need to fetch variants or prices anymore.
+    for main_cat in main_categories:
+        subs = main_cat.subcategories.all()
+        if subs.exists():
+            # If it has subcategories, add THEM to the filter list
+            for sub in subs:
+                filter_names.append(sub.name)
+                filter_map[sub.name] = {'type': 'sub', 'obj': sub}
+        else:
+            # If no subcategories, add the MAIN category to the list
+            filter_names.append(main_cat.name)
+            filter_map[main_cat.name] = {'type': 'main', 'obj': main_cat}
 
-    # --- UPDATED: all_products query ---
-    # We just get the active products. No prefetch needed for variants.
-    all_products = Product.objects.filter(is_active=True).select_related('category')
+    # Sort the combined list alphabetically for a neat display
+    filter_names.sort()
 
-    # Build the product data dictionary in the *exact* structure the JS needs
-    products_by_category = {cat_name: [] for cat_name in category_names}
+    # 3. Get all active products
+    all_products = Product.objects.filter(is_active=True).select_related('category', 'subcategory')
+
+    # 4. Build product data dictionary based on our filter names
+    products_by_filter = {name: [] for name in filter_names}
 
     for product in all_products:
-        # Ensure product's category is in our list
-        if product.category.name not in products_by_category:
-            continue
-
-        # --- UPDATED: Image and Price Logic ---
-
-        # We no longer need 'price_str'.
-        image_url = ""  # Default empty
-
-        # Use the product's main_image field
-        if product.main_image:
-            image_url = product.main_image.url
+        # Determine which filter this product belongs to
+        filter_key = None
+        if product.subcategory:
+            # Try to match by subcategory name first
+            if product.subcategory.name in products_by_filter:
+                filter_key = product.subcategory.name
         else:
-            # Fallback placeholder
-            image_url = f"https://placehold.co/400x400/f1f5f9/9ca3af?text={product.name.replace(' ', '+')}"
+            # Fallback to main category name
+            if product.category.name in products_by_filter:
+                filter_key = product.category.name
 
-        products_by_category[product.category.name].append({
-            'id': product.id,
-            'name': product.name,
-            # 'price': key is GONE
-            'img': image_url,
-            'url': product.get_absolute_url()
-        })
+        # If we found a valid filter bucket for this product, add it
+        if filter_key:
+            image_url = product.main_image.url if product.main_image else f"https://placehold.co/400x400/f1f5f9/9ca3af?text={product.name.replace(' ', '+')}"
+            products_by_filter[filter_key].append({
+                'id': product.id,
+                'name': product.name,
+                'img': image_url,
+                'url': product.get_absolute_url()
+            })
 
-    # 3. Get "Most Loved" Colors (Unchanged, this is fine)
+    # 5. Get "Most Loved" Colors
     most_loved_colors = Color.objects.filter(is_active=True).order_by('?')[:8]
 
     context = {
-        'categories_json': category_names,
-        'products_json': products_by_category,  # This JSON no longer contains price
+        # Pass the mixed list of category/subcategory names for buttons
+        'categories_json': filter_names,
+        # Pass the grouped product data keyed by those same names
+        'products_json': products_by_filter,
         'most_loved_colors': most_loved_colors,
     }
     return render(request, 'home/index.html', context)
@@ -79,25 +93,18 @@ def index(request):
 @login_required
 def my_collection(request):
     """
-    Displays all items saved by the current user in one dashboard.
+    Displays all items saved by the current user.
     """
-
-    # --- 1. Get Saved Products ---
-    # Get the relation objects, but 'select' the related product
-    # to avoid N+1 queries.
     saved_product_relations = SavedProducts.objects.filter(user=request.user) \
-        .select_related('product') \
+        .select_related('product', 'product__category') \
         .order_by('-saved_at')
 
-    # Create a clean list of just the Product objects
-    # We add .is_saved = True so the save-toggle button renders correctly.
     products = []
     for rel in saved_product_relations:
         product = rel.product
-        product.is_saved = True  # We know it's saved
+        product.is_saved = True
         products.append(product)
 
-    # --- 2. Get Saved Colors ---
     saved_color_relations = SavedColor.objects.filter(user=request.user) \
         .select_related('color') \
         .order_by('-saved_at')
@@ -105,11 +112,9 @@ def my_collection(request):
     colors = []
     for rel in saved_color_relations:
         color = rel.color
-        color.is_saved = True  # We know it's saved
+        color.is_saved = True
         colors.append(color)
 
-    # --- 3. Get Saved Ideas ---
-    # This view assumes your 'SavedIdea' model is set up just like the others
     saved_idea_relations = SavedIdea.objects.filter(user=request.user) \
         .select_related('idea') \
         .order_by('-saved_at')
@@ -117,16 +122,14 @@ def my_collection(request):
     ideas = []
     for rel in saved_idea_relations:
         idea = rel.idea
-        idea.is_saved = True  # We know it's saved
+        idea.is_saved = True
         ideas.append(idea)
 
-    # --- 4. Send to template ---
     context = {
         'saved_products': products,
         'saved_colors': colors,
         'saved_ideas': ideas,
     }
-
     return render(request, 'home/my_collection.html', context)
 
 
@@ -143,24 +146,21 @@ def contact(request):
         subject = f"New Contact Message from {name}"
         full_message = f"Sender Name: {name}\nSender Email: {email}\n\nMessage:\n{message}"
 
-        # --- Email Styling Logic ---
         html_content = render_to_string('home/simple_branded_email.html', {
             'subject': subject,
             'content': full_message,
             'site_name': 'ExtraPaints',
         })
-        # ---------------------------
 
         try:
             msg = EmailMultiAlternatives(
                 subject,
-                full_message,  # Use plain text as the fallback body
+                full_message,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.SALES_TEAM_EMAIL],  # Use the specialized sales team email
+                [settings.SALES_TEAM_EMAIL],
             )
             msg.attach_alternative(html_content, "text/html")
             msg.send(fail_silently=False)
-
             messages.success(request, "Your message has been sent successfully.")
         except Exception as e:
             print(f"Contact form email error: {e}")
@@ -170,47 +170,50 @@ def contact(request):
 
     return render(request, "home/contact.html")
 
+
 def live_search(request):
     """
-    AJAX view for live, global search across Colors and Products.
+    AJAX view for live global search.
     """
     query = request.GET.get('q', '').strip()
     results = {'colors': [], 'products': []}
 
-    if not query or len(query) < 2: # Only search if query is substantial
+    if not query or len(query) < 2:
         return JsonResponse(results)
 
-    # --- Search for Colors ---
     color_queryset = Color.objects.filter(
         Q(name__icontains=query) |
         Q(code__icontains=query) |
         Q(description__icontains=query),
         is_active=True
-    )[:5] # Limit results for performance
+    )[:5]
 
     for color in color_queryset:
         results['colors'].append({
             'name': color.name,
             'code': color.code,
             'url': color.get_absolute_url(),
-            'hex_code': color.hex_code # Assuming your Color model has a hex_code field
+            'hex_code': color.hex_code
         })
 
-    # --- Search for Products ---
     product_queryset = Product.objects.filter(
         Q(name__icontains=query) |
         Q(description__icontains=query),
         is_active=True
-    ).select_related('category')[:5] # Limit results for performance
+    ).select_related('category', 'subcategory')[:5]
 
     for product in product_queryset:
-        # Use main_image or a fallback for the image
-        image_url = product.main_image.url if product.main_image else 'https://placehold.co/40x40/f1f5f9/9ca3af?text=P'
+        img_url = product.main_image.url if product.main_image else 'https://placehold.co/40x40/f1f5f9/9ca3af?text=P'
+
+        cat_display = product.category.name
+        if product.subcategory:
+            cat_display += f" - {product.subcategory.name}"
+
         results['products'].append({
             'name': product.name,
-            'category': product.category.name if product.category else 'Product',
+            'category': cat_display,
             'url': product.get_absolute_url(),
-            'image_url': image_url
+            'image_url': img_url
         })
 
     return JsonResponse(results, safe=False)
@@ -218,35 +221,16 @@ def live_search(request):
 
 @require_POST
 def subscribe_newsletter(request):
-    """
-    Handles AJAX subscription form submission from the footer.
-    """
     email = request.POST.get('email', '').strip()
-
     if not email:
         return JsonResponse({'status': 'error', 'message': 'Email is required.'}, status=400)
-
     try:
-        # Attempt to create or find the subscriber
-        subscriber, created = NewsletterSubscriber.objects.get_or_create(
-            email=email
-        )
-
-        if created:
-            message = "Thanks for subscribing! You'll receive our next newsletter."
-            status = 'success'
-        else:
-            message = "You are already subscribed to our newsletter. Welcome back!"
-            status = 'info'
-
-        # Since this is an AJAX endpoint, return JSON
-        return JsonResponse({'status': status, 'message': message})
-
+        subscriber, created = NewsletterSubscriber.objects.get_or_create(email=email)
+        message = "Thanks for subscribing!" if created else "You are already subscribed."
+        return JsonResponse({'status': 'success' if created else 'info', 'message': message})
     except Exception as e:
-        # Log the exception (good practice)
         print(f"Subscription error: {e}")
-        return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred. Please try again.'},
-                            status=500)
+        return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred.'}, status=500)
 
 
 # --- Email Sending Logic (Called by Admin Action) ---

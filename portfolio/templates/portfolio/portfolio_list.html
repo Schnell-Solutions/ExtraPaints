@@ -3,7 +3,7 @@
 {% block title %}Our Portfolio{% endblock %}
 
 {% block content %}
-<section class="py-12 lg:px-12 md:py-16 bg-neutral-50">
+<section class="py-12 lg:px-12 md:py-16 bg-neutral-50 min-h-[1000px]">
   <div class="container mx-auto px-4">
 
     <div class="text-center mb-12">
@@ -55,7 +55,7 @@
         <a href="{{ project.get_absolute_url }}" class="group block bg-white rounded border border-neutral-200 overflow-hidden transition-all duration-300 hover:shadow flex flex-col">
           <div class="h-60 w-full overflow-hidden">
               {% if project.get_display_image %}
-                  <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full p-2 h-full object-cover">
+                  <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full h-full object-cover">
               {% else %}
                   <img src="{{ MEDIA_URL }}default.jpg" alt="{{ project.title }}" class="w-full h-full object-cover">
               {% endif %}

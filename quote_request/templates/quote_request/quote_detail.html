@@ -8,117 +8,163 @@
   <div class="container mx-auto px-4 max-w-6xl">
 
     {% if quote_list %}
-      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-8">My Quote Request</h1>
-      
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-primary-900">My Quote Request</h1>
+        <a href="{% url 'product_list' %}" class="text-primary-700 hover:underline text-sm font-medium flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Continue Browsing
+        </a>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-        
-        <div class="lg:col-span-2 space-y-6">
-          <h2 class="text-xl font-semibold text-primary-900">Items to Inquire</h2>
-          
+
+        {# --- LEFT COLUMN: ITEMS LIST --- #}
+        <div class="lg:col-span-2 space-y-4">
+          <h2 class="sr-only">Items to Inquire</h2>
+
           {% for item in quote_list %}
-          <div class="flex items-start gap-4 p-4 border rounded-lg shadow-sm">
-            <a href="{{ item.product.get_absolute_url }}">
+          <div class="flex flex-col sm:flex-row items-start gap-4 p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+            {# Product Image #}
+            <a href="{{ item.product.get_absolute_url }}" class="flex-shrink-0">
               {% if item.product.main_image %}
-                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="w-24 h-24 object-cover rounded border">
+                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="w-24 h-24 object-contain p-2 bg-white rounded border border-neutral-200 mix-blend-multiply">
               {% else %}
-                <div class="w-24 h-24 bg-gray-100 rounded border flex items-center justify-center text-gray-400">
-                  <i data-lucide="image" class="w-8 h-8"></i>
+                <div class="w-24 h-24 bg-white rounded border border-neutral-200 flex items-center justify-center text-neutral-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </div>
               {% endif %}
             </a>
-            
-            <div class="flex-1">
-              <a href="{{ item.product.get_absolute_url }}" class="hover:underline">
-                <h3 class="text-lg font-semibold text-primary-900">{{ item.product.name }}</h3>
-              </a>
-              <p class="text-sm text-gray-600">
-                <span class="font-medium">Color:</span> {{ item.color.name }}
-              </p>
-              <p class="text-sm text-gray-600">
-                <span class="font-medium">Size:</span> {{ item.size.name }}
-              </p>
 
-              <form action="{% url 'quote_update' %}" method="POST" class="mt-2 flex items-center gap-2">
-                {% csrf_token %}
-                <input type="hidden" name="item_key" value="{{ item.key }}">
-                <label for="quantity-{{ item.key }}" class="text-sm font-medium text-gray-600">Qty:</label>
-                <input type="number" name="quantity" id="quantity-{{ item.key }}"
-                       value="{{ item.quantity }}" min="1"
-                       class="w-16 border rounded px-2 py-1 text-center text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
-                <button type="submit" class="text-xs text-primary-700 hover:underline font-medium">Update</button>
-              </form>
+            {# Product Details #}
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between">
+                  <a href="{{ item.product.get_absolute_url }}" class="hover:text-primary-700 transition-colors">
+                    <h3 class="text-lg font-bold text-neutral-900">{{ item.product.name }}</h3>
+                  </a>
+                  {# Desktop remove button #}
+                  <form action="{% url 'quote_remove' %}" method="POST" class="hidden sm:block ml-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_key" value="{{ item.key }}">
+                    <button type="submit" class="text-neutral-400 hover:text-red-600 transition-colors p-1" title="Remove item">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                       </svg>
+                    </button>
+                  </form>
               </div>
-            
-            <div>
-              <form action="{% url 'quote_remove' %}" method="POST">
+
+              <div class="mt-1 space-y-1">
+                {% if item.product.category %}
+                <p class="text-xs text-neutral-500 uppercase tracking-wide">
+                  {{ item.product.category.name }}
+                  {% if item.product.subcategory %} / {{ item.product.subcategory.name }}{% endif %}
+                </p>
+                {% endif %}
+
+                {% if item.color %}
+                <p class="text-sm text-neutral-700 flex items-center">
+                  <span class="w-3 h-3 rounded-full border border-neutral-300 mr-2 inline-block" style="background-color: {{ item.color.hex_code|default:'#eee' }}"></span>
+                  <span class="font-medium mr-1">Color:</span> {{ item.color.name }}
+                </p>
+                {% endif %}
+
+                {% if item.size %}
+                <p class="text-sm text-neutral-700">
+                  <span class="font-medium mr-1">Size:</span> {{ item.size.name }}
+                </p>
+                {% endif %}
+              </div>
+
+              {# Update Quantity Form #}
+              <form action="{% url 'quote_update' %}" method="POST" class="mt-4 flex items-center">
                 {% csrf_token %}
                 <input type="hidden" name="item_key" value="{{ item.key }}">
-                <button type="submit" class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full" title="Remove item">
-                  <i data-lucide="trash-2" class="w-5 h-5"></i>
+                <label for="quantity-{{ item.key }}" class="sr-only">Quantity</label>
+                <div class="flex items-center border border-neutral-300 rounded-md bg-white">
+                    <span class="text-sm text-neutral-500 pl-3 pr-2 border-r border-neutral-200 bg-neutral-50 h-full flex items-center rounded-l-md">Qty</span>
+                    <input type="number" name="quantity" id="quantity-{{ item.key }}"
+                           value="{{ item.quantity }}" min="1"
+                           class="w-16 border-0 p-2 text-center text-neutral-900 focus:ring-0 sm:text-sm"
+                           onchange="this.form.submit()">
+                </div>
+                {# Mobile remove button #}
+                <button type="submit" formmethod="POST" formaction="{% url 'quote_remove' %}" class="sm:hidden ml-auto text-neutral-400 hover:text-red-600 p-2">
+                    Remove
                 </button>
               </form>
             </div>
           </div>
           {% endfor %}
         </div>
-        
+
+        {# --- RIGHT COLUMN: SUBMISSION FORM --- #}
         <div class="lg:col-span-1">
-          <div class="lg:sticky lg:top-24 bg-gray-50 p-6 rounded-lg border">
-            <h2 class="text-xl font-semibold text-primary-900 mb-6">Submit Your Request</h2>
-            <p class="text-sm text-gray-600 mb-6">
-              Please provide your contact details, and our team will get back to you with a quote.
+          <div class="lg:sticky lg:top-24 bg-neutral-900 text-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-2">Submit Request</h2>
+            <p class="text-neutral-300 text-sm mb-6">
+              Tell us who you are, and our sales team will prepare a custom quote for these items.
             </p>
-            
+
             <form action="{% url 'quote_detail' %}" method="POST" class="space-y-4">
               {% csrf_token %}
-              
+
               <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                <label for="name" class="block text-sm font-medium text-neutral-300 mb-1">Your Name *</label>
                 <input type="text" name="name" id="name" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                       class="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-neutral-500">
               </div>
-              
+
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <label for="email" class="block text-sm font-medium text-neutral-300 mb-1">Email Address *</label>
                 <input type="email" name="email" id="email" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                       class="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-neutral-500">
               </div>
-              
+
               <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <label for="phone" class="block text-sm font-medium text-neutral-300 mb-1">Phone Number *</label>
                 <input type="tel" name="phone" id="phone" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                       class="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-neutral-500">
               </div>
-              
+
               <div>
-                <label for="message" class="block text-sm font-medium text-gray-700">Message (Optional)</label>
-                <textarea name="message" id="message" rows="4"
-                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                          placeholder="Any specific instructions or questions?"></textarea>
+                <label for="message" class="block text-sm font-medium text-neutral-300 mb-1">Additional Notes (Optional)</label>
+                <textarea name="message" id="message" rows="3"
+                          class="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-neutral-500"
+                          placeholder="e.g., Preferred delivery date, project details..."></textarea>
               </div>
-              
+
               <button type="submit"
-                      class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-900 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                      class="w-full flex items-center justify-center py-3 px-4 mt-6 bg-white text-neutral-900 rounded-md font-bold hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all">
                 Send Quote Request
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </button>
             </form>
           </div>
         </div>
-        
+
       </div>
     {% else %}
-      <div class="text-center py-16">
-        <i data-lucide="inbox" class="w-16 h-16 mx-auto text-primary-300"></i>
-        <h1 class="mt-4 text-3xl font-bold text-primary-900">Your Quote List is Empty</h1>
-        <p class="mt-2 text-gray-600">
-          You haven't added any products to your request list yet.
-        </p>
-        <div class="mt-6">
-          <a href="{% url 'product_list' %}"
-             class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-900 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-            Browse Products
-          </a>
+      {# --- EMPTY STATE --- #}
+      <div class="text-center py-24 px-4">
+        <div class="bg-neutral-100 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
         </div>
+        <h1 class="text-3xl font-bold text-neutral-900 mb-3">Your quote list is empty</h1>
+        <p class="text-neutral-600 max-w-md mx-auto mb-8">
+          Looks like you haven't added any items yet. Browse our catalog to find the perfect products for your project.
+        </p>
+        <a href="{% url 'product_list' %}"
+           class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+          Start Browsing
+        </a>
       </div>
     {% endif %}
 

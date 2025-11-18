@@ -14,22 +14,23 @@ from .quote import QuoteList  # Our new class
 
 @require_POST
 def add_to_quote(request):
-    """
-    Adds a product (with its selected color and size) to the quote list.
-    This will be called by AJAX from the product detail page.
-    """
     quote_list = QuoteList(request)
 
     try:
         product_id = request.POST.get('product_id')
-        color_id = request.POST.get('color_id')
-        size_id = request.POST.get('size_id')
         quantity = int(request.POST.get('quantity', 1))
 
-        product = get_object_or_404(Product, id=product_id)
-        color = get_object_or_404(Color, id=color_id)
-        size = get_object_or_404(Size, id=size_id)
+        # Optional fields
+        color_id = request.POST.get('color_id')
+        size_id = request.POST.get('size_id')
 
+        product = get_object_or_404(Product, id=product_id)
+
+        # Only try to get objects if IDs were actually sent
+        color = get_object_or_404(Color, id=color_id) if color_id else None
+        size = get_object_or_404(Size, id=size_id) if size_id else None
+
+        # Pass them to the updated .add() method
         quote_list.add(product=product, color=color, size=size, quantity=quantity)
 
         return JsonResponse({
@@ -39,7 +40,11 @@ def add_to_quote(request):
         })
 
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        # It's good practice to log the actual error for debugging
+        print(f"Error adding to quote: {e}")
+        return JsonResponse(
+            {'status': 'error', 'message': "Could not add item. Please ensure all required options are selected."},
+            status=400)
 
 
 def quote_detail(request):
@@ -58,11 +63,16 @@ def quote_detail(request):
 
         items_summary = ""
         for item in quote_list:
-            items_summary += (
-                f"- {item['product'].name} "
-                f"({item['color'].name}, {item['size'].name}) "
-                f"x {item['quantity']}\n"
-            )
+            # Build string based on what's available
+            details = []
+            if item['color']:
+                details.append(item['color'].name)
+            if item['size']:
+                details.append(item['size'].name)
+
+            details_str = f" ({', '.join(details)})" if details else ""
+
+            items_summary += f"- {item['product'].name}{details_str} x {item['quantity']}\n"
 
         full_quote_request = (
             f"New Quote Request from: {name} ({email}, {phone})\n\n"

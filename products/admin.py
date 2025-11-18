@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Size, Product, SafetyDocument, SavedProducts
+from .models import Category, SubCategory, Size, Product, SafetyDocument, SavedProducts
 
 
 # ---------- INLINE SETUP ----------
@@ -13,18 +13,42 @@ class SafetyDocumentInline(admin.TabularInline):
     autocomplete_fields = ("safetydocument",)
 
 
-# ---------- CATEGORY ADMIN ----------
+class SubCategoryInline(admin.TabularInline):
+    """Inline to add subcategories directly from the Main Category page."""
+    model = SubCategory
+    extra = 1
+    prepopulated_fields = {"slug": ("name",)}
+
+
+# ---------- CATEGORY ADMIN (Main Category) ----------
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
-    search_fields = ("name", "description")
+    list_display = ("name", "slug", "features_colors", "features_sizes")
+    list_filter = ("features_colors", "features_sizes")
+    search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
+    inlines = [SubCategoryInline]
     fieldsets = (
         (None, {
-            "fields": ("name", "slug", "description")
+            "fields": ("name", "slug")
+        }),
+        ("Feature Flags", {
+            "fields": ("features_colors", "features_sizes"),
+            "description": "Control which features are active for products in this category."
         }),
     )
+
+
+# ---------- SUBCATEGORY ADMIN ----------
+@admin.register(SubCategory)
+class SubCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "category", "slug")
+    list_filter = ("category",)
+    search_fields = ("name", "category__name")
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("category", "name")
+    autocomplete_fields = ("category",) # Useful if you have many main categories
 
 
 # ---------- SIZE ADMIN ----------
@@ -41,22 +65,23 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "category",
+        "subcategory", # Added subcategory to list view
         "is_active",
         "created_at",
     )
     list_filter = (
         "category",
-        "available_sizes",
-        "available_colors",
+        "subcategory", # Added subcategory filter
         "is_active",
         "created_at",
     )
-    search_fields = ("name", "description", "category__name")
+    search_fields = ("name", "description", "category__name", "subcategory__name")
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ("created_at", "updated_at",)
     filter_horizontal = ("available_colors", "available_sizes")
     ordering = ("-created_at",)
     inlines = [SafetyDocumentInline]
+    autocomplete_fields = ("category", "subcategory") # Improves performance with many categories
 
     fieldsets = (
         ("Basic Information", {
@@ -64,9 +89,14 @@ class ProductAdmin(admin.ModelAdmin):
                 "name",
                 "slug",
                 "description",
-                "category",
                 "main_image",
             )
+        }),
+        ("Categorization", {
+             "fields": (
+                 "category",
+                 "subcategory",
+             )
         }),
         ("Options & Availability", {
             "fields": (

@@ -7,48 +7,47 @@
 
     <main>
 
+        {# --- HERO SECTION (UNCHANGED) --- #}
         <section class="relative bg-primary-900 overflow-hidden">
-  <div class="container mx-auto px-12 lg:px-12 py-20 md:py-28">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="container mx-auto px-12 lg:px-12 py-20 md:py-28">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-      <div class="text-center lg:text-left space-y-3 lg:order-1">
-        <h1 class="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight tracking-tight">
-          Find Your Perfect Shade
-        </h1>
-        <p class="text-xl text-gray-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-          Explore eco-friendly paints for every space, from lively interiors to durable exteriors, crafted for lasting color and quality.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-          <a href="{% url 'product_list' %}"
-             class="px-10 py-3 bg-white/30 text-white text-base font-medium rounded-md hover:bg-primary-800 shadow-sm transition-transform transform hover:-translate-y-0.5">
-            Shop All Products
-          </a>
-          <a href="{% url 'idea_list' %}"
-             class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded-md border border-gray-200 hover:bg-gray-50 shadow-sm transition-transform transform hover:-translate-y-0.5">
-            Get Inspired
-          </a>
-        </div>
-      </div>
+              <div class="text-center lg:text-left space-y-3 lg:order-1">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight tracking-tight">
+                  Find Your Perfect Shade
+                </h1>
+                <p class="text-xl text-gray-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  Explore eco-friendly paints for every space, from lively interiors to durable exteriors, crafted for lasting color and quality.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                  <a href="{% url 'product_list' %}"
+                     class="px-10 py-3 bg-white/30 text-white text-base font-medium rounded-md hover:bg-primary-800 shadow-sm transition-transform transform hover:-translate-y-0.5">
+                    Shop All Products
+                  </a>
+                  <a href="{% url 'idea_list' %}"
+                     class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded-md border border-gray-200 hover:bg-gray-50 shadow-sm transition-transform transform hover:-translate-y-0.5">
+                    Get Inspired
+                  </a>
+                </div>
+              </div>
 
-      <div class="flex items-start justify-center relative lg:order-2">
-  <img
-    src="{% static 'home/images/hero.png' %}"
-    alt="ExtraPaints"
-    class="md:w-3/5 lg:w-[80%] w-[300px] md:max-w-[350px] max-h-[500px] rounded-xl shadow-2xl object-cover z-10"
-  >
+              <div class="flex items-start justify-center relative lg:order-2">
+                  <img
+                    src="{% static 'home/images/heroImage.png' %}"
+                    alt="ExtraPaints"
+                    class="md:w-3/5 lg:w-[80%] w-[300px] md:max-w-[350px] max-h-[500px] rounded-xl shadow-2xl object-cover z-10"
+                  >
+                  <img
+                    src="{% static 'home/images/heroImage2.png' %}"
+                    alt="ExtraPaints"
+                    class="absolute md:w-2/5 lg:w-1/2 w-[250px] md:max-w-[280px] max-h-[450px] rounded-xl shadow-2xl object-cover top-1/2 left-1/2 -translate-x-1/12 translate-y-1/4 md:translate-y-1/3 lg:translate-x-full lg:translate-y-0 lg:top-1/2 lg:-right-2 xl:top-1/4 xl:-right-12 z-20 transform scale-90 sm:scale-100"
+                  >
+                </div>
+            </div>
+          </div>
+        </section>
 
-  <img
-    src="{% static 'home/images/hero2.png' %}"
-    alt="ExtraPaints"
-    class="absolute md:w-2/5 lg:w-1/2 w-[250px] md:max-w-[280px] max-h-[450px] rounded-xl shadow-2xl object-cover top-1/2 left-1/2 -translate-x-1/12 translate-y-1/4 md:translate-y-1/3 lg:translate-x-full lg:translate-y-0 lg:top-1/2 lg:-right-2 xl:top-1/4 xl:-right-12 z-20 transform scale-90 sm:scale-100"
-  >
-</div>
-
-
-    </div>
-  </div>
-</section>
-
+        {# --- PRODUCT SECTION (UPDATED JS HANDLES THIS) --- #}
         <section class="py-16 md:py-24 bg-primary-10">
             <div class="container mx-auto px-4 lg:px-12">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
@@ -107,19 +106,17 @@
               </a>
             </div>
             {% else %}
-            <div id="colors-empty-state"
-                 class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50">
-              <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
-              <p class="text-red-600 text-lg font-medium">
-                No colors in the website yet.
-              </p>
-            </div>
+                <div class="text-center py-12 border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 w-full mx-4">
+                    <i data-lucide="alert-circle" class="w-12 h-12 mx-auto text-neutral-400 mb-4"></i>
+                    <p class="text-neutral-600 text-lg font-medium">No colors in the website yet.</p>
+                </div>
             {% endif %}
 
           </div>
         </section>
 
 
+        {# --- WHY CHOOSE US SECTION (UNCHANGED) --- #}
         <section class=" bg-primary-900 py-16 md:py-24">
           <div class="container mx-auto max-w-6xl px-4">
             <div class="text-center mb-16 md:mb-24">
@@ -172,6 +169,7 @@
           </div>
         </section>
 
+        {# --- FIND A STORE SECTION (UNCHANGED) --- #}
         <section class="py-16 bg-primary-50">
           <div class="container mx-auto px-6 lg:px-12">
             <div class="text-center mb-12">
@@ -207,7 +205,6 @@
               class="flex flex-col items-center justify-center gap-6
                      md:flex-row md:justify-center md:items-stretch md:gap-8"
             >
-              <!-- Card 1 -->
               <div
                 class="bg-white rounded-md p-6 border border-neutral-200
                        hover:shadow hover:border-primary-200 transition-all duration-300
@@ -240,7 +237,6 @@
                 </div>
               </div>
 
-              <!-- Card 2 -->
               <div
                 class="bg-white rounded-md p-6 border border-neutral-200
                        hover:shadow hover:border-primary-200 transition-all duration-300
@@ -282,171 +278,174 @@
 
     </main>
 
+    {# --- JSON DATA FOR JS (NO CHANGES NEEDED HERE IF VIEW SENDS SAME KEYS) --- #}
     {{ categories_json|json_script:"categories-data" }}
     {{ products_json|json_script:"products-data" }}
 
     <script>
-// Moved toggleView outside DOMContentLoaded to make it accessible to inline onclick handlers
+// Global function for Find a Store toggle
 function toggleView(view) {
     const listBtn = document.getElementById('listBtn');
     const mapBtn = document.getElementById('mapBtn');
     const listView = document.getElementById('listView');
     const mapView = document.getElementById('mapView');
 
-    if (!listBtn || !mapBtn || !listView || !mapView) return; // Safety check
+    if (!listBtn || !mapBtn || !listView || !mapView) return;
 
     const activeClasses = ['bg-primary-900', 'text-white'];
     const inactiveClasses = ['bg-white', 'text-primary-900'];
 
     if (view === 'list') {
-      // Show list, hide map
       listView.classList.remove('hidden');
       mapView.classList.add('hidden');
-
-      // Update button styles
       listBtn.classList.add(...activeClasses);
       listBtn.classList.remove(...inactiveClasses);
       mapBtn.classList.remove(...activeClasses);
       mapBtn.classList.add(...inactiveClasses);
     } else {
-      // Show map, hide list
       mapView.classList.remove('hidden');
       listView.classList.add('hidden');
-
-      // Update button styles
       mapBtn.classList.add(...activeClasses);
       mapBtn.classList.remove(...inactiveClasses);
       listBtn.classList.remove(...activeClasses);
       listBtn.classList.add(...inactiveClasses);
     }
-  }
-
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 
+    // --- GET DATA FROM TEMPLATE ---
     const categories = JSON.parse(document.getElementById('categories-data').textContent);
     const products = JSON.parse(document.getElementById('products-data').textContent);
 
     const categoryFilterContainer = document.getElementById('category-filters');
     const productRowContainer = document.getElementById('product-row-container');
 
-    // Initial load for toggle buttons handled by inline onclick and function call below
-
-    // Default to list view on load - this is still useful for initial styling/state
+    // Initial Store View
     toggleView('list');
 
+    // --- RENDER CATEGORY FILTERS ---
     function renderCategoryFilters() {
         if (!categoryFilterContainer) return;
 
         if (!Array.isArray(categories) || categories.length === 0) {
             categoryFilterContainer.innerHTML = '';
-            productRowContainer.innerHTML = `
-                <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
-                    <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
-                    <p class="text-red-600 text-lg font-medium">No products in the website yet.</p>
-                </div>
-            `;
+            // If NO categories exist at all, show empty state in product area
+            if (productRowContainer) {
+                 productRowContainer.innerHTML = `
+                    <div class="text-center py-12 border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 w-full mx-4">
+                        <i data-lucide="package-open" class="w-12 h-12 mx-auto text-neutral-400 mb-4"></i>
+                        <p class="text-neutral-600 text-lg font-medium">Our product catalog is coming soon.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
             return;
         }
 
         let html = '';
-        categories.forEach((category, index) => {
+        categories.forEach((categoryName, index) => {
+            // First category is active by default
             const isActive = index === 0;
+            // Use category name for data-attribute and display
             html += `
                 <button
-                    class="category-btn px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-                           ${isActive ? 'bg-primary-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                    data-category="${category}">
-                    ${category}
+                    type="button"
+                    class="category-btn px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 border
+                           ${isActive ? 'bg-primary-900 text-white border-primary-900 shadow-md' : 'bg-white text-neutral-700 border-neutral-200 hover:border-primary-500 hover:text-primary-900'}"
+                    data-category="${categoryName}">
+                    ${categoryName}
                 </button>
             `;
         });
         categoryFilterContainer.innerHTML = html;
     }
 
-    function renderProducts(category) {
+    // --- RENDER PRODUCTS FOR A CATEGORY ---
+    function renderProducts(categoryName) {
         if (!productRowContainer) return;
 
-        const productsToRender = products[category] || [];
+        // Get products for this category name (main or sub)
+        const productsToRender = products[categoryName] || [];
         productRowContainer.innerHTML = '';
 
         if (productsToRender.length === 0) {
             productRowContainer.innerHTML = `
-                <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
-                    <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
-                    <p class="text-red-600 text-lg font-medium">No products in this category yet.</p>
+                <div class="text-center py-10 border-2 border-dashed border-neutral-200 rounded-xl bg-white w-full mx-4">
+                    <p class="text-neutral-500 font-medium">No products found in this category yet.</p>
                 </div>
             `;
             return;
         }
 
-        // Center cards container - Removed this, as it breaks the scrollbar flow
-        // productRowContainer.classList.add('justify-center');
-
         productsToRender.forEach((product, index) => {
-            const card = document.createElement('a');
-            card.href = product.url;
-            card.className = 'product-card group flex-shrink-0 w-72 rounded border border-gray-200 overflow-hidden bg-white hover:shadow transition-all duration-300';
+            // Create product card
+            const card = document.createElement('div');
+            card.className = 'flex-shrink-0 w-72 bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 group';
+            // Simple fade-in effect
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
 
             card.innerHTML = `
-                <div>
-                    <div class="w-full h-48 overflow-hidden">
-                        <img src="${product.img}" alt="${product.name}" class="w-full h-full object-contain p-2 bg-white transition-transform duration-300" onerror="this.src='https://placehold.co/400x400/f1f5f9/9ca3af?text=Image+Error'; this.onerror=null;">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-base font-semibold text-gray-800 group-hover:text-primary-900">${product.name}</h3>
-                        <button class="w-full mt-4 px-4 py-2 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-900/80 transition-colors">
-                            View Options
-                        </button>
-                    </div>
+                <div class="relative h-56 bg-neutral-100 overflow-hidden">
+                   <a href="${product.url}" class="block h-full w-full">
+                     <img src="${product.img}" alt="${product.name}"
+                          class="w-full h-full object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
+                          onerror="this.onerror=null; this.src='https://placehold.co/300x300/f5f5f5/e5e7eb?text=No+Image';">
+                   </a>
+                </div>
+                <div class="p-5 flex flex-col">
+                    <h3 class="text-lg font-bold text-neutral-800 mb-1 line-clamp-1">
+                        <a href="${product.url}" class="hover:text-primary-900 transition-colors">${product.name}</a>
+                    </h3>
+                    <a href="${product.url}"
+                       class="mt-4 w-full inline-flex justify-center items-center px-4 py-2.5 bg-primary-900 text-white text-sm font-bold rounded-lg hover:bg-primary-800 transition-colors">
+                        View Details
+                    </a>
                 </div>
             `;
+
             productRowContainer.appendChild(card);
 
-            setTimeout(() => {
-                card.classList.add('visible');
-            }, index * 100);
+            // Trigger fade-in
+            requestAnimationFrame(() => {
+                card.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
         });
     }
 
-    // Category button click
+    // --- EVENT LISTENER FOR CATEGORY CLICKS ---
     if (categoryFilterContainer) {
         categoryFilterContainer.addEventListener('click', (e) => {
-            const clickedButton = e.target.closest('.category-btn');
-            if (!clickedButton) return;
+            const btn = e.target.closest('.category-btn');
+            if (!btn) return;
 
-            categoryFilterContainer.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('bg-primary-900', 'text-white', 'shadow-md');
-                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            // Deactivate all buttons
+            categoryFilterContainer.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('bg-primary-900', 'text-white', 'border-primary-900', 'shadow-md');
+                b.classList.add('bg-white', 'text-neutral-700', 'border-neutral-200');
             });
 
-            clickedButton.classList.add('bg-primary-900', 'text-white', 'shadow-md');
-            clickedButton.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            // Activate clicked button
+            btn.classList.remove('bg-white', 'text-neutral-700', 'border-neutral-200');
+            btn.classList.add('bg-primary-900', 'text-white', 'border-primary-900', 'shadow-md');
 
-            const category = clickedButton.dataset.category;
-
-            // Remove previous centering
-            // productRowContainer.classList.remove('justify-center');
-
-            renderProducts(category);
+            // Render products for selected category
+            renderProducts(btn.dataset.category);
         });
     }
 
-    // Initial load
+    // --- INITIAL RENDER ---
     renderCategoryFilters();
     if (Array.isArray(categories) && categories.length > 0) {
         renderProducts(categories[0]);
-    } else if (productRowContainer) {
-        productRowContainer.innerHTML = `
-            <div class="text-center py-12 border-2 border-dashed border-red-400 rounded-xl bg-red-50 w-full">
-                <i data-lucide="alert-circle" class="w-10 h-10 mx-auto text-red-400 mb-4"></i>
-                <p class="text-red-600 text-lg font-medium">No products in the website yet.</p>
-            </div>
-        `;
     }
+
 });
 </script>
 {% endblock %}
