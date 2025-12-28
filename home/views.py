@@ -80,14 +80,36 @@ def index(request):
     # 5. Get "Most Loved" Colors
     most_loved_colors = Color.objects.filter(is_active=True).order_by('?')[:8]
 
+    initial_color = Color.objects.filter(
+        is_active=True,
+        hex_code__isnull=False
+    ).exclude(hex_code='').order_by('?').first()
+
     context = {
         # Pass the mixed list of category/subcategory names for buttons
         'categories_json': filter_names,
         # Pass the grouped product data keyed by those same names
+        'hero_color': initial_color,
         'products_json': products_by_filter,
         'most_loved_colors': most_loved_colors,
     }
     return render(request, 'home/index.html', context)
+
+
+def get_random_hero_color(request):
+    color = Color.objects.filter(
+        is_active=True,
+        hex_code__isnull=False
+    ).exclude(hex_code='').order_by('?').first()
+
+    if color:
+        return JsonResponse({
+            'name': color.name,
+            'code': color.code,
+            'hex': color.hex_code,
+            'url': color.get_absolute_url()
+        })
+    return JsonResponse({'error': 'No colors found'}, status=404)
 
 
 @login_required

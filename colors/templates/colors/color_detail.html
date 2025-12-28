@@ -4,14 +4,25 @@
 {% block title %}{{ color.name }} - Details{% endblock %}
 
 {% block content %}
-<section class="py-12 md:py-16 px-4 lg:px-12 bg-white">
+<section class="py-8 md:py-12 lg:px-12 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
+
+  <div class="mb-6">
+      <button
+            onclick="goBack()"
+            class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Go Back
+        </button>
+    </div>
 
     <div class="grid md:grid-cols-2 gap-12 lg:gap-16">
 
-      {# --- LEFT COLUMN: Color Swatch & Image --- #}
       <div class="w-full relative">
-        <div class="h-96 w-full rounded overflow-hidden border border-gray-200 mb-4 shadow-sm">
+        <div class="h-96 w-full rounded-md overflow-hidden border border-gray-200 mb-4 shadow-sm">
           {% if color.hex_code %}
             <div class="w-full h-full" style="background-color: {{ color.hex_code }}"></div>
           {% else %}
@@ -20,7 +31,7 @@
         </div>
 
         {% if color.hex_code %}
-        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded border border-gray-200">
+        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-md border border-gray-200">
           <div class="w-16 h-16 rounded-md shadow-sm border border-gray-300" style="background-color: {{ color.hex_code }}"></div>
           <div>
             <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Hex Color</p>
@@ -59,7 +70,7 @@
             </span>
             {% endif %}
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">{{ color.name }}</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ color.name }}</h1>
         <p class="text-lg text-gray-600 mb-8 leading-relaxed">{{ color.description|default:"A versatile and timeless color, perfect for adding character to any space." }}</p>
 
         <div class="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
@@ -93,10 +104,10 @@
         <button
           type="button"
           id="open-drawer-btn"
-          class="w-full bg-primary-900 inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md text-white hover:bg-primary-900/80 md:py-4 md:text-lg md:px-10 transition-colors duration-300"
+          class="w-full bg-primary-900 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-md text-white hover:bg-primary-800/80 sm:px-6 sm:py-3 sm:text-base md:px-10 md:py-4 md:text-lg transition-colors duration-300"
         >
-          <i data-lucide="shopping-bag" class="w-5 h-5 mr-3"></i>
-          See Products in {{ color.name }}
+          <i data-lucide="shopping-bag" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+          <span class="whitespace-nowrap">See Products in {{ color.name }}</span>
         </button>
       </div>
     </div>
@@ -106,7 +117,7 @@
         {% if color.available_finishes.exists %}
         <div>
           <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <i data-lucide="droplet" class="w-5 h-5 mr-2 text-primary-500"></i>
+              <i data-lucide="droplet" class="w-5 h-5 mr-2 text-primary-900"></i>
               Available Finishes
           </h3>
           <ul class="flex flex-wrap gap-2">
@@ -122,7 +133,7 @@
         {% if color.recommended_surfaces.exists %}
         <div>
           <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <i data-lucide="layers" class="w-5 h-5 mr-2 text-primary-500"></i>
+              <i data-lucide="layers" class="w-5 h-5 mr-2 text-primary-900"></i>
               Ideal For
           </h3>
           <ul class="flex flex-wrap gap-2">
@@ -196,7 +207,7 @@
       </label>
       <div class="relative">
           <select id="category-filter"
-                  class="block w-full pl-4 pr-10 py-2.5 text-sm border border-neutral-300 rounded-lg bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none cursor-pointer">
+                  class="block w-full pl-4 pr-10 py-2.5 text-sm border border-neutral-300 rounded-lg bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-900 focus:border-primary-900 appearance-none cursor-pointer">
             <option value="">All Categories</option>
             {% for category in shop_categories %}
               <option value="{{ category.slug }}">{{ category.name }}</option>
@@ -350,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mt-2">
                     ${hasSizes ? `
                     <label class="text-xs font-medium text-gray-500 mb-1 block">Select Size:</label>
-                    <select class="drawer-size-select w-full border border-gray-300 bg-white text-gray-900 rounded text-sm py-1.5 px-2 focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+                    <select class="drawer-size-select w-full border border-gray-300 bg-white text-gray-900 rounded text-sm py-1.5 px-2 focus:ring-1 focus:ring-primary-900 focus:border-primary-900">
                       ${sizeOptions}
                     </select>
                     ` : ''}

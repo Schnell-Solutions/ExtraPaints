@@ -3,12 +3,59 @@
 
 {% block title %}{{ product.name }} | Extra Paints{% endblock %}
 
+{% block description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
+
+{% block og_title %}{{ product.name }}{% endblock %}
+{% block og_description %}{{ product.description|striptags|truncatechars:200 }}{% endblock %}
+{% block og_image %}{% if product.main_image %}{{ product.main_image.url }}{% else %}{% static 'home/images/logo.png' %}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ product.name }}{% endblock %}
+{% block twitter_description %}{{ product.description|striptags|truncatechars:200 }}{% endblock %}
+{% block twitter_image %}{% if product.main_image %}{{ product.main_image.url }}{% else %}{% static 'home/images/logo.png' %}{% endif %}{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name }}",
+  "image": [
+    "{% if product.main_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.url }}{% endif %}"
+  ],
+  "description": "{{ product.description|striptags|escapejs }}",
+  "sku": "{{ product.id }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "ExtraPaints"
+  },
+  "category": "{{ product.category.name }}",
+  "offers": {
+    "@type": "Offer",
+    "availability": "https://schema.org/InStock",
+    "price": "0",
+    "priceCurrency": "KES",
+    "url": "{{ request.build_absolute_uri }}"
+  }
+}
+</script>
+{% endblock %}
+
 {% block content %}
-<section class="py-12 lg:px-12 md:py-16 bg-white">
+<section class="py-8 lg:px-12 md:py-12 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
+    <div class="mb-6">
+      <button
+            onclick="goBack()"
+            class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Go Back
+        </button>
+    </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
-      {# --- PRODUCT IMAGE GALLERY --- #}
       <div class="w-full h-[400px] md:h-[500px] lg:sticky lg:top-24">
         <div class="relative w-full h-full rounded overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center">
           {% if product.main_image %}
@@ -45,9 +92,7 @@
           </div>
       </div>
 
-      {# --- PRODUCT DETAILS --- #}
       <div class="flex flex-col">
-        {# Updated Category Label to show hierarchy #}
         <div class="mb-4">
             <span class="text-xs font-bold uppercase tracking-widest text-primary-700 bg-primary-50 px-3 py-1 rounded-full">
                 {{ product.category.name }}
@@ -57,7 +102,7 @@
             </span>
         </div>
 
-        <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 leading-tight">
+        <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-4 leading-tight">
           {{ product.name }}
         </h1>
 
@@ -74,7 +119,6 @@
 
           <div class="space-y-8 mb-10 border-t border-neutral-100 pt-8">
 
-            {# --- CONDITIONAL COLOR SELECTOR --- #}
             {% if show_colors %}
             <div id="color-section">
               <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900 flex items-center">
@@ -100,7 +144,6 @@
             </div>
             {% endif %}
 
-            {# --- CONDITIONAL SIZE SELECTOR --- #}
             {% if show_sizes %}
             <div id="size-section">
               <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900 flex items-center">
@@ -123,18 +166,17 @@
             </div>
             {% endif %}
 
-            {# --- QUANTITY SELECTOR --- #}
             <div>
               <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900">Quantity</h3>
               <div class="flex items-center max-w-[8rem] border-2 border-neutral-200 rounded-md">
-                  <button type="button" id="qty-minus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-100 transition-colors rounded-l-md">
+                  <button type="button" id="qty-minus" class="px-3 py-2 text-neutral-500 hover:focus:ring-[#cfd8ff] transition-colors rounded-l-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                     </svg>
                   </button>
                   <input type="number" id="quantity-input" name="visible_quantity" value="1" min="1"
                          class="w-full text-center border-0 focus:ring-0 text-neutral-900 font-medium py-2 appearance-none [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 ps-1">
-                  <button type="button" id="qty-plus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-100 transition-colors rounded-r-md">
+                  <button type="button" id="qty-plus" class="px-3 py-2 text-neutral-500 hover:focus:ring-[#cfd8ff] transition-colors rounded-r-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -166,8 +208,8 @@
       <h2 class="text-2xl font-bold text-neutral-900 mb-8">Documents & Downloads</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {% for doc in product.safety_documents.all %}
-        <a href="{{ doc.file.url }}" target="_blank" class="group flex items-start p-4 rounded-lg border border-neutral-200 hover:border-primary-500 hover:shadow-md transition-all bg-white">
-          <div class="mr-4 p-3 bg-primary-50 text-primary-700 rounded-md group-hover:bg-primary-900 group-hover:text-white transition-colors">
+        <a href="{{ doc.file.url }}" target="_blank" class="group flex items-start p-4 rounded-lg border border-neutral-200 hover:border-primary-900 hover:shadow-md transition-all bg-white">
+          <div class="mr-4 p-3 bg-primary-50 text-primary-700 rounded-md group-hover:bg-primary-800 group-hover:text-white transition-colors">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
              </svg>
@@ -184,7 +226,6 @@
   </div>
 </section>
 
-{# --- JSON DATA FOR JS (Kept optional if needed later) --- #}
 {% if show_colors and show_sizes %}
     {{ color_availability_json|json_script:"color-availability-map" }}
     {{ size_availability_json|json_script:"size-availability-map" }}
@@ -192,11 +233,9 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 1. GET DOM ELEMENTS ---
   const colorSelector = document.getElementById("color-selector");
   const sizeSelector = document.getElementById("size-selector");
 
-  // Determine strictly required selections based on what exists on page
   const isColorRequired = !!colorSelector;
   const isSizeRequired = !!sizeSelector;
 
@@ -218,13 +257,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
   const saveProductBtn = document.querySelector(".save-product-btn");
 
-  // --- 2. STATE VARIABLES ---
   let selectedColorId = null;
   let selectedSizeId = null;
   let selectedQuantity = parseInt(quantityInput.value, 10) || 1;
 
-  // --- 3. UI UPDATER ---
-  // Controls the main button state based on selections
   function updateUI() {
       const colorOk = !isColorRequired || selectedColorId;
       const sizeOk = !isSizeRequired || selectedSizeId;
@@ -232,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (colorOk && sizeOk && qtyOk) {
           addToQuoteBtn.disabled = false;
-          // Only update innerHTML if needed to avoid re-rendering icons constantly
           if (!addToQuoteBtn.querySelector('i') || addToQuoteBtn.textContent.trim() !== "Add to Quote List") {
                addToQuoteBtn.innerHTML = `<i data-lucide="plus" class="inline-block w-4 h-4 mr-1"></i> Add to Quote List`;
                if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -246,15 +281,11 @@ document.addEventListener("DOMContentLoaded", () => {
           addToQuoteBtn.textContent = reason;
       }
 
-      // Sync hidden inputs for form submission
       if (selectedColorIdInput) selectedColorIdInput.value = selectedColorId || "";
       if (selectedSizeIdInput) selectedSizeIdInput.value = selectedSizeId || "";
       if (formQuantityInput) formQuantityInput.value = selectedQuantity;
   }
 
-  // --- 4. SELECTION EVENT LISTENERS ---
-
-  // Color Selection
   if (colorSelector) {
       colorSelector.addEventListener("click", (e) => {
           const btn = e.target.closest(".color-btn");
@@ -262,16 +293,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
           selectedColorId = btn.dataset.colorId;
 
-          // Visual updates
           if (selectedColorNameEl) selectedColorNameEl.textContent = `: ${btn.dataset.colorName}`;
-          colorBtns.forEach(b => b.classList.remove("ring-2", "ring-primary-500", "ring-offset-1"));
-          btn.classList.add("ring-2", "ring-primary-500", "ring-offset-1");
+          colorBtns.forEach(b => b.classList.remove("ring-2", "ring-primary-900", "ring-offset-1"));
+          btn.classList.add("ring-2", "ring-primary-900", "ring-offset-1");
 
           updateUI();
       });
   }
 
-  // Size Selection
   if (sizeSelector) {
       sizeSelector.addEventListener("click", (e) => {
           const btn = e.target.closest(".size-btn");
@@ -279,7 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           selectedSizeId = btn.dataset.sizeId;
 
-          // Visual updates
           if (selectedSizeNameEl) selectedSizeNameEl.textContent = `: ${btn.dataset.sizeName}`;
           sizeBtns.forEach(b => b.classList.remove("bg-primary-900", "text-white", "border-primary-900"));
           btn.classList.add("bg-primary-900", "text-white", "border-primary-900");
@@ -288,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Quantity Inputs
   document.getElementById('qty-plus')?.addEventListener('click', () => {
       quantityInput.value = parseInt(quantityInput.value || 0) + 1;
       quantityInput.dispatchEvent(new Event('input'));
@@ -307,7 +334,6 @@ document.addEventListener("DOMContentLoaded", () => {
       updateUI();
   });
 
-  // --- 5. AJAX ADD TO QUOTE SUBMISSION ---
   addToQuoteForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const originalBtnHTML = addToQuoteBtn.innerHTML;
@@ -325,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.status === "success") {
               addToQuoteBtn.innerHTML = `<i data-lucide="check" class="inline-block w-4 h-4 mr-1"></i> Added!`;
               if (typeof lucide !== 'undefined') lucide.createIcons();
-              // Update navbar counters
               if (navbarQuoteCountDesktop) { navbarQuoteCountDesktop.textContent = data.quote_item_count; navbarQuoteCountDesktop.classList.remove("hidden"); }
               if (navbarQuoteCountMobile) { navbarQuoteCountMobile.textContent = data.quote_item_count; navbarQuoteCountMobile.classList.remove("hidden"); }
           } else {
@@ -343,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2000);
   });
 
-  // --- 6. SAVE PRODUCT TOGGLE ---
   if (saveProductBtn) {
       saveProductBtn.addEventListener('click', async (e) => {
           e.preventDefault();
@@ -375,8 +399,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // --- 7. INITIALIZATION ---
-  // Auto-select first available options to save user clicks
   if (isColorRequired && !selectedColorId) {
       const firstColor = colorSelector.querySelector('.color-btn:not(:disabled)');
       if (firstColor) firstColor.click();

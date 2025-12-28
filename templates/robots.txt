@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /quote/
+Disallow: /save-toggle/
+Disallow: /ajax/
+
+Sitemap: https://www.extrapaints.co.ke/sitemap.xml

@@ -3,10 +3,19 @@
 {% block title %}{{ project.title }}{% endblock %}
 
 {% block content %}
-<section class="py-12 lg:px-12 md:py-16 bg-white">
+<section class="py-8 lg:px-12 md:py-12 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
-
-    <!-- Header -->
+    <div class="mb-6">
+          <button
+                onclick="goBack()"
+                class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Go Back
+            </button>
+        </div>
     <div class="mb-8">
       <span class="text-sm font-semibold uppercase tracking-wider text-primary-700">
         {{ project.get_project_type_display }}
@@ -39,29 +48,39 @@
         
         <!-- Gallery -->
         {% if project.products_used.exists %}
-            <li>
-              <span class="block text-sm font-medium text-gray-500 mb-3">Products Used</span>
-              <div class="space-y-3">
-                {% for product in project.products_used.all %}
-                  <a href="{{ product.get_absolute_url }}" class="flex items-start gap-3 p-2 bg-white border border-gray-200 rounded-lg hover:shadow-sm hover:border-primary-300 transition-all group">
-                    <div class="w-12 h-12 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden border border-gray-200">
-                        {% if product.main_image %}
-                         <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-1 mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity">
-                        {% else %}
-                         <div class="w-full h-full flex items-center justify-center text-gray-400">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                         </div>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-800 group-hover:text-primary-900 leading-tight">{{ product.name }}</h4>
-                        <p class="text-xs text-gray-500">{{ product.category.name }}</p>
-                    </div>
-                  </a>
-                {% endfor %}
-              </div>
-            </li>
-            {% endif %}
+            <div class="flex items-center gap-3 mb-4 mt-6">
+                <div class="w-1 h-6 bg-primary-900 rounded-full"></div>
+                <h2 class="text-lg font-bold text-primary-900">Products Used</h2>
+            </div>
+
+            <div class="space-y-3">
+            {% for product in project.products_used.all %}
+                <a href="{{ product.get_absolute_url }}" class="flex items-start gap-3 p-2 bg-white border border-gray-200 rounded-lg hover:shadow hover:border-primary-800 transition-all group">
+
+                <div class="w-12 h-12 flex-shrink-0 bg-gray-50 rounded-md overflow-hidden border border-gray-100 flex items-center justify-center">
+                    {% if product.main_image %}
+                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-1 mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity">
+                    {% else %}
+                        <div class="text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-800 group-hover:text-primary-900 leading-tight transition-colors">
+                        {{ product.name }}
+                    </h4>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        {{ product.category.name }}
+                    </p>
+                </div>
+                </a>
+            {% endfor %}
+            </div>
+        {% endif %}
       </div>
 
       <!-- Right Column (Sidebar) -->

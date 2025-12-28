@@ -4,7 +4,7 @@
 {% block title %}Explore Our Colors{% endblock %}
 
 {% block content %}
-<section class="py-12 px-4 lg:px-12 bg-neutral-50 min-h-[1000px]">
+<section class="py-8 lg:px-12 bg-neutral-50 min-h-[1000px]">
   <div class="container mx-auto px-4 max-w-7xl">
     <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
       <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
@@ -18,7 +18,7 @@
           name="q"
           value="{{ search_query|default:'' }}"
           placeholder="Search by name or code..."
-          class="px-4 py-2 border rounded text-sm w-full sm:w-64 focus:outline-none focus:border-primary-500"
+          class="px-4 py-2 border rounded text-sm w-full sm:w-64 focus:outline-none focus:border-primary-900"
         >
         <button
           type="submit"
@@ -35,7 +35,7 @@
       <input type="hidden" name="q" id="hidden-search-q" value="{{ search_query|default:'' }}">
 
       <div class="relative filter-select-wrapper">
-        <select name="undertone" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="undertone" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="">All Undertones</option>
           <option value="warm" {% if selected_undertone == "warm" %}selected{% endif %}>Warm</option>
           <option value="cool" {% if selected_undertone == "cool" %}selected{% endif %}>Cool</option>
@@ -47,7 +47,7 @@
       </div>
 
       <div class="relative filter-select-wrapper">
-        <select name="collection" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="collection" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="">All Collections</option>
           {% for c in collections %}
             <option value="{{ c.slug }}" {% if selected_collection == c.slug %}selected{% endif %}>{{ c.name }}</option>
@@ -59,7 +59,7 @@
       </div>
 
       <div class="relative filter-select-wrapper">
-        <select name="finish" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="finish" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="">All Finishes</option>
           {% for f in finishes %}
             <option value="{{ f.id }}" {% if selected_finish == f.id|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>
@@ -71,7 +71,7 @@
       </div>
 
       <div class="relative filter-select-wrapper">
-        <select name="surface" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="surface" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="">All Surfaces</option>
           {% for s in surfaces %}
             <option value="{{ s.id }}" {% if selected_surface == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
@@ -83,7 +83,7 @@
       </div>
 
       <div class="relative filter-select-wrapper">
-        <select name="room" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="room" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="">All Rooms</option>
           {% for r in rooms %}
             <option value="{{ r.id }}" {% if selected_room == r.id|stringformat:"s" %}selected{% endif %}>{{ r.name }}</option>
@@ -95,7 +95,7 @@
       </div>
 
       <div class="relative filter-select-wrapper">
-        <select name="sort" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none cursor-pointer">
+        <select name="sort" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
           <option value="name" {% if sort == "name" %}selected{% endif %}>Sort: Name</option>
           <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
           <option value="lrv_high" {% if sort == "lrv_high" %}selected{% endif %}>LRV High → Low</option>
@@ -106,7 +106,7 @@
         </div>
       </div>
 
-      <a href="{% url 'color_list' %}" class="px-4 py-2 border border-primary-900 text-primary-900 rounded text-sm font-medium hover:bg-primary-900 hover:text-white transition-colors">
+      <a href="{% url 'color_list' %}" class="px-4 py-2 border border-primary-900 text-primary-900 rounded text-sm font-medium hover:bg-primary-800 hover:text-white transition-colors">
         Clear All
       </a>
     </form>
@@ -119,8 +119,8 @@
 
         <div id="colors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
           {% for color in colors %}
-            <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
-              <div class="h-60 relative rounded overflow-hidden">
+            <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+              <div class="h-60 relative rounded-t-md overflow-hidden">
                 {% if color.hex_code %}
                   <div class="w-full h-full" style="background-color: {{ color.hex_code }}"></div>
                 {% else %}
@@ -159,7 +159,7 @@
                   {% else %}
                   <span></span>
                   {% endif %}
-                  <a href="{{ color.get_absolute_url }}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 transition-colors">
+                  <a href="{{ color.get_absolute_url }}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                     View
                   </a>
                 </div>
@@ -270,8 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>`;
 
           return `
-            <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
-              <div class="h-60 relative rounded overflow-hidden">
+            <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+              <div class="h-60 relative rounded-t-md overflow-hidden">
                 ${swatchHtml}
                 ${saveBtnHtml}
                 <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 class="text-xl font-semibold text-primary-900 mb-2 truncate">${c.name}</h3>
                 <div class="flex items-center justify-between pt-4 mt-auto">
                   ${collectionHtml}
-                  <a href="${c.url}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-500 transition-colors">View</a>
+                  <a href="${c.url}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">View</a>
                 </div>
               </div>
             </div>`;

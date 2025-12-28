@@ -7,5 +7,6 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
     path('ajax/search/', views.live_search, name='live_search'),
-path('ajax/subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
+    path('ajax/subscribe/', views.subscribe_newsletter, name='subscribe_newsletter'),
+    path('random-hero-color/', views.get_random_hero_color, name='random_hero_color'),
 ]

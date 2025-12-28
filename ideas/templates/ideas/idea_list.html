@@ -4,7 +4,7 @@
 {% block title %}Inspiration Ideas{% endblock %}
 
 {% block content %}
-<section class="py-12 lg:px-12 md:py-16 bg-neutral-50 min-h-[1000px]">
+<section class="py-8 md:px-12 bg-neutral-50 min-h-[1000px]">
   <div class="container mx-auto px-4">
 
     <div class="text-center mb-12">
@@ -20,7 +20,7 @@
       {% csrf_token %} <div>
         <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
         <div class="relative filter-select-wrapper">
-          <select id="category" name="category" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+          <select id="category" name="category" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none">
             <option value="">All Categories</option>
             {% for c in categories %}
             <option value="{{ c.slug }}" {% if c.slug == selected_category %}selected{% endif %}>{{ c.name }}</option>
@@ -37,7 +37,7 @@
       <div>
         <label for="tag" class="block text-sm font-medium text-gray-700 mb-1">Tag</label>
         <div class="relative filter-select-wrapper">
-          <select id="tag" name="tag" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-500 appearance-none">
+          <select id="tag" name="tag" class="pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none">
             <option value="">All Tags</option>
             {% for t in tags %}
             <option value="{{ t.slug }}" {% if t.slug == selected_tag %}selected{% endif %}>{{ t.name }}</option>
@@ -53,7 +53,7 @@
 
       <div>
         <label for="q" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
-        <input type="text" id="q" name="q" value="{{ search_query|default:'' }}" placeholder="Search by title, tag..." class="w-full px-4 py-2 border rounded text-sm focus:outline-none focus:border-primary-500">
+        <input type="text" id="q" name="q" value="{{ search_query|default:'' }}" placeholder="Search by title, tag..." class="w-full px-4 py-2 border rounded text-sm focus:outline-none focus:border-primary-900">
       </div>
 
       <div class="self-end">
@@ -65,11 +65,11 @@
 
     <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for idea in ideas %}
-        <div class="group bg-white rounded border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+        <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
           <div class="relative">
             <a href="{{ idea.get_absolute_url }}">
                 {% if idea.get_display_image %}
-                    <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-64 object-cover">
+                    <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-64 object-cover rounded-t-md">
                 {% else %}
                     <img src="{{ MEDIA_URL }}default.jpg" alt="{{ idea.title }}" class="w-full h-64 object-cover">
                 {% endif %}

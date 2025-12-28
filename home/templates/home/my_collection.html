@@ -4,31 +4,30 @@
 {% block title %}My Collection{% endblock %}
 
 {% block content %}
-<div id="collection-container" class="container mx-auto max-w-6xl px-4 lg:px-12 py-12 min-h-screen">
+<div id="collection-container" class="container mx-auto max-w-6xl px-4 lg:px-12 py-8 lg:py-12 min-h-screen">
 
-    <header class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-primary-900 mb-3">My Collection</h1>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto pb-5 border-b border-gray-200">
+    <header class="text-center mb-8 lg:mb-12">
+        <h1 class="text-3xl lg:text-4xl font-bold text-primary-900 mb-3">My Collection</h1>
+        <p class="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto pb-5 border-b border-gray-200">
             All your saved products, colors, and ideas in one place.
         </p>
     </header>
 
-    {# --- SAVED PRODUCTS --- #}
-    <section class="mb-16 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="px-8 py-6 border-b border-gray-200 bg-gray-50/50">
-            <h2 class="text-2xl font-bold text-primary-900 flex items-center">
-                <i data-lucide="package" class="w-7 h-7 mr-3 text-primary-600"></i>
+    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
+            <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
+                <i data-lucide="package" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
                 Saved Products
             </h2>
         </div>
 
-        <div class="p-8">
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 {% if not saved_products %}hidden{% endif %}">
+        <div class="p-4 lg:p-8">
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 {% if not saved_products %}hidden{% endif %}">
                 {% for product in saved_products %}
                     <div id="item-product-{{ product.id }}" class="collection-item group flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
                         <button
                             type="button"
-                            class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
                             data-item-id="{{ product.id }}"
                             data-item-type="product"
                             title="Remove from collection"
@@ -36,7 +35,7 @@
                             <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
 
-                        <a href="{% url 'product_detail' product.slug %}" class="block relative h-56 overflow-hidden bg-gray-100">
+                        <a href="{% url 'product_detail' product.slug %}" class="block relative h-48 lg:h-56 overflow-hidden bg-gray-100">
                             {% if product.main_image %}
                                 <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
                             {% else %}
@@ -46,19 +45,19 @@
                             {% endif %}
                         </a>
 
-                        <div class="p-6 flex flex-col flex-grow">
-                            <div class="mb-4">
-                                <span class="text-xs font-bold uppercase tracking-wider text-primary-700 bg-primary-50 px-2 py-1 rounded-full">
+                        <div class="p-4 lg:p-6 flex flex-col flex-grow">
+                            <div class="mb-3">
+                                <span class="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-primary-700 bg-primary-50 px-2 py-1 rounded-full">
                                     {{ product.category.name }}
                                 </span>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                            <h3 class="text-base lg:text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                                 <a href="{% url 'product_detail' product.slug %}" class="hover:text-primary-700 transition-colors">
                                     {{ product.name }}
                                 </a>
                             </h3>
                             <a href="{% url 'product_detail' product.slug %}"
-                               class="mt-auto w-full inline-flex justify-center items-center py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -67,9 +66,9 @@
             </div>
 
             <div id="products-empty-state"
-                 class="text-center py-16 px-4 {% if saved_products %}hidden{% endif %}">
-                <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="package-open" class="w-10 h-10 text-gray-400"></i>
+                 class="text-center py-12 lg:py-16 px-4 {% if saved_products %}hidden{% endif %}">
+                <div class="bg-gray-100 rounded-full h-16 w-16 lg:h-20 lg:w-20 flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="package-open" class="w-8 h-8 lg:w-10 lg:h-10 text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No products saved yet</h3>
                 <p class="text-gray-500 mb-6">Start building your collection by browsing our catalog.</p>
@@ -80,22 +79,21 @@
         </div>
     </section>
 
-    {# --- SAVED COLORS --- #}
-    <section class="mb-16 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="px-8 py-6 border-b border-gray-200 bg-gray-50/50">
-            <h2 class="text-2xl font-bold text-primary-900 flex items-center">
-                <i data-lucide="palette" class="w-7 h-7 mr-3 text-primary-600"></i>
+    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
+            <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
+                <i data-lucide="palette" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
                 Saved Colors
             </h2>
         </div>
 
-        <div class="p-8">
-            <div id="colors-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 {% if not saved_colors %}hidden{% endif %}">
+        <div class="p-4 lg:p-8">
+            <div id="colors-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 {% if not saved_colors %}hidden{% endif %}">
                 {% for color in saved_colors %}
                     <div id="item-color-{{ color.id }}" class="collection-item group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
                         <button
                             type="button"
-                            class="js-remove-item absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            class="js-remove-item absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
                             data-item-id="{{ color.id }}"
                             data-item-type="color"
                             title="Remove from collection"
@@ -104,10 +102,10 @@
                         </button>
 
                         <a href="{% url 'color_detail' color.slug %}" class="block">
-                            <div class="h-32 w-full" style="background-color: {{ color.hex_code|default:'#eee' }};"></div>
-                            <div class="p-4">
-                                <h3 class="font-bold text-gray-900 mb-1 truncate">{{ color.name }}</h3>
-                                <p class="text-sm text-gray-500 font-mono">{{ color.code }}</p>
+                            <div class="h-24 lg:h-32 w-full" style="background-color: {{ color.hex_code|default:'#eee' }};"></div>
+                            <div class="p-3 lg:p-4">
+                                <h3 class="font-bold text-gray-900 mb-1 truncate text-sm lg:text-base">{{ color.name }}</h3>
+                                <p class="text-xs lg:text-sm text-gray-500 font-mono">{{ color.code }}</p>
                             </div>
                         </a>
                     </div>
@@ -115,9 +113,9 @@
             </div>
 
             <div id="colors-empty-state"
-                 class="text-center py-16 px-4 {% if saved_colors %}hidden{% endif %}">
-                <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="palette" class="w-10 h-10 text-gray-400"></i>
+                 class="text-center py-12 lg:py-16 px-4 {% if saved_colors %}hidden{% endif %}">
+                <div class="bg-gray-100 rounded-full h-16 w-16 lg:h-20 lg:w-20 flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="palette" class="w-8 h-8 lg:w-10 lg:h-10 text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No colors saved yet</h3>
                 <p class="text-gray-500 mb-6">Find your perfect shade in our color library.</p>
@@ -128,22 +126,21 @@
         </div>
     </section>
 
-    {# --- SAVED IDEAS --- #}
-    <section class="mb-16 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="px-8 py-6 border-b border-gray-200 bg-gray-50/50">
-            <h2 class="text-2xl font-bold text-primary-900 flex items-center">
-                <i data-lucide="lightbulb" class="w-7 h-7 mr-3 text-primary-600"></i>
+    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
+            <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
+                <i data-lucide="lightbulb" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
                 Saved Ideas
             </h2>
         </div>
 
-        <div class="p-8">
-            <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 {% if not saved_ideas %}hidden{% endif %}">
+        <div class="p-4 lg:p-8">
+            <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 {% if not saved_ideas %}hidden{% endif %}">
                 {% for idea in saved_ideas %}
                     <div id="item-idea-{{ idea.id }}" class="collection-item group flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
                         <button
                             type="button"
-                            class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
                             data-item-id="{{ idea.id }}"
                             data-item-type="idea"
                             title="Remove from collection"
@@ -151,7 +148,7 @@
                             <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
 
-                        <a href="{% url 'idea_detail' idea.slug %}" class="block relative h-56 overflow-hidden bg-gray-100">
+                        <a href="{% url 'idea_detail' idea.slug %}" class="block relative h-48 lg:h-56 overflow-hidden bg-gray-100">
                             {% if idea.get_display_image %}
                                 <img src="{{ idea.get_display_image.url }}" alt="{{ idea.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             {% else %}
@@ -161,14 +158,14 @@
                             {% endif %}
                         </a>
 
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold text-gray-900 mb-4 line-clamp-2">
+                        <div class="p-4 lg:p-6 flex flex-col flex-grow">
+                            <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-4 line-clamp-2">
                                 <a href="{% url 'idea_detail' idea.slug %}" class="hover:text-primary-700 transition-colors">
                                     {{ idea.title }}
                                 </a>
                             </h3>
                             <a href="{% url 'idea_detail' idea.slug %}"
-                               class="mt-auto w-full inline-flex justify-center items-center py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                                 Read More
                             </a>
                         </div>
@@ -177,9 +174,9 @@
             </div>
 
             <div id="ideas-empty-state"
-                 class="text-center py-16 px-4 {% if saved_ideas %}hidden{% endif %}">
-                <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="sparkles" class="w-10 h-10 text-gray-400"></i>
+                 class="text-center py-12 lg:py-16 px-4 {% if saved_ideas %}hidden{% endif %}">
+                <div class="bg-gray-100 rounded-full h-16 w-16 lg:h-20 lg:w-20 flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="sparkles" class="w-8 h-8 lg:w-10 lg:h-10 text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No ideas saved yet</h3>
                 <p class="text-gray-500 mb-6">Get inspired by our curated collection of ideas.</p>
@@ -194,14 +191,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- CSRF Helper ---
     function getCsrfToken() {
         return document.cookie.split('; ')
             .find(row => row.startsWith('csrftoken='))
             ?.split('=')[1];
     }
 
-    // --- Remove Item Handler ---
     document.getElementById('collection-container').addEventListener('click', async (e) => {
         const btn = e.target.closest('.js-remove-item');
         if (!btn) return;
@@ -216,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btn.disabled = true;
         btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>';
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
 
         try {
             const res = await fetch(urlMap[itemType], {
@@ -233,7 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'success' && !data.is_saved) {
                 const itemCard = document.getElementById(`item-${itemType}-${itemId}`);
                 if (itemCard) {
-                    // Animate removal
                     itemCard.style.transition = 'all 0.3s ease-out';
                     itemCard.style.opacity = '0';
                     itemCard.style.transform = 'scale(0.95)';
@@ -247,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(err);
             btn.innerHTML = '<i data-lucide="x" class="w-5 h-5"></i>';
             btn.disabled = false;
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     });
 
