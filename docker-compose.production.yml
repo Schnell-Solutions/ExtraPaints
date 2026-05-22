@@ -1,0 +1,22 @@
+# In-place production upgrade — keeps your existing database files and media on disk.
+# Set MEDIA_HOST_PATH and/or POSTGRES_HOST_PATH in .env to host folders you already have.
+# Leave unset to reuse existing Docker named volumes (same compose project name).
+#
+#   docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
+#
+# NEVER run: docker compose down -v   (that deletes named volumes)
+
+services:
+  db:
+    volumes:
+      - ${POSTGRES_HOST_PATH:-postgres_data}:/var/lib/postgresql/data
+
+  web:
+    volumes:
+      - static_volume:/app/static
+      - ${MEDIA_HOST_PATH:-media_volume}:/app/media
+
+  nginx:
+    volumes:
+      - static_volume:/app/static:ro
+      - ${MEDIA_HOST_PATH:-media_volume}:/app/media:ro

@@ -39,8 +39,9 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-extrapaints}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-extrapaints}
-      CACHE_URL: redis://redis:6379/1
+      # Set DATABASE_URL in .env to use an existing Postgres; otherwise uses the db service.
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-extrapaints}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-extrapaints}}
+      CACHE_URL: ${CACHE_URL:-redis://redis:6379/1}
     depends_on:
       db:
         condition: service_healthy
