@@ -2,30 +2,35 @@
 {% load static %}
 
 {% block title %}Extra Paints - Quality Paints for Every Project{% endblock %}
+{% block description %}Professional paint supply in Kenya. Build a quote list, explore colors and products, and receive tailored quotations from ExtraPaints.{% endblock %}
+{% block og_title %}Extra Paints - Quality Paints for Every Project{% endblock %}
+{% block og_description %}Tailored paint quotations for contractors and distributors. Browse colors, products, and project inspiration.{% endblock %}
+{% block twitter_title %}Extra Paints - Quality Paints for Every Project{% endblock %}
+{% block twitter_description %}Professional paint supply and custom quotations — ExtraPaints Kenya.{% endblock %}
 
 {% block content %}
 
-    <main>
+    <div id="home-page-root">
 
         <section class="relative bg-primary-900 overflow-hidden">
           <div class="container mx-auto md:px-12 px-6 lg:px-12 py-20 md:py-28">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
               <div class="text-center lg:text-left space-y-3 lg:order-1">
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-medium text-white leading-tight tracking-tight">
+                <h1 class="ep-hero-title">
                   Find Your Perfect Shade
                 </h1>
-                <p class="text-xl text-gray-100 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                <p class="ep-lead-on-dark max-w-xl mx-auto lg:mx-0">
                   Explore eco-friendly paints for every space, from lively interiors to durable exteriors, crafted for lasting color and quality.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
                   <a href="{% url 'product_list' %}"
-                     class="px-10 py-3 bg-white/30 text-white text-base font-medium rounded-md hover:bg-primary-800 shadow-sm transition-transform transform hover:-translate-y-0.5">
-                    Shop All Products
+                     class="px-10 py-3 bg-white text-primary-900 text-base font-semibold rounded-md hover:bg-gray-50 shadow-sm transition-transform transform hover:-translate-y-0.5">
+                    Explore range
                   </a>
                   <a href="{% url 'idea_list' %}"
-                     class="px-10 py-3 bg-white text-primary-900 text-base font-medium rounded-md border border-gray-200 hover:bg-gray-50 shadow-sm transition-transform transform hover:-translate-y-0.5">
-                    Get Inspired
+                     class="px-10 py-3 bg-white/20 text-white text-base font-medium rounded-md border border-white/40 hover:bg-white/30 shadow-sm transition-transform transform hover:-translate-y-0.5">
+                    Get inspired
                   </a>
                 </div>
               </div>
@@ -36,7 +41,7 @@
                       {% if hero_color %}
                       <a id="hero-color-link"
                          href="{{ hero_color.get_absolute_url }}"
-                         class="absolute -top-8 md:-right-8 -right-4 z-30 px-5 py-4 rounded-xl bg-white cursor-pointer flex flex-col items-start border-4 transition-colors duration-700 ease-in-out group"
+                         class="absolute -top-8 md:-right-8 -right-4 z-30 px-5 py-4 rounded-md bg-white cursor-pointer flex flex-col items-start border-4 transition-colors duration-700 ease-in-out group"
                          style="border-color: {{ hero_color.hex_code }};"
                       >
                           <span id="hero-color-name" class="text-sm font-bold text-primary-900 uppercase tracking-wider group-hover:underline">
@@ -55,8 +60,8 @@
                       <img
                         id="hero-image"
                         src="{% static 'home/images/heroImage.png' %}"
-                        alt="ExtraPaints"
-                        class="w-full max-h-[500px] rounded-2xl shadow-2xl object-cover transition-colors duration-700 ease-in-out"
+                        alt="ExtraPaints premium paint finishes"
+                        class="w-full max-h-[500px] rounded-md shadow-2xl object-cover transition-colors duration-700 ease-in-out"
                         style="border-width: 6px; border-style: solid; border-color: {{ hero_color.hex_code|default:'#ffffff' }};"
                       >
                   </div>
@@ -64,68 +69,69 @@
                   <img
                     id="hero-image-secondary"
                     src="{% static 'home/images/heroImage2.png' %}"
-                    alt="ExtraPaints"
-                    class="absolute md:w-2/5 lg:w-1/2 w-[250px] md:max-w-[280px] max-h-[450px] rounded-xl shadow-2xl object-cover top-1/2 left-1/2 -translate-x-1/12 translate-y-1/4 md:translate-y-1/3 lg:translate-x-full lg:translate-y-0 lg:top-1/2 lg:-right-2 xl:top-1/4 xl:-right-12 z-20 transform scale-90 sm:scale-100 transition-colors duration-700 ease-in-out"
+                    alt="ExtraPaints lifestyle color inspiration"
+                    class="absolute md:w-2/5 lg:w-1/2 w-[250px] md:max-w-[280px] max-h-[450px] rounded-md shadow-2xl object-cover top-1/2 left-1/2 -translate-x-1/12 translate-y-1/4 md:translate-y-1/3 lg:translate-x-full lg:translate-y-0 lg:top-1/2 lg:-right-2 xl:top-1/4 xl:-right-12 z-20 transform scale-90 sm:scale-100 transition-colors duration-700 ease-in-out"
                     style="border-width: 2px; border-style: solid; border-color: {{ hero_color.hex_code|default:'#ffffff' }};"
                   >
               </div>
 
-                <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const box = document.getElementById('hero-color-link');
-                    const nameSpan = document.getElementById('hero-color-name');
-                    const codeSpan = document.getElementById('hero-color-code');
-                    const image = document.getElementById('hero-image');
-                    const secondaryImage = document.getElementById('hero-image-secondary');
-
-                    const INTERVAL_TIME = 600000;
-                    let nextColorData = null;
-
-                    async function prepareNextColor() {
-                        try {
-                            const response = await fetch("{% url 'random_hero_color' %}");
-                            if (response.ok) {
-                                nextColorData = await response.json();
-                            }
-                        } catch (error) {
-                            console.warn("Background fetch failed, skipping update.");
-                        }
-                    }
-
-                    function applyNextColor() {
-                        if (!nextColorData) return;
-
-                        if (box) box.style.borderColor = nextColorData.hex;
-                        if (image) image.style.borderColor = nextColorData.hex;
-                        if (secondaryImage) secondaryImage.style.borderColor = nextColorData.hex;
-
-                        if (nameSpan) nameSpan.textContent = nextColorData.name;
-                        if (codeSpan) codeSpan.textContent = nextColorData.code;
-                        if (box) box.href = nextColorData.url;
-
-                        nextColorData = null;
-                        prepareNextColor();
-                    }
-
-                    prepareNextColor();
-                    setInterval(applyNextColor, INTERVAL_TIME);
-                });
-                </script>
             </div>
           </div>
         </section>
 
-        <section class="py-16 md:py-24 bg-primary-10">
+        <section class="bg-white border-y border-neutral-200 section-pad reveal-on-scroll" aria-label="Why trust ExtraPaints">
+          <div class="container mx-auto px-4 lg:px-12 max-w-6xl">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 text-center">
+              <div class="flex flex-col items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center text-primary-900">
+                  <i data-lucide="award" class="w-7 h-7"></i>
+                </div>
+                <h3 class="ep-card-title">{{ company_years_experience }}+ years</h3>
+                <p class="text-sm text-neutral-600 max-w-xs">Established in {{ company_founded_year }} — trusted expertise for homes and businesses across Kenya.</p>
+              </div>
+              <div class="flex flex-col items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center text-primary-900">
+                  <i data-lucide="building-2" class="w-7 h-7"></i>
+                </div>
+                <h3 class="ep-card-title">{{ company_projects_count }} projects</h3>
+                <p class="text-sm text-neutral-600 max-w-xs">Residential, commercial, and industrial finishes delivered at scale.</p>
+              </div>
+              <div class="flex flex-col items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center text-primary-900">
+                  <i data-lucide="shield-check" class="w-7 h-7"></i>
+                </div>
+                <h3 class="ep-card-title">Quality &amp; value</h3>
+                <p class="text-sm text-neutral-600 max-w-xs">Affordable professional coatings with low-VOC durability, technical support, and color matching.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-pad bg-primary-10 reveal-on-scroll">
             <div class="container mx-auto px-4 lg:px-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-8 md:mb-12">
+                <h2 class="ep-section-title text-center mb-8 md:mb-12">
                     Our Products
                 </h2>
 
-                <div id="category-filters" class="flex justify-center flex-wrap gap-3 mb-10">
+                <div id="category-filters" class="flex justify-center flex-wrap gap-2 md:gap-3 mb-8 md:mb-10">
                 </div>
 
-                <div id="product-row-container" class="product-scrollbar flex overflow-x-auto space-x-6 pb-6 -mb-6">
+                <div class="relative group/carousel">
+                    <button id="scroll-left"
+                        class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-12 h-12 bg-white border border-neutral-200 rounded-full shadow-md items-center justify-center text-primary-900 transition-all duration-300 hover:bg-neutral-50 disabled:opacity-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+
+                    <div id="product-row-container"
+                        class="ep-no-scrollbar flex overflow-x-auto space-x-4 md:space-x-6 pb-6 -mb-6 scroll-smooth snap-x snap-mandatory">
+                    </div>
+
+                    <button id="scroll-right"
+                        class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-12 h-12 bg-white border border-neutral-200 rounded-full shadow-md items-center justify-center text-primary-900 transition-all duration-300 hover:bg-neutral-50 disabled:opacity-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
                 </div>
+
                 <div class="mt-8 flex justify-center">
                   <a href="{% url 'product_list' %}"
                     class="px-6 py-3 bg-primary-900 text-white text-sm font-medium rounded hover:bg-primary-800 transition-colors">
@@ -137,7 +143,7 @@
 
         <section class="py-16 md:py-24 bg-gray-50">
           <div class="container mx-auto px-4 lg:px-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-primary-900 text-center mb-12">
+            <h2 class="ep-page-title text-center mb-12">
                 Most Loved Colors
             </h2>
 
@@ -146,11 +152,11 @@
               {% for color in most_loved_colors %}
               <a href="{{ color.get_absolute_url }}" class="group block overflow-hidden rounded">
                 <div
-                  class="relative w-full h-48 overflow-hidden rounded-lg md:h-56 group-hover:shadow-lg group-hover:-translate-y-1 transition-all duration-300"
+                  class="relative w-full h-48 overflow-hidden rounded-md md:h-56 group-hover:shadow-lg group-hover:-translate-y-1 transition-all duration-300"
                   style="background-color: {{ color.hex_code|default:'#f1f5f9' }}">
                   {% if not color.hex_code %}
                   <img
-                    src="{{ MEDIA_URL }}default.jpg"
+                    src="{% static 'images/extrapaints.jpg' %}"
                     alt="{{ color.name }}"
                     class="w-full h-full object-cover">
                   {% endif %}
@@ -173,7 +179,7 @@
               </a>
             </div>
             {% else %}
-                <div class="text-center py-12 px-4 border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 w-full mx-4">
+                <div class="text-center py-12 px-4 border-2 border-dashed border-neutral-300 rounded-md bg-neutral-50 w-full mx-4">
                     <i data-lucide="alert-circle" class="w-12 h-12 mx-auto text-neutral-400 mb-4"></i>
                     <p class="text-neutral-600 text-lg font-medium">No colors in the website yet.</p>
                 </div>
@@ -182,15 +188,15 @@
           </div>
         </section>
 
-        <section class=" bg-primary-900 py-16 md:py-24">
+        <section class="bg-primary-900 section-pad reveal-on-scroll">
           <div class="container mx-auto max-w-6xl px-4">
             <div class="text-center mb-8 md:mb-16">
-              <h2 class="text-3xl md:text-4xl font-bold text-white mt-2">Why Choose Us</h2>
+              <h2 class="ep-section-title text-white mt-2">Why Choose Us</h2>
             </div>
             <div class="flex flex-col lg:flex-row justify-center gap-16 lg:gap-6">
               <div class="lg:w-1/3 px-5">
                 <div class="flex justify-between items-center mb-6 h-14 mx-auto">
-                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-lg">
+                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#060024" d="M21 11c0 5.55-3.84 10.74-9 12c-5.16-1.26-9-6.45-9-12V5l9-4l9 4zm-9 10c3.75-1 7-5.46 7-9.78V6.3l-7-3.12L5 6.3v4.92C5 15.54 8.25 20 12 21"/></svg>
                   </div>
                   <span class="text-md text-gray-200">01</span>
@@ -204,7 +210,7 @@
               </div>
                 <div class="lg:w-1/3 px-5">
                 <div class="flex justify-between items-center mb-6 h-22">
-                  <div class="flex-shrink-0 bg-white text-black w-20 h-20 flex items-center justify-center rounded-lg">
+                  <div class="flex-shrink-0 bg-white text-black w-20 h-20 flex items-center justify-center rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="#060024" d="M11.5 3a4.5 4.5 0 0 1 4.336 3.292l.052.205l1.87-.467a1 1 0 0 1 1.233.84L19 7v1.81a6.5 6.5 0 0 1 1.364 1.882l.138.308H21a1 1 0 0 1 .993.883L22 12v3a1 1 0 0 1-.445.832l-.108.062l-1.168.585a6.5 6.5 0 0 1-2.02 2.325l-.259.174V20a1 1 0 0 1-.883.993L17 21h-3a1 1 0 0 1-.993-.883L13 20h-1a1 1 0 0 1-.883.993L11 21H8a1 1 0 0 1-.993-.883L7 20v-1.022a6.5 6.5 0 0 1-2.854-4.101a3 3 0 0 1-2.14-2.693L2 12v-.5a1 1 0 0 1 1.993-.117L4 11.5v.5q.002.224.09.415a6.5 6.5 0 0 1 2.938-4.411A4.5 4.5 0 0 1 11.5 3M17 8.28l-2.758.69l-.12.023L14 9h-3.5a4.5 4.5 0 0 0-2.045 8.51a1 1 0 0 1 .537.766L9 18.4v.6h1a1 1 0 0 1 .883-.993L11 18h3a1 1 0 0 1 .993.883L15 19h1v-.6a1 1 0 0 1 .545-.89a4.52 4.52 0 0 0 2.068-2.18a1 1 0 0 1 .347-.417l.119-.07l.921-.461V13h-.207a1 1 0 0 1-.962-.728a4.5 4.5 0 0 0-1.468-2.244a1 1 0 0 1-.355-.644L17 9.257zM16 11a1 1 0 1 1 0 2a1 1 0 0 1 0-2m-4.5-6a2.5 2.5 0 0 0-2.478 2.169A6.5 6.5 0 0 1 10.5 7h3.377l.07-.017A2.5 2.5 0 0 0 11.5 5"/></g></svg>
                   </div>
                   <span class="text-md text-gray-200">02</span>
@@ -218,7 +224,7 @@
               </div>
                 <div class="lg:w-1/3 px-5">
                 <div class="flex justify-between items-center mb-6 h-14">
-                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-lg">
+                  <div class="flex-shrink-0 bg-white text-black w-14 h-14 flex items-center justify-center rounded-md">
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"><path fill="#060024" d="M19.95 5.97a2.02 2.02 0 0 0-1.92-1.92c-.7-.03-1.37-.05-2.02-.05c-5.03 0-8.52.97-10.46 2.91c-3.68 3.68-3.15 8.9.09 11.9h.01a16 16 0 0 1 7.67-8.8c-.21.18-4.7 3.58-5.51 10.25c1.05.48 2.2.75 3.36.75c2.05 0 4.16-.8 5.92-2.55c2.19-2.2 3.14-6.36 2.86-12.49"/></svg>
                   </div>
                   <span class="text-md text-gray-200">03</span>
@@ -234,12 +240,12 @@
           </div>
         </section>
 
-        <section class="py-16 bg-primary-50">
+        <section class="section-pad bg-primary-50 reveal-on-scroll">
           <div class="container mx-auto px-6 lg:px-12">
             <div class="text-center mb-8">
-              <h2 class="text-3xl font-extrabold text-primary-900 uppercase mb-4">Find a Store</h2>
+              <h2 class="ep-section-title uppercase mb-4">Find a Store</h2>
               <p class="text-lg text-primary-700 max-w-2xl mx-auto">
-                Discover our locations near you for expert advice, delivery, and color matching.
+                Visit us for expert advice and color matching — free delivery on orders within Nairobi.
               </p>
             </div>
 
@@ -265,7 +271,7 @@
             </div>
 
             <div id="listView" class="flex flex-col md:flex-row items-stretch justify-center gap-4">
-              <div class="bg-white rounded-lg border border-neutral-200 hover:shadow-md transition-all duration-300 w-full max-w-[22rem] flex flex-col">
+              <div class="bg-white rounded-md border border-neutral-200 hover:shadow-md transition-all duration-300 w-full max-w-[22rem] flex flex-col">
                 <div class="p-5 flex-grow">
                   <h3 class="text-lg font-bold text-primary-900 mb-3 pb-2 border-b border-gray-100">
                     Extra Paints HQ
@@ -278,7 +284,11 @@
                     </p>
                     <p class="flex items-center">
                       <i data-lucide="phone" class="w-4 h-4 mr-2.5 text-primary-700 shrink-0"></i>
-                      <a href="tel:+254729086036" class="hover:text-primary-900">+254 729 086 036</a>
+                      <a href="tel:{{ business_phone_primary }}" class="hover:text-primary-900">{{ business_phone_primary }}</a>
+                    </p>
+                    <p class="flex items-center">
+                      <i data-lucide="message-circle" class="w-4 h-4 mr-2.5 text-primary-700 shrink-0"></i>
+                      <a href="{{ business_whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="hover:text-primary-900">{{ business_whatsapp_display }}</a>
                     </p>
                     <div class="flex items-start">
                       <i data-lucide="clock" class="w-4 h-4 mr-2.5 text-primary-700 shrink-0 mt-0.5"></i>
@@ -295,8 +305,8 @@
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-50 border border-gray-200 text-gray-600 uppercase tracking-wide">
                        Matching
                     </span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-50 border border-gray-200 text-gray-600 uppercase tracking-wide">
-                       Delivery
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-green-50 border border-green-200 text-green-800 uppercase tracking-wide">
+                       Free Nairobi delivery
                     </span>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-50 border border-gray-200 text-gray-600 uppercase tracking-wide">
                        Advice
@@ -305,7 +315,7 @@
                 </div>
               </div>
 
-              <div class="bg-white rounded-lg border border-neutral-200 hover:shadow-md transition-all duration-300 w-full max-w-[22rem] flex flex-col">
+              <div class="bg-white rounded-md border border-neutral-200 hover:shadow-md transition-all duration-300 w-full max-w-[22rem] flex flex-col">
                 <div class="p-5 flex-grow">
                   <h3 class="text-lg font-bold text-primary-900 mb-3 pb-2 border-b border-gray-100">
                     Extra Paints Eldoret
@@ -318,7 +328,7 @@
                     </p>
                     <p class="flex items-center">
                       <i data-lucide="phone" class="w-4 h-4 mr-2.5 text-primary-700 shrink-0"></i>
-                      <a href="tel:+254729086036" class="hover:text-primary-900">+254 729 086 036</a>
+                      <a href="tel:{{ business_phone_primary }}" class="hover:text-primary-900">{{ business_phone_primary }}</a>
                     </p>
                     <div class="flex items-start">
                       <i data-lucide="clock" class="w-4 h-4 mr-2.5 text-primary-700 shrink-0 mt-0.5"></i>
@@ -346,170 +356,17 @@
               </div>
             </div>
 
-            <div id="mapView" class="hidden mt-10 rounded-xl border overflow-hidden shadow">
+            <div id="mapView" class="hidden mt-10 rounded-md border overflow-hidden shadow">
               <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d997.1962053852611!2d36.889473269446846!3d-1.3041436591597835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMTgnMTQuOSJTIDM2wrA1MycyNC40IkU!5e0!3m2!1sen!2ske!4v1762793268275!5m2!1sen!2ske" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
         </section>
 
-    </main>
+    </div>
 
-    {{ categories_json|json_script:"categories-data" }}
-    {{ products_json|json_script:"products-data" }}
-
-    <script>
-    function toggleView(view) {
-        const listBtn = document.getElementById('listBtn');
-        const mapBtn = document.getElementById('mapBtn');
-        const listView = document.getElementById('listView');
-        const mapView = document.getElementById('mapView');
-
-        if (!listBtn || !mapBtn || !listView || !mapView) return;
-
-        const activeClasses = ['bg-primary-900', 'text-white'];
-        const inactiveClasses = ['bg-white', 'text-primary-900'];
-
-        if (view === 'list') {
-            listView.classList.remove('hidden');
-            mapView.classList.add('hidden');
-            listBtn.classList.add(...activeClasses);
-            listBtn.classList.remove(...inactiveClasses);
-            mapBtn.classList.remove(...activeClasses);
-            mapBtn.classList.add(...inactiveClasses);
-        } else {
-            mapView.classList.remove('hidden');
-            listView.classList.add('hidden');
-            mapBtn.classList.add(...activeClasses);
-            mapBtn.classList.remove(...inactiveClasses);
-            listBtn.classList.remove(...activeClasses);
-            listBtn.classList.add(...inactiveClasses);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-
-        const categories = JSON.parse(document.getElementById('categories-data').textContent);
-        const products = JSON.parse(document.getElementById('products-data').textContent);
-
-        const categoryFilterContainer = document.getElementById('category-filters');
-        const productRowContainer = document.getElementById('product-row-container');
-
-        toggleView('list');
-
-        function renderCategoryFilters() {
-            if (!categoryFilterContainer) return;
-
-            if (!Array.isArray(categories) || categories.length === 0) {
-                categoryFilterContainer.innerHTML = '';
-                if (productRowContainer) {
-                    productRowContainer.innerHTML = `
-                        <div class="text-center py-12 border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 w-full mx-4">
-                            <i data-lucide="package-open" class="w-12 h-12 mx-auto text-neutral-400 mb-4"></i>
-                            <p class="text-neutral-600 text-lg font-medium">Our product catalog is coming soon.</p>
-                        </div>
-                    `;
-                    lucide.createIcons();
-                }
-                return;
-            }
-
-            let html = '';
-            categories.forEach((categoryName, index) => {
-                const isActive = index === 0;
-
-                html += `
-                    <button
-                        type="button"
-                        class="category-btn px-6 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-200 border
-                            ${isActive
-                                ? 'bg-primary-900 text-white border-primary-900 shadow hover:bg-primary-800 hover:text-white active:bg-primary-700'
-                                : 'bg-white text-neutral-700 border-neutral-200 hover:border-primary-900 hover:text-primary-900'
-                            }"
-                        data-category="${categoryName}">
-                        ${categoryName}
-                    </button>
-                `;
-            });
-            categoryFilterContainer.innerHTML = html;
-        }
-
-        function renderProducts(categoryName) {
-            if (!productRowContainer) return;
-
-            const productsToRender = products[categoryName] || [];
-            productRowContainer.innerHTML = '';
-
-            if (productsToRender.length === 0) {
-                productRowContainer.innerHTML = `
-                    <div class="text-center py-10 px-4 border-2 border-dashed border-neutral-200 rounded-xl bg-white w-full mx-4">
-                        <p class="text-neutral-500 font-medium">No products found in this category yet.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            productsToRender.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'flex-shrink-0 w-72 bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 group';
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(10px)';
-
-                card.innerHTML = `
-                    <div class="relative h-56 bg-neutral-100 overflow-hidden">
-                        <a href="${product.url}" class="block h-full w-full">
-                            <img src="${product.img}" alt="${product.name}"
-                                class="w-full h-full object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
-                                onerror="this.onerror=null; this.src='https://placehold.co/300x300/f5f5f5/e5e7eb?text=No+Image';">
-                        </a>
-                    </div>
-                    <div class="p-5 flex flex-col">
-                        <h3 class="text-lg font-bold text-neutral-800 mb-1 line-clamp-1">
-                            <a href="${product.url}" class="hover:text-primary-900 transition-colors">${product.name}</a>
-                        </h3>
-                        <a href="${product.url}"
-                        class="mt-4 w-full inline-flex justify-center items-center px-4 py-2.5 bg-primary-900 text-white text-sm font-bold rounded-lg hover:bg-primary-800 transition-colors">
-                            View Details
-                        </a>
-                    </div>
-                `;
-
-                productRowContainer.appendChild(card);
-
-                requestAnimationFrame(() => {
-                    card.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-        }
-
-        if (categoryFilterContainer) {
-            categoryFilterContainer.addEventListener('click', (e) => {
-                const btn = e.target.closest('.category-btn');
-                if (!btn) return;
-
-                const ACTIVE_CLASSES = ['bg-primary-900', 'text-white', 'border-primary-900', 'shadow-md', 'hover:bg-primary-800', 'hover:text-white', 'active:bg-primary-700'];
-                const INACTIVE_CLASSES = ['bg-white', 'text-neutral-700', 'border-neutral-200', 'hover:border-primary-900', 'hover:text-primary-900'];
-
-                categoryFilterContainer.querySelectorAll('.category-btn').forEach(b => {
-                    b.classList.remove(...ACTIVE_CLASSES);
-                    b.classList.add(...INACTIVE_CLASSES);
-                });
-
-                btn.classList.remove(...INACTIVE_CLASSES);
-                btn.classList.add(...ACTIVE_CLASSES);
-
-                renderProducts(btn.dataset.category);
-            });
-        }
-
-        renderCategoryFilters();
-        if (Array.isArray(categories) && categories.length > 0) {
-            renderProducts(categories[0]);
-        }
-    });
+    <script id="home-page-config" type="application/json">
+    {"randomHeroColorUrl":"{% url 'random_hero_color' %}","homeProductsUrl":"{% url 'home_products_api' %}","initialCategory":"{{ initial_category|escapejs }}"}
     </script>
+    {{ categories_json|json_script:"categories-data" }}
+    <script src="{% static 'js/home-index.js' %}" defer></script>
 {% endblock %}

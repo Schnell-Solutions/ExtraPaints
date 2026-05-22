@@ -1,0 +1,144 @@
+{% load static %}
+{# Slide-out navigation for small screens only #}
+<div
+  id="mobile-nav-overlay"
+  class="ep-nav-drawer-overlay fixed inset-0 bg-neutral-900/60 z-[998] hidden backdrop-blur-sm"
+  aria-hidden="true"
+></div>
+<aside
+  id="mobile-nav-panel"
+  class="ep-nav-drawer-panel fixed top-0 left-0 z-[999] h-dvh w-full hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="mobile-nav-title"
+  aria-hidden="true"
+>
+  <div class="ep-nav-drawer-header flex items-center justify-between gap-3 px-5 py-4 shrink-0">
+    <a href="{% url 'home' %}" class="shrink-0" data-close-mobile-nav>
+      <img
+        src="{% static 'home/images/logo.svg' %}"
+        alt="ExtraPaints"
+        class="h-8 w-auto"
+        onerror="this.onerror=null; this.src='https://placehold.co/120x32/060024/ffffff?text=ExtraPaints';"
+      >
+    </a>
+    <button
+      type="button"
+      id="mobile-nav-close-btn"
+      class="ep-nav-drawer-close ep-focus-ring shrink-0"
+      aria-label="Close menu"
+    >
+      <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="ep-nav-drawer-body">
+    <nav aria-label="Main">
+      <p id="mobile-nav-title" class="sr-only">Main navigation</p>
+      <ul>
+        <li>
+          <a href="{% url 'color_list' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--main">
+            <i data-lucide="palette" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Colors
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'product_list' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--main">
+            <i data-lucide="package" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Products
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'idea_list' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--main">
+            <i data-lucide="lightbulb" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Ideas
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'portfolio_list' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--main">
+            <i data-lucide="images" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Portfolio
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <hr class="ep-nav-drawer-divider" aria-hidden="true">
+    <nav aria-label="More">
+      <p class="ep-nav-drawer-section-label">More</p>
+      <ul>
+        <li>
+          <a href="{% url 'about' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
+            <i data-lucide="info" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            About
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'contact' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
+            <i data-lucide="mail" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Contact
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'guide_list' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
+            <i data-lucide="book-open" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Guides
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'my_collection' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
+            <i data-lucide="heart" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            My Collection
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'quote_detail' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
+            <i data-lucide="file-text" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Get a Quote
+          </a>
+        </li>
+        <li>
+          <button type="button" data-open-quick-inquiry data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more text-left">
+            <i data-lucide="message-circle" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
+            Quick inquiry
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="ep-nav-drawer-footer">
+    {% if user.is_authenticated %}
+      <div class="ep-nav-drawer-user">
+        <span class="ep-nav-drawer-user-avatar" aria-hidden="true">
+          {% with name=user.full_name|default:user.username %}
+            {{ name|slice:":1" }}
+          {% endwith %}
+        </span>
+        <div class="ep-nav-drawer-user-meta">
+          <p class="ep-nav-drawer-user-name">{{ user.full_name|default:user.username }}</p>
+          <p class="ep-nav-drawer-user-email">{{ user.email }}</p>
+        </div>
+      </div>
+      <div class="ep-nav-drawer-footer-actions ep-nav-drawer-footer-actions--auth">
+        <a href="{% url 'profile' %}" data-close-mobile-nav class="ep-nav-drawer-footer-btn ep-nav-drawer-footer-btn--profile">
+          <i data-lucide="user" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+          Profile
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="ep-nav-drawer-footer-btn ep-nav-drawer-footer-btn--logout">
+            <i data-lucide="log-out" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+            Sign out
+          </button>
+        </form>
+      </div>
+    {% else %}
+      <div class="ep-nav-drawer-footer-actions">
+        <a href="{% url 'login' %}" data-close-mobile-nav class="ep-nav-drawer-footer-btn ep-nav-drawer-footer-btn--profile ep-nav-drawer-footer-btn--guest">
+          Sign in
+        </a>
+        <a href="{% url 'register' %}" data-close-mobile-nav class="ep-btn ep-btn-primary ep-nav-drawer-footer-btn--guest w-full py-3">
+          Create account
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</aside>

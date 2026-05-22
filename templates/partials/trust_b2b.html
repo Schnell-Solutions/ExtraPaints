@@ -1,0 +1,32 @@
+<section
+  class="{% if bare %}mb-10 md:mb-14{% else %}bg-white border-y border-neutral-200 section-pad{% endif %}"
+  aria-labelledby="trust-b2b-heading"
+>
+  <div class="{% if bare %}w-full{% else %}container mx-auto max-w-6xl px-4{% endif %}">
+    <h2 id="trust-b2b-heading" class="ep-section-title {% if bare %}text-left mb-6 md:mb-8{% else %}text-center mb-8{% endif %}">
+      Trusted by professionals across Kenya
+    </h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-10 {% if not bare %}text-center{% endif %}">
+      <div class="p-4 md:p-5 rounded-md bg-primary-50/80 border border-primary-100/80 {% if bare %}text-left{% else %}text-center{% endif %}">
+        <p class="ep-stat-value">500+</p>
+        <p class="text-sm text-gray-600 mt-0.5">Projects supplied</p>
+      </div>
+      <div class="p-4 md:p-5 rounded-md bg-primary-50/80 border border-primary-100/80 {% if bare %}text-left{% else %}text-center{% endif %}">
+        <p class="ep-section-title">{{ response_time_label }}</p>
+        <p class="text-sm text-gray-600 mt-0.5">Quote turnaround</p>
+      </div>
+      <div class="p-4 md:p-5 rounded-md bg-primary-50/80 border border-primary-100/80 {% if bare %}text-left{% else %}text-center{% endif %}">
+        <p class="ep-stat-value">B2B</p>
+        <p class="text-sm text-gray-600 mt-0.5">Contractor focus</p>
+      </div>
+      <div class="p-4 md:p-5 rounded-md bg-primary-50/80 border border-primary-100/80 {% if bare %}text-left{% else %}text-center{% endif %}">
+        <p class="ep-stat-value">SDS/TDS</p>
+        <p class="text-sm text-gray-600 mt-0.5">Technical docs</p>
+      </div>
+    </div>
+    <p class="text-sm text-gray-500 max-w-2xl {% if bare %}text-left{% else %}text-center mx-auto{% endif %}">
+      ISO-aligned quality processes · Eco-conscious product ranges · Nairobi &amp; Eldoret supply
+      · <a href="{% url 'portfolio_list' %}" class="text-primary-800 font-medium hover:underline">See completed projects</a>
+    </p>
+  </div>
+</section>

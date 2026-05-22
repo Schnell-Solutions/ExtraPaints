@@ -2,7 +2,7 @@ import random
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from ideas.models import Idea, Category, Tag, IdeaImage, SavedIdea
+from ideas.models import Idea, IdeaCategory, Tag, IdeaImage, SavedIdea
 from colors.models import Color  # We need this for the M2M link
 
 
@@ -29,10 +29,10 @@ class Command(BaseCommand):
             self.stdout.write(f'Created user: {user.username}')
 
         # --- 2. Get or Create Categories ---
-        cat1, _ = Category.objects.get_or_create(name='Living Rooms', defaults={'slug': 'living-rooms'})
-        cat2, _ = Category.objects.get_or_create(name='Exteriors', defaults={'slug': 'exteriors'})
-        cat3, _ = Category.objects.get_or_create(name='Bedrooms', defaults={'slug': 'bedrooms'})
-        cat4, _ = Category.objects.get_or_create(name='Kitchens', defaults={'slug': 'kitchens'})
+        cat1, _ = IdeaCategory.objects.get_or_create(name='Living Rooms', defaults={'slug': 'living-rooms'})
+        cat2, _ = IdeaCategory.objects.get_or_create(name='Exteriors', defaults={'slug': 'exteriors'})
+        cat3, _ = IdeaCategory.objects.get_or_create(name='Bedrooms', defaults={'slug': 'bedrooms'})
+        cat4, _ = IdeaCategory.objects.get_or_create(name='Kitchens', defaults={'slug': 'kitchens'})
 
         # --- 3. Get or Create Tags ---
         tag1, _ = Tag.objects.get_or_create(name='Minimalist', defaults={'slug': 'minimalist'})

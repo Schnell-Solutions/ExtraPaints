@@ -1,0 +1,8 @@
+{# title (required), subtitle (optional), class (optional extra wrapper classes) #}
+<header class="ep-page-header mb-6 md:mb-8 text-left{% if class %} {{ class }}{% endif %}">
+  <h1 class="ep-page-title">{{ title }}</h1>
+  {% if subtitle %}
+  <p class="ep-lead mt-2 max-w-2xl">{{ subtitle }}</p>
+  {% endif %}
+  {% block page_header_extra %}{% endblock %}
+</header>

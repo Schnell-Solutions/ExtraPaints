@@ -1,0 +1,21 @@
+{% if show_referral_partner_note and referral_partner %}
+<p class="text-sm text-primary-800/90 bg-primary-50 border border-primary-100 rounded-md px-3 py-2 mb-3">
+  Referred by one of our trusted partners.
+</p>
+{% endif %}
+
+<div class="mb-4">
+  <label for="{{ field_id|default:'id_referral_code' }}" class="block text-sm font-medium {% if dark %}text-neutral-300{% else %}text-gray-900{% endif %} mb-1">
+    Referral Code <span class="font-normal {% if dark %}text-neutral-500{% else %}text-gray-500{% endif %}">(Optional)</span>
+  </label>
+  <input
+    type="text"
+    name="referral_code"
+    id="{{ field_id|default:'id_referral_code' }}"
+    value="{{ referral_value|default:referral_code_prefill }}"
+    maxlength="32"
+    autocomplete="off"
+    placeholder="e.g. JOHN-M7K2"
+    class="{% if dark %}w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-white placeholder-neutral-500 uppercase tracking-wide focus:ring-2 focus:ring-primary-800{% elif modal_input %}ep-input ep-modal-input w-full px-4 py-2 border border-gray-300 rounded-md uppercase tracking-wide{% else %}w-full px-4 py-2 border border-gray-300 rounded-md uppercase tracking-wide focus:ring-primary-900 focus:border-primary-900{% endif %}"
+  >
+</div>

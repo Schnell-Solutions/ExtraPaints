@@ -1,0 +1,12 @@
+{% if messages %}
+  <div class="ep-auth-messages" role="status">
+    {% for message in messages %}
+      <div class="ep-auth-alert
+        {% if message.tags == 'error' or message.tags == 'warning' %}ep-auth-alert--error
+        {% elif message.tags == 'success' %}ep-auth-alert--success
+        {% else %}ep-auth-alert--info{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

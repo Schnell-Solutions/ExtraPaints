@@ -6,26 +6,59 @@ from django.conf import settings
 from colors.models import Color
 
 
+class Finish(models.Model):
+    """Sheen level (e.g., Matte, Gloss)."""
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Surface(models.Model):
+    """Surfaces like Wood, Concrete, Metal."""
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ApplicationMethod(models.Model):
+    """Tools used for application (e.g., Brush, Roller)."""
+    name = models.CharField(max_length=50, unique=True)
+    icon = models.ImageField(
+        upload_to="tools/icons/",
+        blank=True,
+        null=True,
+        help_text="Upload a small icon (SVG or PNG) to display on the product page."
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class Category(models.Model):
-    """
-    Main product category (e.g., Paints, Spirits, Tools).
-    Holds the feature flags because these usually apply to the whole group.
-    """
+    """Main product category."""
     name = models.CharField(max_length=150, unique=True)
     slug = models.SlugField(max_length=160, unique=True)
 
     features_colors = models.BooleanField(
         default=True,
-        help_text="Do products in this category have colors? (e.g. Yes for Paints, No for Tools)"
+        help_text="Check if products in this category come in different colors."
     )
     features_sizes = models.BooleanField(
         default=True,
-        help_text="Do products in this category have sizes? (e.g. Yes for Paints, maybe No for Brushes)"
+        help_text="Check if products in this category are sold in different sizes."
     )
 
     class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
+        verbose_name = "Product category"
+        verbose_name_plural = "Product categories"
         ordering = ["name"]
 
     def __str__(self):
@@ -38,20 +71,12 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    """
-    Optional subcategory (e.g., Interior, Exterior, Primer).
-    Linked to a main Category.
-    """
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        related_name="subcategories"
-    )
+    """Optional subcategory."""
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="subcategories")
     name = models.CharField(max_length=150)
     slug = models.SlugField(max_length=160, unique=True)
 
     class Meta:
-        verbose_name = "SubCategory"
         verbose_name_plural = "SubCategories"
         unique_together = ('category', 'name')
         ordering = ["name"]
@@ -66,12 +91,10 @@ class SubCategory(models.Model):
 
 
 class Size(models.Model):
-    """Master table for available sizes (e.g., 1L, 5L, 20L)."""
+    """Master table for available sizes."""
     name = models.CharField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name = "Size"
-        verbose_name_plural = "Sizes"
         ordering = ["name"]
 
     def __str__(self):
@@ -79,8 +102,7 @@ class Size(models.Model):
 
 
 class SafetyDocument(models.Model):
-    """Represents a safety, technical, or compliance document."""
-
+    """Represents a safety or technical document."""
     SAFETY_DOC_TYPES = [
         ("SDS", "Safety Data Sheet (SDS)"),
         ("TDS", "Technical Data Sheet (TDS)"),
@@ -93,7 +115,7 @@ class SafetyDocument(models.Model):
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to="products/safety_docs/")
     language = models.CharField(max_length=50, blank=True, null=True, help_text="e.g. English, French")
-    version = models.CharField(max_length=50, blank=True, null=True, help_text="Document version code")
+    version = models.CharField(max_length=50, blank=True, null=True)
     effective_date = models.DateField(blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -102,12 +124,10 @@ class SafetyDocument(models.Model):
         "Product",
         related_name="safety_documents",
         blank=True,
-        help_text="Products this document applies to"
+        help_text="Select all products this document applies to."
     )
 
     class Meta:
-        verbose_name = "Safety Document"
-        verbose_name_plural = "Safety Documents"
         ordering = ["doc_type", "title"]
 
     def __str__(self):
@@ -116,44 +136,71 @@ class SafetyDocument(models.Model):
 
 class Product(models.Model):
     """Product model for all items."""
-
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=160, unique=True, blank=True)
     description = models.TextField()
 
-    # MANDATORY Main Category
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        related_name="products",
-        help_text="The main group this product belongs to."
-    )
-
-    # OPTIONAL Subcategory
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="products")
     subcategory = models.ForeignKey(
         SubCategory,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="products",
-        help_text="Optional specific group (e.g. Interior for Paints). Leave blank for generic items."
+        related_name="products"
     )
-
     main_image = models.ImageField(upload_to="products/main/", blank=True, null=True)
 
-    available_colors = models.ManyToManyField(
-        Color,
-        related_name="products",
+    finish = models.ForeignKey(
+        Finish,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
-        help_text="Colors this product is available in."
+        related_name="products",
+        help_text="Sheen level (e.g. Matte, Gloss)."
+    )
+    coverage_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Coverage in square meters per liter (m2/L)."
+    )
+    drying_time = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="e.g. 'Touch dry in 2 hours'."
+    )
+    coats_required = models.PositiveIntegerField(blank=True, null=True)
+
+    suitable_surfaces = models.ManyToManyField(Surface, blank=True, related_name="products")
+
+    tools_needed = models.ManyToManyField(
+        ApplicationMethod,
+        blank=True,
+        related_name="products",
+        verbose_name="Tools Needed",
+        help_text="Select tools required for application."
     )
 
-    available_sizes = models.ManyToManyField(
-        "Size",
-        related_name="products",
+    other_products_needed = models.ManyToManyField(
+        "self",
         blank=True,
-        help_text="Sizes this product is sold in."
+        symmetrical=False,
+        related_name="required_by",
+        verbose_name="Other Products Needed",
+        help_text="Essential add-ons (e.g. Hardener, Thinner)."
     )
+
+    related_products = models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=False,
+        related_name="related_to",
+        help_text="Optional cross-sells (e.g. Similar paints)."
+    )
+
+    available_colors = models.ManyToManyField(Color, related_name="products", blank=True)
+    available_sizes = models.ManyToManyField(Size, related_name="products", blank=True)
 
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -181,20 +228,15 @@ class Product(models.Model):
 
 
 class SavedProducts(models.Model):
-    """Stores products that users have saved (favorites/bookmarks)."""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_products"
-    )
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name="saved_products"
-    )
+    """Stores user favorites."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_products")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="saved_products")
     saved_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("user", "product")
         ordering = ["-saved_at"]
         verbose_name = "Saved Product"
-        verbose_name_plural = "Saved Products"
 
     def __str__(self):
         return f"{self.user} saved {self.product}"

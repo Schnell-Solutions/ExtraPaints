@@ -1,0 +1,17 @@
+<div id="catalog-pagination" class="{% if not page_obj.has_other_pages %}hidden{% endif %}">
+{% if page_obj.has_other_pages %}
+<nav class="mt-10 flex justify-center gap-2" aria-label="Pagination">
+  {% if page_obj.has_previous %}
+  <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+     class="px-4 py-2 rounded-md border border-gray-300 text-primary-900 hover:bg-primary-50 ep-focus-ring">Previous</a>
+  {% endif %}
+  <span class="px-4 py-2 text-gray-600 self-center">
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+  </span>
+  {% if page_obj.has_next %}
+  <a href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+     class="px-4 py-2 rounded-md border border-gray-300 text-primary-900 hover:bg-primary-50 ep-focus-ring">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+</div>

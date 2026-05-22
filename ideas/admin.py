@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Tag, Idea, IdeaImage, SavedIdea
+from .models import IdeaCategory, Tag, Idea, IdeaImage, SavedIdea
 
 
 # --- Inline for Idea Images ---
@@ -20,9 +20,9 @@ class IdeaImageInline(admin.TabularInline):
     image_preview.short_description = "Preview"
 
 
-# --- Category Admin ---
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+# --- Idea category admin ---
+@admin.register(IdeaCategory)
+class IdeaCategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "description")
     search_fields = ("name", "description")
     prepopulated_fields = {"slug": ("name",)}

@@ -8,25 +8,20 @@ venv/
 
 # Environment variables (never copy .env into the image)
 .env
+.env.*
 
-# Django media/uploads
-media/ides
-media/portfolio
-media/products
+# Frontend (built in Docker stage 1)
+node_modules/
 
-# Django migrations
-# Ignore all migration .py files except __init__.py
-**/migrations/*.py
-!**/migrations/__init__.py
-**/migrations/*.pyc
-**/migrations/__pycache__/
-
-# SQLite DB (if using local sqlite, don't include it in the image)
+# Local DB and user uploads (mounted as volumes in production)
 db.sqlite3
+media/
+logs/
 
-# IDE/project files
+# IDE / git
 .idea/
+.git/
+.gitignore
 
-# Docker files (optional)
-Dockerfile
-docker-compose.yml
+# Compose files are not needed inside the image
+docker-compose*.yml

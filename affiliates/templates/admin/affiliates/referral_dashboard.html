@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}{{ title }} | {{ site_title }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url 'admin:affiliates_affiliate_changelist' %}">Affiliates / Partners</a>
+  &rsaquo; Dashboard
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p class="help" style="margin-bottom: 1.5rem;">
+  Partner referral metrics. Use list actions on Affiliates or Referral leads to export CSV for reporting.
+</p>
+
+<div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+  <div style="padding: 1rem 1.25rem; background: var(--body-bg, #f8f8f8); border: 1px solid var(--hairline-color, #ddd); border-radius: 6px; min-width: 140px;">
+    <div style="font-size: 1.75rem; font-weight: 600;">{{ totals.partners }}</div>
+    <div style="color: #666;">Partners ({{ totals.active_partners }} active)</div>
+  </div>
+  <div style="padding: 1rem 1.25rem; background: var(--body-bg, #f8f8f8); border: 1px solid var(--hairline-color, #ddd); border-radius: 6px; min-width: 140px;">
+    <div style="font-size: 1.75rem; font-weight: 600;">{{ totals.visits }}</div>
+    <div style="color: #666;">Referral visits</div>
+  </div>
+  <div style="padding: 1rem 1.25rem; background: var(--body-bg, #f8f8f8); border: 1px solid var(--hairline-color, #ddd); border-radius: 6px; min-width: 140px;">
+    <div style="font-size: 1.75rem; font-weight: 600;">{{ totals.leads }}</div>
+    <div style="color: #666;">Attributed leads</div>
+  </div>
+  <div style="padding: 1rem 1.25rem; background: var(--body-bg, #f8f8f8); border: 1px solid var(--hairline-color, #ddd); border-radius: 6px; min-width: 140px;">
+    <div style="font-size: 1.75rem; font-weight: 600;">{{ totals.quotes }}</div>
+    <div style="color: #666;">Quote requests</div>
+  </div>
+  <div style="padding: 1rem 1.25rem; background: var(--body-bg, #f8f8f8); border: 1px solid var(--hairline-color, #ddd); border-radius: 6px; min-width: 140px;">
+    <div style="font-size: 1.75rem; font-weight: 600;">{{ totals.won }}</div>
+    <div style="color: #666;">Won / converted</div>
+  </div>
+</div>
+
+<div style="margin-bottom: 1rem;">
+  <a href="{% url 'admin:affiliates_affiliate_changelist' %}" class="button">Manage partners</a>
+  <a href="{% url 'admin:affiliates_referrallead_changelist' %}" class="button">All referral leads</a>
+  <a href="{% url 'admin:affiliates_referralvisit_changelist' %}" class="button">All visits</a>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+  <thead>
+    <tr>
+      <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ccc;">Partner</th>
+      <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ccc;">Code</th>
+      <th style="text-align: right; padding: 0.5rem; border-bottom: 2px solid #ccc;">Visits</th>
+      <th style="text-align: right; padding: 0.5rem; border-bottom: 2px solid #ccc;">Leads</th>
+      <th style="text-align: right; padding: 0.5rem; border-bottom: 2px solid #ccc;">Quotes</th>
+      <th style="text-align: right; padding: 0.5rem; border-bottom: 2px solid #ccc;">Won</th>
+      <th style="text-align: center; padding: 0.5rem; border-bottom: 2px solid #ccc;">Active</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in partners %}
+    <tr>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+        <a href="{% url 'admin:affiliates_affiliate_change' p.pk %}">{{ p.name }}</a>
+      </td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><code>{{ p.code }}</code></td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: right;">{{ p.visit_total }}</td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: right;">{{ p.lead_total }}</td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: right;">{{ p.quote_leads }}</td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: right;">{{ p.won_deals }}</td>
+      <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: center;">{% if p.is_active %}✓{% else %}—{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" style="padding: 1rem;">No partners yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="help" style="margin-top: 1.5rem;">
+  Export: select rows on Affiliates, Referral leads, or Referral visits → Action → Export CSV.
+</p>
+{% endblock %}

@@ -1,32 +1,78 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: extrapaints_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-extrapaints}
+      POSTGRES_USER: ${POSTGRES_USER:-extrapaints}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-extrapaints} -d ${POSTGRES_DB:-extrapaints}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    expose:
+      - 5432
+
+  redis:
+    image: redis:7-alpine
+    container_name: extrapaints_redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    expose:
+      - 6379
+
   web:
     build: .
     container_name: extrapaints_web
-    command: gunicorn ExtraPaints.wsgi:application --bind 0.0.0.0:8000
+    entrypoint: ["/app/docker/entrypoint.sh"]
     volumes:
       - static_volume:/app/static
       - media_volume:/app/media
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-extrapaints}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-extrapaints}
+      CACHE_URL: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     expose:
       - 8000
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; r=urllib.request.Request('http://127.0.0.1:8000/robots.txt', headers={'X-Forwarded-Proto': 'https'}); urllib.request.urlopen(r)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   nginx:
-    image: nginx:1.25
+    image: nginx:1.25-alpine
     container_name: extrapaints_nginx
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - static_volume:/app/static
-      - media_volume:/app/media
-      - ./nginx:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt
+      - static_volume:/app/static:ro
+      - media_volume:/app/media:ro
+      - ./nginx:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: always
 
 volumes:
+  postgres_data:
   static_volume:
   media_volume:

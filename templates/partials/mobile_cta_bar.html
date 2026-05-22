@@ -1,0 +1,17 @@
+<nav class="ep-mobile-cta md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] safe-area-pb" aria-label="Quick actions">
+  <div class="grid grid-cols-3 divide-x divide-gray-100">
+    <a href="{% url 'quote_detail' %}" class="flex flex-col items-center justify-center py-3 px-2 text-primary-900 hover:bg-primary-50 transition-colors relative">
+      <i data-lucide="clipboard-list" class="w-5 h-5 mb-1" aria-hidden="true"></i>
+      <span class="text-xs font-semibold">Quote</span>
+      <span id="navbar-quote-count-mobile" class="absolute top-1.5 right-6 min-w-[1.1rem] h-[1.1rem] px-0.5 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">{{ quote_list|length }}</span>
+    </a>
+    <a href="tel:{{ business_phone_primary }}" class="flex flex-col items-center justify-center py-3 px-2 text-gray-700 hover:bg-gray-50 transition-colors">
+      <i data-lucide="phone" class="w-5 h-5 mb-1" aria-hidden="true"></i>
+      <span class="text-xs font-semibold">Call</span>
+    </a>
+    <a href="{{ business_whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center py-3 px-2 text-green-700 hover:bg-green-50 transition-colors" aria-label="WhatsApp {{ business_whatsapp_display }}">
+      <i data-lucide="message-circle" class="w-5 h-5 mb-1" aria-hidden="true"></i>
+      <span class="text-xs font-semibold">WhatsApp</span>
+    </a>
+  </div>
+</nav>

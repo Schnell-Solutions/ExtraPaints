@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ guide.title }} | ExtraPaints Guides{% endblock %}
+{% block description %}{{ guide.seo_description }}{% endblock %}
+{% block og_type %}article{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
+
+{% block content %}
+<article class="container mx-auto max-w-3xl px-4 py-10 md:py-14">
+  {% include "partials/breadcrumbs.html" %}
+
+  <header class="mb-8">
+    <p class="text-sm font-bold uppercase text-primary-700">{{ guide.get_guide_type_display }}</p>
+    <h1 class="ep-page-title mt-2">{{ guide.title }}</h1>
+    <p class="mt-4 ep-lead">{{ guide.excerpt }}</p>
+  </header>
+
+  <div class="prose prose-neutral max-w-none mb-10">
+    {{ guide.body|safe }}
+  </div>
+
+  {% if guide.guide_type == 'howto' and guide.howto_steps %}
+  <section class="mb-10">
+    <h2 class="text-xl font-bold text-primary-900 mb-4">Steps</h2>
+    <ol class="space-y-4 list-decimal list-inside">
+      {% for step in guide.howto_steps %}
+      <li class="pl-2">
+        <strong class="text-primary-900">{{ step.name }}</strong>
+        <p class="mt-1 text-gray-600">{{ step.text }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  {% if faq_items %}
+  {% include "partials/faq_section.html" with faq_items=faq_items %}
+  {% endif %}
+
+  {% if guide.related_products.exists or guide.related_colors.exists %}
+  {% include "partials/internal_links.html" with link_products=guide.related_products.all link_colors=guide.related_colors.all section_title="Related products & colors" %}
+  {% endif %}
+
+  <div class="mt-10 p-6 rounded-md bg-primary-900 text-white text-center">
+    <p class="font-semibold">Ready for a project quote?</p>
+    <p class="text-primary-200 text-sm mt-1">{{ response_time_label }}</p>
+    <a href="{% url 'quote_detail' %}" class="inline-flex mt-4 px-6 py-3 bg-white text-primary-900 rounded-md font-semibold hover:bg-primary-50">Request a quote</a>
+  </div>
+</article>
+{% endblock %}

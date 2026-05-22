@@ -1,0 +1,3 @@
+{% for block in schema_json_ld_blocks %}
+<script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ block }}</script>
+{% endfor %}

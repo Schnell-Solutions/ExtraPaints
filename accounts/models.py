@@ -43,12 +43,10 @@ class User(AbstractUser):
 
 class Address(models.Model):
     """
-    Stores multiple delivery addresses for each user.
+    Reserved for a future distributor / delivery portal — not used in quote flow.
 
-    - Linked to a user via ForeignKey (One-to-Many relationship).
-    - Allows customers to save different addresses (Home, Office, etc.).
-    - Supports marking one address as default for faster checkout.
-    - Keeps delivery info separate from User to avoid data duplication.
+    ExtraPaints is quote-led, not checkout-led. This model is kept for admin and
+    possible future B2B features; profile and quote views do not read it yet.
     """
 
     user = models.ForeignKey(
@@ -70,3 +68,71 @@ class Address(models.Model):
         Useful for dropdowns in checkout (e.g., 'Home: Nairobi, Nairobi County').
         """
         return f"{self.label}: {self.city}, {self.region}"
+
+
+class AccountDeletionRequest(models.Model):
+    """Logged when a registered user requests account deletion (admin completes erasure)."""
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending review'
+        COMPLETED = 'completed', 'Completed'
+        CANCELLED = 'cancelled', 'Cancelled'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='deletion_requests',
+    )
+    email_snapshot = models.EmailField()
+    username_snapshot = models.CharField(max_length=150)
+    full_name_snapshot = models.CharField(max_length=200, blank=True)
+    reason = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
+    )
+    requested_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-requested_at']
+        verbose_name = 'Account deletion request'
+        verbose_name_plural = 'Account deletion requests'
+
+    def __str__(self):
+        return f'{self.email_snapshot} ({self.get_status_display()})'
+
+
+class AuthOTP(models.Model):
+    """One-time codes for email verification, password reset, and password change."""
+
+    class Purpose(models.TextChoices):
+        EMAIL_VERIFY = 'email_verify', 'Email verification'
+        PASSWORD_RESET = 'password_reset', 'Password reset'
+        PASSWORD_CHANGE = 'password_change', 'Password change'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='auth_otps',
+    )
+    purpose = models.CharField(max_length=32, choices=Purpose.choices, db_index=True)
+    code_hash = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'purpose', 'is_used']),
+        ]
+
+    def __str__(self):
+        return f'{self.user_id} — {self.purpose}'

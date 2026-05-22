@@ -1,0 +1,62 @@
+{% if link_products or link_colors or link_ideas or link_portfolio or link_guides %}
+<section class="mt-10 pt-10 border-t border-gray-200">
+  <h2 class="text-xl font-bold text-primary-900 mb-4">{{ section_title|default:"Explore related" }}</h2>
+  <div class="grid sm:grid-cols-2 gap-6 text-sm">
+
+    {% if link_colors %}
+    <div>
+      <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="palette" class="w-4 h-4"></i> Colors</h3>
+      <ul class="space-y-1">
+        {% for color in link_colors %}
+        <li><a href="{{ color.get_absolute_url }}" class="text-primary-800 hover:underline">{{ color.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if link_products %}
+    <div>
+      <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="package" class="w-4 h-4"></i> Products</h3>
+      <ul class="space-y-1">
+        {% for product in link_products %}
+        <li><a href="{{ product.get_absolute_url }}" class="text-primary-800 hover:underline">{{ product.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if link_ideas %}
+    <div>
+      <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Inspiration</h3>
+      <ul class="space-y-1">
+        {% for idea in link_ideas %}
+        <li><a href="{{ idea.get_absolute_url }}" class="text-primary-800 hover:underline">{{ idea.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if link_portfolio %}
+    <div>
+      <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="images" class="w-4 h-4"></i> Projects</h3>
+      <ul class="space-y-1">
+        {% for project in link_portfolio %}
+        <li><a href="{{ project.get_absolute_url }}" class="text-primary-800 hover:underline">{{ project.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if link_guides %}
+    <div>
+      <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Guides</h3>
+      <ul class="space-y-1">
+        {% for guide in link_guides %}
+        <li><a href="{{ guide.get_absolute_url }}" class="text-primary-800 hover:underline">{{ guide.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

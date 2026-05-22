@@ -6,23 +6,21 @@ __pycache__/
 venv/
 .venv/
 
+# Frontend build
+node_modules/
+
 # Environment variables
 .env
 
-# Django media/uploads
-media/ides
-media/portfolio
-media/products
+# Django media/uploads (user content — not in git)
+media/
 
-# Django migrations
-# Ignore all migration .py files except __init__.py
-**/migrations/*.py
-!**/migrations/__init__.py
-**/migrations/*.pyc
-**/migrations/__pycache__/
+# Logs
+logs/
+*.log
 
 # PyCharm project files
 .idea/
 
-# SQLite DB
+# SQLite DB (local dev only)
 db.sqlite3

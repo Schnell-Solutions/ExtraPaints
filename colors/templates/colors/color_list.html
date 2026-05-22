@@ -1,35 +1,39 @@
 {% extends "base.html" %}
 {% load static %}
+{% load seo %}
 
-{% block title %}Explore Our Colors{% endblock %}
+{% block title %}Explore Our Colors | ExtraPaints{% endblock %}
+{% block description %}Browse thousands of paint colors with undertones, collections, and room ideas. Find the perfect shade for your space at ExtraPaints Kenya.{% endblock %}
+{% block og_title %}Explore Our Colors | ExtraPaints{% endblock %}
+{% block og_description %}Browse paint colors with undertones, collections, and room ideas. Find the perfect shade for your space.{% endblock %}
+{% block twitter_title %}Explore Our Colors | ExtraPaints{% endblock %}
+{% block twitter_description %}Browse paint colors and find the perfect shade for your space at ExtraPaints Kenya.{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
 
 {% block content %}
-<section class="py-8 lg:px-12 bg-neutral-50 min-h-[1000px]">
+<section class="section-pad ep-catalog-section lg:px-12 bg-neutral-50">
   <div class="container mx-auto px-4 max-w-7xl">
-    <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
-      <h1 class="text-2xl md:text-3xl font-bold text-primary-900 text-center md:text-left">
-        Explore Our Colors
-      </h1>
+    {% include "partials/breadcrumbs.html" %}
+    <div class="ep-page-header ep-catalog-page-header flex flex-col md:flex-row md:justify-between md:items-end mb-6 md:mb-8 gap-3 md:gap-4">
+      <h1 class="ep-page-title">Explore Our Colors</h1>
 
-      <form id="search-form" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+      <form id="search-form" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:max-w-md">
         <input
           type="text"
           id="search-input"
           name="q"
           value="{{ search_query|default:'' }}"
           placeholder="Search by name or code..."
-          class="px-4 py-2 border rounded text-sm w-full sm:w-64 focus:outline-none focus:border-primary-900"
+          class="ep-input w-full sm:w-64"
         >
-        <button
-          type="submit"
-          class="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-800 transition-colors"
-        >
-          Search
-        </button>
+        <button type="submit" class="ep-btn ep-btn-primary shrink-0">Search</button>
       </form>
     </div>
 
-    <form id="filters-form" class="flex flex-wrap items-center gap-2 sm:gap-4 mb-12 justify-center md:justify-start">
+    <form id="filters-form" class="ep-catalog-filters flex flex-wrap items-center gap-2 sm:gap-4 mb-8 md:mb-12 justify-start">
       {% csrf_token %}
       {# Hidden input to sync search query with filters #}
       <input type="hidden" name="q" id="hidden-search-q" value="{{ search_query|default:'' }}">
@@ -58,29 +62,7 @@
         </div>
       </div>
 
-      <div class="relative filter-select-wrapper">
-        <select name="finish" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
-          <option value="">All Finishes</option>
-          {% for f in finishes %}
-            <option value="{{ f.id }}" {% if selected_finish == f.id|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>
-          {% endfor %}
-        </select>
-        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-primary-900">
-          <svg class="w-5 h-5 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
-        </div>
-      </div>
-
-      <div class="relative filter-select-wrapper">
-        <select name="surface" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
-          <option value="">All Surfaces</option>
-          {% for s in surfaces %}
-            <option value="{{ s.id }}" {% if selected_surface == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
-          {% endfor %}
-        </select>
-        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-primary-900">
-          <svg class="w-5 h-5 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/></svg>
-        </div>
-      </div>
+      {# REMOVED: Finish and Surface filters (moved to Product model) #}
 
       <div class="relative filter-select-wrapper">
         <select name="room" class="filter-select pl-4 pr-10 py-2 w-full border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none cursor-pointer">
@@ -112,54 +94,36 @@
     </form>
 
     {# --- GRID CONTAINER WITH LOADER --- #}
-    <div class="relative min-h-[400px]">
-        <div id="grid-loader" class="absolute inset-0 z-10 bg-neutral-50/60 backdrop-blur-[1px] hidden transition-opacity duration-200 opacity-0 flex items-start justify-center pt-20">
-            <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-900"></div>
-        </div>
-
-        <div id="colors-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+    <div class="relative min-h-[280px]">
+        <div id="colors-grid" class="ep-catalog-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4 mb-12">
           {% for color in colors %}
-            <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
-              <div class="h-60 relative rounded-t-md overflow-hidden">
+            <div class="ep-catalog-card group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+              <div class="ep-catalog-media ep-catalog-media--color h-32 sm:h-48 lg:h-60 relative rounded-t-md overflow-hidden">
                 {% if color.hex_code %}
                   <div class="w-full h-full" style="background-color: {{ color.hex_code }}"></div>
+                {% elif color.main_image %}
+                  <img src="{% thumbnail color.main_image 400 %}" alt="{{ color.name }}" class="w-full h-full object-cover" loading="lazy" width="400" height="400">
                 {% else %}
-                  <img src="{{ MEDIA_URL }}default.jpg" alt="{{ color.name }}" class="w-full h-full object-cover">
+                  <img src="{% static 'images/extrapaints.jpg' %}" alt="{{ color.name }}" class="w-full h-full object-cover" loading="lazy">
                 {% endif %}
 
-                {% if user.is_authenticated %}
-                {# UPDATED SAVE BUTTON STYLE #}
-                <button
-                  class="save-color-btn absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-all z-10"
-                  data-color-id="{{ color.id }}"
-                  data-is-saved="{{ color.is_saved|yesno:'true,false' }}"
-                  aria-label="Save color"
-                >
-                  <span class="heart-icon block">
-                    {% if color.is_saved %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    {% endif %}
-                  </span>
-                </button>
-                {% endif %}
-                <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                  <span class="text-sm font-semibold text-gray-800">{{ color.code }}</span>
+                {% include "partials/save_favorite_btn.html" with kind="color" item_id=color.id is_saved=color.is_saved icon_size="sm" %}
+                <div class="ep-catalog-code absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-white/90 backdrop-blur-sm rounded-md px-2 py-0.5 sm:px-3 sm:py-1">
+                  <span class="text-[10px] sm:text-sm font-semibold text-gray-800">{{ color.code }}</span>
                 </div>
               </div>
 
-              <div class="p-6 flex flex-col flex-grow">
-                <h3 class="text-xl font-semibold text-primary-900 mb-2 truncate">{{ color.name }}</h3>
-                <div class="flex items-center justify-between pt-4 mt-auto">
+              <div class="ep-catalog-body p-3 sm:p-6 flex flex-col flex-grow">
+                <h3 class="ep-catalog-title text-sm sm:text-xl font-semibold text-primary-900 mb-1 sm:mb-2 truncate">{{ color.name }}</h3>
+                <div class="flex items-center justify-between gap-1 pt-2 sm:pt-4 mt-auto">
                   {% if color.collection %}
-                  <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
+                  <span class="ep-catalog-tag inline-block max-w-[55%] truncate px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md text-[10px] sm:text-xs font-medium bg-neutral-100 text-neutral-800">
                     {{ color.collection.name }}
                   </span>
                   {% else %}
                   <span></span>
                   {% endif %}
-                  <a href="{{ color.get_absolute_url }}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+                  <a href="{{ color.get_absolute_url }}" class="ep-catalog-btn shrink-0 px-2 py-1 sm:px-4 sm:py-2 border border-transparent rounded text-[11px] sm:text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                     View
                   </a>
                 </div>
@@ -168,18 +132,18 @@
           {% empty %}
             {# --- Empty State Logic --- #}
             <div class="col-span-full py-12 flex justify-center items-center h-full">
-                {% if not search_query and not selected_undertone and not selected_collection and not selected_finish and not selected_surface and not selected_room %}
-                    <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-xl bg-neutral-50 max-w-lg mx-auto">
+                {% if not search_query and not selected_undertone and not selected_collection and not selected_room %}
+                    <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-md bg-neutral-50 max-w-lg mx-auto">
                       <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-neutral-400 mb-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.9 10.9L17.7 3.1M12.7 20.7l-1.8 1.8a2 2 0 01-2.828 0l-2.828-2.828a2 2 0 010-2.828L16 8l3 3M15 15l2 2M12 2v2M4 12H2M20 12h2M6 6L4 4"/></svg>
                       <h3 class="text-xl font-semibold text-primary-900 mb-2">No Colors Added Yet</h3>
                       <p class="text-neutral-500">Check back later for our new color palette.</p>
                     </div>
                 {% else %}
-                    <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-xl bg-white max-w-xl mx-auto">
+                    <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-md bg-white max-w-xl mx-auto">
                       <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-neutral-400 mb-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                       <h3 class="text-xl font-semibold text-primary-900 mb-2">No Matches Found</h3>
                       <p class="text-neutral-500 mb-6">We couldn't find any colors matching your criteria.</p>
-                      <a href="{% url 'color_list' %}" class="inline-flex items-center px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors">
+                      <a href="{% url 'color_list' %}" class="inline-flex items-center px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 transition-colors">
                           Clear Filters
                       </a>
                     </div>
@@ -188,6 +152,7 @@
           {% endfor %}
         </div>
     </div>
+    {% include "partials/pagination.html" %}
   </div>
 </section>
 
@@ -196,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const filtersForm = document.getElementById('filters-form');
   const searchForm = document.getElementById('search-form');
   const colorsGrid = document.getElementById('colors-grid');
-  const loader = document.getElementById('grid-loader');
+  const S = window.ExtraPaintsSkeletons;
   const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '{{ csrf_token }}';
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -210,38 +175,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function fetchColors(url) {
-      loader.classList.remove('hidden');
-      requestAnimationFrame(() => loader.classList.add('opacity-100'));
+      if (S) S.showColorGrid(colorsGrid);
 
       try {
           const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
           if (!res.ok) throw new Error('Network error');
           const data = await res.json();
           renderGrid(data.colors);
+          if (P) P.update(paginationEl, data);
 
-          // Sync hidden inputs
           const urlObj = new URL(url, window.location.origin);
           const q = urlObj.searchParams.get('q') || '';
           document.getElementById('search-input').value = q;
           document.getElementById('hidden-search-q').value = q;
 
-      } catch (err) { console.error(err); }
-      finally {
-          loader.classList.remove('opacity-100');
-          setTimeout(() => loader.classList.add('hidden'), 200);
+      } catch (err) {
+          console.error(err);
+          colorsGrid.innerHTML = '<div class="col-span-full py-12 text-center text-red-600">Could not load colors. Please try again.</div>';
+      } finally {
+          if (S) S.clearBusy(colorsGrid);
       }
   }
 
   function renderGrid(colors) {
       if (colors.length === 0) {
-          // Render empty state (No matches found version)
            colorsGrid.innerHTML = `
             <div class="col-span-full py-12 flex justify-center items-center h-full">
-                <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-xl bg-white max-w-xl mx-auto">
+                <div class="text-center py-8 px-12 border-2 border-dashed border-neutral-300 rounded-md bg-white max-w-xl mx-auto">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-neutral-400 mb-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                   <h3 class="text-xl font-semibold text-primary-900 mb-2">No Matches Found</h3>
                   <p class="text-neutral-500 mb-6">We couldn't find any colors matching your criteria.</p>
-                  <a href="${window.location.pathname}" class="inline-flex items-center px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors">Clear Filters</a>
+                  <a href="${window.location.pathname}" class="inline-flex items-center px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 transition-colors">Clear Filters</a>
                 </div>
             </div>`;
            return;
@@ -253,43 +217,39 @@ document.addEventListener('DOMContentLoaded', () => {
               : `<img src="${c.image_url}" alt="${c.name}" class="w-full h-full object-cover">`;
 
           const collectionHtml = c.collection_name
-              ? `<span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">${c.collection_name}</span>`
+              ? `<span class="ep-catalog-tag inline-block max-w-[55%] truncate px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md text-[10px] sm:text-xs font-medium bg-neutral-100 text-neutral-800">${c.collection_name}</span>`
               : `<span></span>`;
 
-          // SVG Icons for JS
           const heartSaved = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
           const heartUnsaved = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
 
-          // Render Save Button only if authenticated (requires backend to send user state, or just render it and let backend reject if anon)
-          // Assuming all users see button but it redirects if anon, or is hidden by CSS if anon.
-          // For simplicity, we'll render it and let the existing JS handler deal with it.
           const saveBtnHtml = `
-            <button class="save-color-btn absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-all z-10"
-                    data-color-id="${c.id}" data-is-saved="${c.is_saved ? 'true' : 'false'}" aria-label="Save color">
-              <span class="heart-icon block">${c.is_saved ? heartSaved : heartUnsaved}</span>
+            <button type="button" class="ep-save-btn save-color-btn absolute top-3 right-3 z-20 p-2 rounded-full bg-white shadow-md ring-1 ring-black/10 text-neutral-600 hover:text-red-600 hover:bg-red-50 transition-all"
+                    data-color-id="${c.id}" data-is-saved="${c.is_saved ? 'true' : 'false'}" aria-label="Save color to collection" title="Add to favorites">
+              <span class="heart-icon block pointer-events-none">${c.is_saved ? heartSaved : heartUnsaved}</span>
             </button>`;
 
           return `
-            <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
-              <div class="h-60 relative rounded-t-md overflow-hidden">
+            <div class="ep-catalog-card group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+              <div class="ep-catalog-media ep-catalog-media--color h-32 sm:h-48 lg:h-60 relative rounded-t-md overflow-hidden">
                 ${swatchHtml}
                 ${saveBtnHtml}
-                <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                  <span class="text-sm font-semibold text-gray-800">${c.code}</span>
+                <div class="ep-catalog-code absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-white/90 backdrop-blur-sm rounded-md px-2 py-0.5 sm:px-3 sm:py-1">
+                  <span class="text-[10px] sm:text-sm font-semibold text-gray-800">${c.code}</span>
                 </div>
               </div>
-              <div class="p-6 flex flex-col flex-grow">
-                <h3 class="text-xl font-semibold text-primary-900 mb-2 truncate">${c.name}</h3>
-                <div class="flex items-center justify-between pt-4 mt-auto">
+              <div class="ep-catalog-body p-3 sm:p-6 flex flex-col flex-grow">
+                <h3 class="ep-catalog-title text-sm sm:text-xl font-semibold text-primary-900 mb-1 sm:mb-2 truncate">${c.name}</h3>
+                <div class="flex items-center justify-between gap-1 pt-2 sm:pt-4 mt-auto">
                   ${collectionHtml}
-                  <a href="${c.url}" class="px-4 py-2 border border-transparent rounded text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">View</a>
+                  <a href="${c.url}" class="ep-catalog-btn shrink-0 px-2 py-1 sm:px-4 sm:py-2 border border-transparent rounded text-[11px] sm:text-sm font-medium text-white bg-primary-900 hover:bg-primary-800 transition-colors">View</a>
                 </div>
               </div>
             </div>`;
       }).join('');
+      if (S) S.staggerChildren(colorsGrid);
   }
 
-  // Event Listeners for Filtering
   document.querySelectorAll('.filter-select').forEach(select => {
       select.addEventListener('change', () => {
           const url = `${window.location.pathname}?${getCombinedParams().toString()}`;
@@ -307,40 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('popstate', () => fetchColors(window.location.href));
 
-  // --- SAVE TOGGLE ---
-  if (colorsGrid) {
-      colorsGrid.addEventListener('click', async (e) => {
-          const btn = e.target.closest('.save-color-btn');
-          if (!btn) return;
-          e.preventDefault();
-          const colorId = btn.dataset.colorId;
-          btn.disabled = true;
-
-          try {
-              const res = await fetch("{% url 'save_color_toggle' %}", {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken },
-                  body: `color_id=${colorId}`
-              });
-              const data = await res.json();
-              if (data.status === 'success') {
-                  const svg = btn.querySelector('svg');
-                  if (data.is_saved) {
-                      svg.setAttribute('fill', 'red');
-                      svg.setAttribute('stroke', 'red');
-                      btn.dataset.isSaved = 'true';
-                  } else {
-                      svg.setAttribute('fill', 'none');
-                      svg.setAttribute('stroke', 'currentColor');
-                      btn.dataset.isSaved = 'false';
-                  }
-              }
-          } catch (err) { console.error(err); }
-          finally { btn.disabled = false; }
-      });
+  if (P) {
+    P.bind(paginationEl, (url) => {
+      window.history.pushState({}, '', url);
+      fetchColors(url);
+    });
   }
 
-  // Select arrow animation
   document.querySelectorAll('.filter-select-wrapper').forEach(wrapper => {
       const select = wrapper.querySelector('select');
       const svg = wrapper.querySelector('svg');

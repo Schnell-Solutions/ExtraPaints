@@ -1,0 +1,7 @@
+{# Expects: field — placeholders only, no labels #}
+<div class="ep-auth-field">
+  {{ field }}
+  {% if field.errors %}
+    <p class="ep-auth-field-error" role="alert">{{ field.errors.0 }}</p>
+  {% endif %}
+</div>

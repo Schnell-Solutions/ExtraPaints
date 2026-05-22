@@ -1,3 +1,1 @@
-from django.test import TestCase
-
-# Create your tests here.
+"""Home/SEO tests live in core.tests.test_critical_paths."""

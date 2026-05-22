@@ -1,24 +1,22 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
 from colors.models import Color  # <-- IMPORT THE COLOR MODEL
 
 
-class Category(models.Model):
+class IdeaCategory(models.Model):
     """
-    Category for grouping ideas (e.g., Interior, Exterior, Living Room).
+    Idea category (separate from products.Category — not shared taxonomy).
+    Groups inspiration content (e.g., Interior, Exterior, Living Room).
     """
     name = models.CharField(max_length=150, unique=True)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=160, unique=True)
 
     class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
+        verbose_name = "Idea category"
+        verbose_name_plural = "Idea categories"
         ordering = ["name"]
 
     def __str__(self):
@@ -59,7 +57,7 @@ class Idea(models.Model):
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField()
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, related_name="ideas", blank=True, null=True
+        IdeaCategory, on_delete=models.SET_NULL, related_name="ideas", blank=True, null=True
     )
     tags = models.ManyToManyField(Tag, related_name="ideas", blank=True)
 

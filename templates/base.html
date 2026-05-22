@@ -1,93 +1,91 @@
 <!DOCTYPE html>
 {% load static %}
+{% load seo %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}ExtraPaints | Quality Paints & Colors in Kenya{% endblock %}</title>
-    <meta name="description" content="{% block description %}Discover premium paints, vibrant colors, and professional painting tools at ExtraPaints. Free delivery on orders over KES 50,000.{% endblock %}">
-    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+    <title>{% block title %}{{ seo_default_title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ seo_default_description }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ canonical_url }}{% endblock %}">
+    {% block meta_robots %}
+    {% if page_noindex %}<meta name="robots" content="noindex, follow">{% else %}<meta name="robots" content="index, follow, max-image-preview:large">{% endif %}
+    {% endblock %}
 
+    <meta property="og:locale" content="en_KE">
     <meta property="og:site_name" content="ExtraPaints">
-    <meta property="og:title" content="{% block og_title %}{{ self.title }}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{{ self.description }}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% static 'home/images/logo.png' %}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}ExtraPaints | Quality Paints & Colors in Kenya{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ seo_default_og_description }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% absolute_static request 'images/extrapaints.jpg' %}{% endblock %}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:url" content="{% block og_url %}{{ canonical_url }}{% endblock %}">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}{{ self.title }}{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}{{ self.description }}{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{% static 'home/images/logo.png' %}{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}ExtraPaints | Quality Paints & Colors in Kenya{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Professional paint supply and tailored quotations — ExtraPaints Kenya.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% absolute_static request 'images/extrapaints.jpg' %}{% endblock %}">
 
+    {% if use_tailwind_cdn %}
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    {% block schema %}{% endblock %}
-
-    {% block styles %}{% endblock %}
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
                     colors: {
                         primary: {
-                            10: '#fbfdff',
-                            25: '#f8fbff',
-                            50: '#eff6ff',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            500: '#3b82f6',
-                            800: '#14005C',
-                            900: '#060024'
+                            10: '#fbfdff', 25: '#f8fbff', 50: '#eff6ff', 200: '#bfdbfe',
+                            300: '#93c5fd', 500: '#3b82f6', 800: '#14005C', 900: '#060024'
                         }
                     }
                 }
             }
-        }
+        };
     </script>
+    {% else %}
+    <link rel="stylesheet" href="{% static 'css/tailwind.compiled.css' %}">
+    {% endif %}
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" crossorigin="anonymous" defer></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="{% static 'css/extrapaints.css' %}?v={{ static_version }}">
 
-    <style>
-        body { font-family: 'Montserrat', sans-serif; }
-        .product-scrollbar::-webkit-scrollbar { height: 8px; }
-        .product-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        .product-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .product-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .product-card { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; opacity: 0; transform: translateY(10px); }
-        .product-card.visible { opacity: 1; transform: translateY(0); }
-    </style>
+    {% block schema %}{% endblock %}
+    <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ organization_json_ld|safe }}</script>
+    <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ local_business_json_ld|safe }}</script>
+    <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ website_search_json_ld|safe }}</script>
+
+    {% block styles %}{% endblock %}
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
+<body class="ep-site-shell bg-gray-100">
 
-    <header class="bg-primary-50 border-b text-primary-900 sticky top-0 z-50">
-        <div class="hidden md:block bg-primary-900 py-2 text-sm text-primary-50">
-
-            <div class="container mx-auto px-4 flex justify-between items-center max-w-6xl">
-                <span class="hidden sm:inline">Free Delivery on orders over KES 50,000</span>
-
-                <div class="flex space-x-4 items-center justify-end">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'my_collection' %}" class="hover:text-primary-300 transition-colors">My Collection</a>
-                        <span>|</span>
-                        <a href="{% url 'logout' %}" class="hover:text-primary-300 transition-colors">Logout</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="hover:text-primary-300 transition-colors">Login</a>
-                        <span>|</span>
-                        <a href="{% url 'register' %}" class="hover:text-primary-300 transition-colors">Register</a>
-                    {% endif %}
+    <header class="ep-site-header sticky top-0 z-50 shrink-0">
+        <div class="ep-top-strip hidden md:block bg-primary-900 border-b border-white/10">
+            <div class="container mx-auto px-6 max-w-6xl">
+                <div class="flex items-center justify-between gap-6 py-1.5 text-xs font-medium">
+                    <div class="flex items-center gap-5">
+                        <a href="{% url 'about' %}" class="text-white/85 hover:text-white transition-colors">About</a>
+                        <a href="{% url 'contact' %}" class="text-white/85 hover:text-white transition-colors">Contact</a>
+                        <a href="{% url 'guide_list' %}" class="text-white/85 hover:text-white transition-colors">Guides</a>
+                    </div>
+                    <div class="flex items-center gap-5">
+                        <a href="{% url 'my_collection' %}" class="text-white/85 hover:text-white transition-colors">My Collection</a>
+                        <button type="button" data-open-quick-inquiry class="text-white/85 hover:text-white transition-colors">Quick inquiry</button>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}" class="text-white/85 hover:text-white transition-colors">Account</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="text-white/85 hover:text-white transition-colors">Sign in</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <nav class="container mx-auto px-6 py-4 max-w-6xl">
+        <nav class="bg-primary-50 border-b text-primary-900">
+        <div class="container mx-auto px-6 py-3 lg:py-4 max-w-6xl">
             <div class="flex items-center justify-between">
                 <a href="{% url 'home' %}">
                   <img
@@ -98,165 +96,133 @@
                   >
                 </a>
 
-                <div class="hidden md:flex items-center space-x-8">
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
                     <a href="{% url 'color_list' %}" class="font-medium hover:text-primary-900">Colors</a>
                     <a href="{% url 'product_list' %}" class="font-medium hover:text-primary-900">Products</a>
                     <a href="{% url 'idea_list' %}" class="font-medium hover:text-primary-900">Ideas</a>
-                    <a href="{% url 'portfolio_list' %}" class="font-medium hover:text-primary-900">Our Portfolio</a>
+                    <a href="{% url 'portfolio_list' %}" class="font-medium hover:text-primary-900">Portfolio</a>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-4">
-                    <button id="search-open-btn-desktop" class="p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="Search">
+                <div class="hidden md:flex items-center gap-3">
+                    <button id="search-open-btn-desktop" class="p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="Search" aria-label="Search">
                         <i data-lucide="search" class="w-5 h-5"></i>
                     </button>
 
-                    <a href="{% url 'quote_detail' %}" class="relative p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="View Quote Request">
-                        <i data-lucide="clipboard-list" class="w-5 h-5"></i>
-                        <span id="navbar-quote-count-desktop" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">
+                    <a href="{% url 'quote_detail' %}" class="relative inline-flex items-center gap-2 bg-primary-900 text-white px-5 py-2.5 rounded-md font-semibold text-sm hover:bg-primary-800 transition-colors shadow-sm">
+                        <i data-lucide="clipboard-list" class="w-4 h-4" aria-hidden="true"></i>
+                        <span>Get a Quote</span>
+                        <span id="navbar-quote-count-desktop" class="absolute -top-2 -right-2 min-w-[1.25rem] h-5 px-1 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">
                             {{ quote_list|length }}
                         </span>
                     </a>
 
                     {% if user.is_authenticated %}
-                        <a href="{% url 'profile' %}" class="p-2 hover:bg-gray-100 rounded-full cursor-pointer" title="Profile">
-                            <i data-lucide="user" class="w-5 h-5"></i>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'login' %}">
-                            <button class="bg-primary-900 text-primary-50 px-6 py-2 rounded-sm hover:bg-primary-800 cursor-pointer transition-colors">
-                                Login
-                            </button>
-                        </a>
+                        {% include "partials/account_menu.html" %}
                     {% endif %}
                 </div>
 
                 <div class="flex items-center space-x-2 md:hidden">
-                    <button id="search-open-btn-mobile" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full" title="Search">
-                        <i data-lucide="search" class="w-6 h-6"></i>
+                    <button id="search-open-btn-mobile" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full ep-focus-ring" title="Search" aria-label="Search">
+                        <i data-lucide="search" class="w-6 h-6" aria-hidden="true"></i>
                     </button>
-
-                    <a href="{% url 'quote_detail' %}" class="relative p-2 hover:bg-primary-200 rounded-full cursor-pointer" title="View Quote Request">
-                        <i data-lucide="clipboard-list" class="w-6 h-6"></i>
-                        <span id="navbar-quote-count-mobile" class="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">
-                            {{ quote_list|length }}
-                        </span>
-                    </a>
-                    <button id="mobile-menu-button" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    <button id="mobile-menu-button" type="button" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full ep-focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav-panel">
+                        <i data-lucide="menu" class="w-6 h-6" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
-
-            <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 mt-4 p-4 hidden shadow absolute w-full left-0 z-50">
-              <div class="flex flex-col space-y-3">
-
-                <a href="{% url 'color_list' %}" class="block px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-900 rounded-lg transition-colors">
-                    Colors
-                </a>
-                <a href="{% url 'product_list' %}" class="block px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-900 rounded-lg transition-colors">
-                    Products
-                </a>
-                <a href="{% url 'idea_list' %}" class="block px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-900 rounded-lg transition-colors">
-                    Ideas
-                </a>
-                <a href="{% url 'portfolio_list' %}" class="block px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-900 rounded-lg transition-colors">
-                    Our Portfolio
-                </a>
-
-                <div class="pt-4 border-t border-gray-100 mt-2">
-                  {% if user.is_authenticated %}
-                    <div class="flex flex-col space-y-2">
-                      <a href="{% url 'my_collection' %}" class="flex items-center space-x-3 px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 rounded-lg transition-colors">
-                        <i data-lucide="heart" class="w-5 h-5 text-primary-900"></i>
-                        <span>My Collections</span>
-                      </a>
-                      <a href="{% url 'profile' %}" class="flex items-center space-x-3 px-3 py-2 font-medium text-gray-700 hover:bg-primary-50 rounded-lg transition-colors">
-                        <i data-lucide="user" class="w-5 h-5 text-primary-900"></i>
-                        <span>My Profile</span>
-                      </a>
-
-                      <a href="{% url 'logout' %}" class="flex items-center justify-center space-x-2 mt-2 px-4 py-2.5 border border-red-200 text-red-600 bg-red-50/50 rounded-lg font-semibold hover:bg-red-100 hover:border-red-300 transition-colors">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                        <span>Logout</span>
-                      </a>
-                    </div>
-                  {% else %}
-                    <div class="grid grid-cols-2 gap-3 mt-2">
-                      <a href="{% url 'login' %}" class="flex items-center justify-center px-4 py-2.5 border border-primary-900 text-primary-900 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
-                        Login
-                      </a>
-                      <a href="{% url 'register' %}" class="flex items-center justify-center px-4 py-2.5 bg-primary-900 text-white rounded-lg font-semibold hover:bg-primary-800 transition-colors shadow-sm">
-                        Register
-                      </a>
-                    </div>
-                  {% endif %}
-                </div>
-
-              </div>
-            </div>
+        </div>
         </nav>
     </header>
 
-    <div id="search-modal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm" aria-modal="true" role="dialog">
-        <div class="bg-white max-w-xl md:max-w-lg w-[90%] mx-auto mt-16 rounded-xl shadow-2xl overflow-hidden">
+    {% include "partials/mobile_nav_drawer.html" %}
+
+    {# Hidden target for AJAX quote count updates on small screens (no bottom CTA bar) #}
+    <span id="navbar-quote-count-mobile" class="hidden" aria-hidden="true"></span>
+
+    <div id="search-modal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm" aria-modal="true" role="dialog" aria-labelledby="search-dialog-title">
+        <div class="bg-white max-w-xl md:max-w-lg w-[90%] mx-auto mt-16 rounded-md shadow-2xl overflow-hidden">
+            <h2 id="search-dialog-title" class="sr-only">Search ExtraPaints</h2>
             <div class="p-4 border-b flex items-center">
-                <i data-lucide="search" class="w-5 h-5 text-gray-400 mr-3"></i>
-                <input type="text" id="live-search-input" placeholder="Search colors, products, and more..." class="w-full text-lg focus:outline-none placeholder-gray-500" autofocus>
-                <button id="search-close-btn" class="p-2 ml-3 text-gray-500 hover:bg-gray-100 rounded-full">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <i data-lucide="search" class="w-5 h-5 text-gray-400 mr-3" aria-hidden="true"></i>
+                <input type="search" id="live-search-input" placeholder="Search colors, products, and more..." autocomplete="off" class="w-full text-lg border-0 bg-transparent placeholder-gray-500 ep-modal-input focus:ring-0 focus:outline-none" aria-controls="search-results-scroll">
+                <button type="button" id="search-close-btn" class="p-2 ml-3 text-gray-500 hover:bg-gray-100 rounded-full" aria-label="Close search">
+                    <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
                 </button>
             </div>
-            <div id="search-results-container" class="max-h-96 overflow-y-auto p-4 space-y-4">
+            <div id="search-results-scroll" class="max-h-96 overflow-y-auto p-4 space-y-4">
                 <p id="search-placeholder" class="text-gray-500 text-center py-8">Start typing to see results...</p>
+                <div id="search-results-container"></div>
             </div>
         </div>
     </div>
 
-    <main class="flex-grow">
-        <div>
-            {% block content %}{% endblock %}
-        </div>
+    <main class="ep-site-main" id="main-content">
+        {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-primary-900 text-primary-50">
+    <footer class="ep-site-footer bg-primary-900 text-primary-50 shrink-0">
         <div class="container mx-auto max-w-6xl px-4 py-16 pb-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
 
                 <div class="md:col-span-1">
-                    <h2 class="text-2xl font-bold text-white mb-4">ExtraPaints</h2>
-                    <p class="text-primary-200 text-sm mb-6">Colors that inspire, quality that lasts.</p>
+                    <h2 class="ep-section-title text-white mb-4">ExtraPaints</h2>
+                    <p class="text-primary-200 text-sm mb-4">{{ site_tagline_b2b }}</p>
+                    <p class="text-primary-300 text-xs mb-4 flex items-center gap-1.5">
+                        <i data-lucide="clock" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                        {{ response_time_label }}
+                    </p>
+                    <a href="{% url 'quote_detail' %}" class="inline-flex items-center gap-2 bg-white text-primary-900 px-4 py-2 rounded-md text-sm font-semibold hover:bg-primary-100 transition-colors mb-6">
+                        <i data-lucide="clipboard-list" class="w-4 h-4" aria-hidden="true"></i>
+                        Get a Quote
+                    </a>
+                    <address class="not-italic text-primary-200 text-sm space-y-1 mb-4">
+                        <p>{{ local_address_line }}</p>
+                        <p><a href="tel:{{ business_phone_primary }}" class="hover:text-white">{{ business_phone_primary }}</a></p>
+                        <p>
+                          <a href="{{ business_whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="hover:text-white">
+                            WhatsApp {{ business_whatsapp_display }}
+                          </a>
+                        </p>
+                        <p><a href="mailto:{{ business_email }}" class="hover:text-white">{{ business_email }}</a></p>
+                        {% if google_maps_url %}<p><a href="{{ google_maps_url }}" target="_blank" rel="noopener noreferrer" class="hover:text-white underline">Directions</a></p>{% endif %}
+                    </address>
                     <div class="flex space-x-4">
-                        <a href="https://web.facebook.com/extrapaints.ke" class="text-primary-200 hover:text-white transition-colors" aria-label="Facebook">
+                        <a href="{{ social_facebook }}" target="_blank" rel="noopener noreferrer" class="text-primary-200 hover:text-white transition-colors" aria-label="Facebook">
                             <i data-lucide="facebook" class="w-5 h-5"></i>
                         </a>
-                        <a href="www.linkedin.com/in/extrapaints-ltd-b5a2283a3" class="text-primary-200 hover:text-white transition-colors" aria-label="LinkedIn">
+                        <a href="{{ social_instagram }}" target="_blank" rel="noopener noreferrer" class="text-primary-200 hover:text-white transition-colors" aria-label="Instagram">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="{{ social_linkedin }}" target="_blank" rel="noopener noreferrer" class="text-primary-200 hover:text-white transition-colors" aria-label="LinkedIn">
                             <i data-lucide="linkedin" class="w-5 h-5"></i>
                         </a>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="font-semibold text-lg text-white mb-4">Shop</h4>
+                    <h4 class="ep-card-title text-white mb-4">Explore</h4>
                     <ul class="space-y-3">
                         <li><a href="{% url 'color_list' %}" class="text-primary-200 hover:text-white">Colors</a></li>
                         <li><a href="{% url 'product_list' %}" class="text-primary-200 hover:text-white">Products</a></li>
-                        <li><a href="{% url 'quote_detail' %}" class="text-primary-200 hover:text-white">View Quote List</a></li>
+                        <li><a href="{% url 'quote_detail' %}" class="text-primary-200 hover:text-white font-medium">Request a Quote</a></li>
+                        <li><button type="button" data-open-quick-inquiry class="text-primary-200 hover:text-white text-left">Quick inquiry</button></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="font-semibold text-lg text-white mb-4">Company</h4>
+                    <h4 class="ep-card-title text-white mb-4">Company</h4>
                     <ul class="space-y-3">
                         <li><a href="{% url 'idea_list' %}" class="text-primary-200 hover:text-white">Inspiration</a></li>
                         <li><a href="{% url 'portfolio_list' %}" class="text-primary-200 hover:text-white">Portfolio</a></li>
+                        <li><a href="{% url 'guide_list' %}" class="text-primary-200 hover:text-white">Guides &amp; resources</a></li>
                         <li><a href="{% url 'about' %}" class="text-primary-200 hover:text-white">About Us</a></li>
                         <li><a href="{% url 'contact' %}" class="text-primary-200 hover:text-white">Contact Us</a></li>
                     </ul>
                 </div>
 
                 <div class="md:col-span-1">
-                    <h4 class="font-semibold text-lg text-white mb-4">Join Our Newsletter</h4>
-                    <p class="text-primary-200 text-sm mb-4">Get sales, new product alerts, and expert tips.</p>
+                    <h4 class="ep-card-title text-white mb-4">Join Our Newsletter</h4>
+                    <p class="text-primary-200 text-sm mb-4">Project tips, new ranges, and supply updates for professionals.</p>
                     <form id="newsletter-form" action="{% url 'subscribe_newsletter' %}" method="POST">
                         {% csrf_token %}
                         <div class="flex">
@@ -270,250 +236,33 @@
                 </div>
             </div>
 
-            <div class="border-t border-primary-800 mt-12 pt-8 text-center">
-                <p class="text-primary-300 text-sm">&copy; {% now "Y" %} ExtraPaints. All rights reserved.</p>
+            <div class="border-t border-primary-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-primary-300">
+                <p>&copy; {% now "Y" %} {{ brand_name }}. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="{% url 'privacy_policy' %}" class="hover:text-white">Privacy</a>
+                    <a href="{% url 'terms_conditions' %}" class="hover:text-white">Terms</a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // CSRF Token Utility
-            const csrfTokenInput = document.querySelector("input[name=csrfmiddlewaretoken]");
-            const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
-
-            // Mobile Menu Toggle
-            const menuBtn = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-
-            if (menuBtn && mobileMenu) {
-                menuBtn.addEventListener('click', (ev) => {
-                    ev.preventDefault();
-                    mobileMenu.classList.toggle('hidden');
-                    const icon = menuBtn.querySelector('i');
-                    if (icon) {
-                        const current = icon.getAttribute('data-lucide');
-                        icon.setAttribute('data-lucide', current === 'menu' ? 'x' : 'menu');
-                    }
-                    try { lucide.createIcons(); } catch (err) {}
-                });
-            }
-
-            // Live Search Logic
-            const searchModal = document.getElementById('search-modal');
-            const searchOpenBtnDesktop = document.getElementById('search-open-btn-desktop');
-            const searchOpenBtnMobile = document.getElementById('search-open-btn-mobile');
-            const searchCloseBtn = document.getElementById('search-close-btn');
-            const searchInput = document.getElementById('live-search-input');
-            const resultsContainer = document.getElementById('search-results-container');
-            const searchPlaceholder = document.getElementById('search-placeholder');
-            let searchTimeout;
-            const SEARCH_DELAY = 300;
-
-            const openSearchModal = () => {
-                searchModal.classList.remove('hidden');
-                searchInput.focus();
-            };
-
-            if (searchCloseBtn) {
-                searchCloseBtn.addEventListener('click', () => {
-                    searchModal.classList.add('hidden');
-                    searchInput.value = '';
-                    resultsContainer.innerHTML = '';
-                    searchPlaceholder.textContent = "Start typing to see results...";
-                    searchPlaceholder.classList.remove('hidden');
-                });
-            }
-
-            if (searchModal) {
-                searchModal.addEventListener('click', (e) => {
-                    if (e.target === searchModal) searchCloseBtn.click();
-                });
-            }
-
-            if (searchInput) {
-                searchInput.addEventListener('input', () => {
-                    clearTimeout(searchTimeout);
-                    const query = searchInput.value.trim();
-
-                    if (query.length < 2) {
-                        resultsContainer.innerHTML = '';
-                        searchPlaceholder.textContent = "Start typing to see results...";
-                        searchPlaceholder.classList.remove('hidden');
-                        return;
-                    }
-
-                    searchPlaceholder.textContent = "Searching...";
-                    searchTimeout = setTimeout(() => fetchResults(query), SEARCH_DELAY);
-                });
-            }
-
-            async function fetchResults(query) {
-                try {
-                    const response = await fetch(`{% url 'live_search' %}?q=${encodeURIComponent(query)}`);
-                    const data = await response.json();
-                    displayResults(data);
-                } catch (error) {
-                    console.error("Live search failed:", error);
-                    resultsContainer.innerHTML = `<p class="text-red-500 text-center py-8">An error occurred while searching.</p>`;
-                }
-            }
-
-            function displayResults(data) {
-                resultsContainer.innerHTML = '';
-                const totalResults = data.colors.length + data.products.length;
-
-                if (totalResults === 0) {
-                    resultsContainer.innerHTML = `<p class="text-gray-500 text-center py-8">No results found for "${searchInput.value}".</p>`;
-                    return;
-                }
-                searchPlaceholder.classList.add('hidden');
-
-                if (data.colors.length > 0) {
-                    resultsContainer.innerHTML += `<h3 class="text-sm font-semibold text-primary-900 uppercase border-b pb-2 mb-2">Colors (${data.colors.length})</h3>`;
-                    data.colors.forEach(color => {
-                        resultsContainer.innerHTML += `
-                        <a href="${color.url}" class="flex items-center p-2 rounded-lg hover:bg-primary-50 transition-colors" onclick="searchCloseBtn.click()">
-                            <div style="background-color: ${color.hex_code};" class="w-8 h-8 rounded-full border border-gray-200 mr-4 flex-shrink-0"></div>
-                            <div>
-                                <p class="font-medium text-primary-900">${color.name}</p>
-                                <p class="text-xs text-gray-500">Code: ${color.code}</p>
-                            </div>
-                        </a>`;
-                    });
-                }
-
-                if (data.products.length > 0) {
-                    if (data.colors.length > 0) resultsContainer.innerHTML += `<div class="pt-4 mt-4"></div>`;
-                    resultsContainer.innerHTML += `<h3 class="text-sm font-semibold text-primary-900 uppercase border-b pb-2 mb-2">Products (${data.products.length})</h3>`;
-                    data.products.forEach(product => {
-                        resultsContainer.innerHTML += `
-                        <a href="${product.url}" class="flex items-center p-2 rounded-lg hover:bg-primary-50 transition-colors" onclick="searchCloseBtn.click()">
-                            <img src="${product.image_url}" alt="${product.name}" class="w-10 h-10 object-cover rounded-md mr-4 flex-shrink-0">
-                            <div>
-                                <p class="font-medium text-primary-900">${product.name}</p>
-                                <p class="text-xs text-gray-500">${product.category}</p>
-                            </div>
-                        </a>`;
-                    });
-                }
-            }
-
-            if (searchOpenBtnDesktop) searchOpenBtnDesktop.addEventListener('click', openSearchModal);
-            if (searchOpenBtnMobile) searchOpenBtnMobile.addEventListener('click', openSearchModal);
-
-            // Save Toggle Button Logic
-            if (csrfToken) {
-                const saveButtons = document.querySelectorAll(".js-save-toggle-btn");
-                saveButtons.forEach(button => {
-                    button.addEventListener("click", async (e) => {
-                        const btn = e.currentTarget;
-                        if (btn.disabled) return;
-                        btn.disabled = true;
-
-                        const icon = btn.querySelector("[data-lucide='heart']");
-                        const text = btn.querySelector(".btn-save-text");
-                        const originalText = text.textContent;
-                        text.textContent = "Updating...";
-
-                        const formData = new FormData();
-                        formData.append(btn.dataset.formKey, btn.dataset.itemId);
-                        formData.append("csrfmiddlewaretoken", csrfToken);
-
-                        try {
-                            const response = await fetch(btn.dataset.url, {
-                                method: "POST",
-                                body: formData,
-                                headers: { "X-Requested-With": "XMLHttpRequest" }
-                            });
-                            const data = await response.json();
-
-                            if (data.status === "success") {
-                                if (data.is_saved) {
-                                    text.textContent = "Saved";
-                                    icon.classList.add("fill-current", "text-red-600");
-                                    btn.classList.add("bg-red-100", "text-red-700", "border-red-200");
-                                    btn.classList.remove("bg-white", "text-gray-700", "border-gray-300", "hover:bg-gray-50");
-                                } else {
-                                    text.textContent = "Save";
-                                    icon.classList.remove("fill-current", "text-red-600");
-                                    btn.classList.remove("bg-red-100", "text-red-700", "border-red-200");
-                                    btn.classList.add("bg-white", "text-gray-700", "border-gray-300", "hover:bg-gray-50");
-                                }
-                            } else {
-                                text.textContent = "Error";
-                                setTimeout(() => { text.textContent = originalText; }, 2000);
-                            }
-                        } catch (error) {
-                            text.textContent = "Error";
-                            setTimeout(() => { text.textContent = originalText; }, 2000);
-                        } finally {
-                            btn.disabled = false;
-                        }
-                    });
-                });
-            }
-
-            // Newsletter Logic
-            const newsletterForm = document.getElementById('newsletter-form');
-            const newsletterMessage = document.getElementById('newsletter-message');
-            const newsletterSubmitBtn = document.getElementById('newsletter-submit-btn');
-            const newsletterEmailInput = document.getElementById('newsletter-email-input');
-
-            if (newsletterForm) {
-                newsletterForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    newsletterSubmitBtn.disabled = true;
-                    newsletterMessage.textContent = "Processing...";
-                    newsletterMessage.className = "mt-2 text-sm font-medium text-primary-300";
-
-                    const formData = new FormData(newsletterForm);
-                    formData.append("csrfmiddlewaretoken", csrfToken);
-
-                    try {
-                        const response = await fetch(newsletterForm.action, {
-                            method: "POST",
-                            body: formData,
-                            headers: { "X-Requested-With": "XMLHttpRequest" }
-                        });
-                        const data = await response.json();
-
-                        if (data.status === 'success') {
-                            newsletterMessage.textContent = data.message;
-                            newsletterMessage.className = "mt-2 text-sm font-medium text-green-400";
-                            newsletterEmailInput.value = '';
-                        } else if (data.status === 'info') {
-                            newsletterMessage.textContent = data.message;
-                            newsletterMessage.className = "mt-2 text-sm font-medium text-yellow-400";
-                        } else {
-                            newsletterMessage.textContent = data.message || "An error occurred.";
-                            newsletterMessage.className = "mt-2 text-sm font-medium text-red-400";
-                        }
-                    } catch (error) {
-                        newsletterMessage.textContent = "Network error. Please try again.";
-                        newsletterMessage.className = "mt-2 text-sm font-medium text-red-400";
-                    } finally {
-                        newsletterSubmitBtn.disabled = false;
-                    }
-                });
-            }
-
-            // Initialize Lucide Icons
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
-        });
-
-        function goBack() {
-            const hasHistory = document.referrer && document.referrer.indexOf(window.location.host) !== -1;
-
-            if (hasHistory) {
-                history.back();
-            } else {
-                window.location.href = "/";
-            }
-        }
+    <script src="{% static 'js/accessibility.js' %}" defer></script>
+    {% if user.is_authenticated %}
+    <script src="{% static 'js/account-menu.js' %}" defer></script>
+    {% endif %}
+    <script src="{% static 'js/skeletons.js' %}" defer></script>
+    <script id="extrapaints-save-config" type="application/json">
+    {"product":"{% url 'save_product_toggle' %}","color":"{% url 'save_color_toggle' %}","idea":"{% url 'save_idea_toggle' %}"}
     </script>
+    {% include "partials/quick_inquiry_modal.html" %}
+
+    <script src="{% static 'js/saved-toggle.js' %}" defer></script>
+    <script src="{% static 'js/scroll-reveal.js' %}" defer></script>
+    <script src="{% static 'js/quick-inquiry.js' %}" defer></script>
+    <script id="extrapaints-live-search-config" type="application/json">{"url":"{% url 'live_search' %}"}</script>
+    <script src="{% static 'js/catalog-pagination.js' %}" defer></script>
+    <script src="{% static 'js/live-search.js' %}" defer></script>
+    <script src="{% static 'js/site-shell.js' %}" defer></script>
+    {% block page_scripts %}{% endblock %}
 </body>
 </html>

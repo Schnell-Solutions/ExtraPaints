@@ -15,7 +15,11 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'monthly'
 
     def items(self):
-        return ['home', 'about', 'contact', 'color_list', 'product_list', 'portfolio_list', 'idea_list']
+        return [
+            'home', 'about', 'contact', 'color_list', 'product_list',
+            'portfolio_list', 'idea_list', 'guide_list',
+            'privacy_policy', 'terms_conditions',
+        ]
 
     def location(self, item):
         return reverse(item)
@@ -61,3 +65,15 @@ class IdeaSitemap(Sitemap):
     def lastmod(self, obj):
         # If Idea doesn't have updated_at, change this to obj.created_at
         return obj.updated_at or obj.created_at
+
+
+class GuideSitemap(Sitemap):
+    changefreq = 'monthly'
+    priority = 0.75
+
+    def items(self):
+        from guides.models import Guide
+        return Guide.objects.filter(is_published=True)
+
+    def lastmod(self, obj):
+        return obj.updated_at

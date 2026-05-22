@@ -1,10 +1,12 @@
 from django.contrib import admin
-from .models import Category, SubCategory, Size, Product, SafetyDocument, SavedProducts
+from .models import (
+    Category, SubCategory, Size, Product, SafetyDocument, SavedProducts,
+    Finish, Surface, ApplicationMethod
+)
 
 
 # ---------- INLINE SETUP ----------
 class SafetyDocumentInline(admin.TabularInline):
-    """Inline to quickly view/edit documents attached to a product."""
     model = SafetyDocument.products.through
     extra = 0
     verbose_name = "Safety Document"
@@ -14,13 +16,32 @@ class SafetyDocumentInline(admin.TabularInline):
 
 
 class SubCategoryInline(admin.TabularInline):
-    """Inline to add subcategories directly from the Main Category page."""
     model = SubCategory
     extra = 1
     prepopulated_fields = {"slug": ("name",)}
 
 
-# ---------- CATEGORY ADMIN (Main Category) ----------
+# ---------- HELPER ADMINS ----------
+@admin.register(Finish)
+class FinishAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug")
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name",)
+
+
+@admin.register(Surface)
+class SurfaceAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
+
+
+@admin.register(ApplicationMethod)
+class ApplicationMethodAdmin(admin.ModelAdmin):
+    list_display = ("name", "icon")
+    search_fields = ("name",)
+
+
+# ---------- CATEGORY ADMIN ----------
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "features_colors", "features_sizes")
@@ -48,7 +69,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     search_fields = ("name", "category__name")
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("category", "name")
-    autocomplete_fields = ("category",) # Useful if you have many main categories
+    autocomplete_fields = ("category",)
 
 
 # ---------- SIZE ADMIN ----------
@@ -65,23 +86,35 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "category",
-        "subcategory", # Added subcategory to list view
+        "subcategory",
+        "finish",
         "is_active",
         "created_at",
     )
     list_filter = (
         "category",
-        "subcategory", # Added subcategory filter
+        "subcategory",
+        "finish",
         "is_active",
         "created_at",
     )
     search_fields = ("name", "description", "category__name", "subcategory__name")
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ("created_at", "updated_at",)
-    filter_horizontal = ("available_colors", "available_sizes")
+
+    # Use filter_horizontal for better UX on ManyToMany fields
+    filter_horizontal = (
+        "available_colors",
+        "available_sizes",
+        "suitable_surfaces",
+        "tools_needed",
+        "other_products_needed",
+        "related_products"
+    )
+
     ordering = ("-created_at",)
     inlines = [SafetyDocumentInline]
-    autocomplete_fields = ("category", "subcategory") # Improves performance with many categories
+    autocomplete_fields = ("category", "subcategory", "finish")
 
     fieldsets = (
         ("Basic Information", {
@@ -93,10 +126,32 @@ class ProductAdmin(admin.ModelAdmin):
             )
         }),
         ("Categorization", {
-             "fields": (
-                 "category",
-                 "subcategory",
-             )
+            "fields": (
+                "category",
+                "subcategory",
+            )
+        }),
+        ("Technical Specifications", {
+            "fields": (
+                "finish",
+                "coverage_rate",
+                "drying_time",
+                "coats_required",
+            )
+        }),
+        ("Application & Usage", {
+            "fields": (
+                "suitable_surfaces",
+                "tools_needed",
+            ),
+            "classes": ("collapse",)
+        }),
+        ("Cross-Selling & Relations", {
+            "fields": (
+                "other_products_needed",
+                "related_products",
+            ),
+            "classes": ("collapse",)
         }),
         ("Options & Availability", {
             "fields": (

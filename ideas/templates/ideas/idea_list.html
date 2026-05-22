@@ -1,22 +1,31 @@
 {% extends "base.html" %}
 {% load static %}
+{% load seo %}
 
-{% block title %}Inspiration Ideas{% endblock %}
+{% block title %}Inspiration Ideas | ExtraPaints{% endblock %}
+{% block description %}Interior and exterior design ideas, color palettes, and painting inspiration from ExtraPaints to help you plan your next project.{% endblock %}
+{% block og_title %}Inspiration Ideas | ExtraPaints{% endblock %}
+{% block og_description %}Interior and exterior design ideas and painting inspiration from ExtraPaints Kenya.{% endblock %}
+{% block twitter_title %}Inspiration Ideas | ExtraPaints{% endblock %}
+{% block twitter_description %}Design ideas and painting inspiration from ExtraPaints Kenya.{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
 
 {% block content %}
-<section class="py-8 md:px-12 bg-neutral-50 min-h-[1000px]">
-  <div class="container mx-auto px-4">
+<section class="section-pad ep-catalog-section lg:px-12 bg-neutral-50">
+  <div class="container mx-auto px-4 max-w-7xl">
+    {% include "partials/breadcrumbs.html" %}
 
-    <div class="text-center mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-4">
-        Inspiration Gallery
-      </h1>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+    <header class="ep-page-header ep-catalog-page-header mb-6 md:mb-8">
+      <h1 class="ep-page-title mb-2">Inspiration Gallery</h1>
+      <p class="ep-lead max-w-2xl">
         Discover paint ideas for every room. Find your next project, save your favorite looks, and shop the colors.
       </p>
-    </div>
+    </header>
 
-    <form id="filters-form" method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+    <form id="filters-form" method="get" class="ep-catalog-filters grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 md:mb-12 text-left">
       {% csrf_token %} <div>
         <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
         <div class="relative filter-select-wrapper">
@@ -63,44 +72,32 @@
       </div>
     </form>
 
-    <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="relative min-h-[280px]">
+    <div id="ideas-grid" class="ep-catalog-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
       {% for idea in ideas %}
-        <div class="group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+        <div class="ep-catalog-card group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
           <div class="relative">
             <a href="{{ idea.get_absolute_url }}">
-                {% if idea.get_display_image %}
-                    <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-64 object-cover rounded-t-md">
+                {% if idea.main_image %}
+                    <img src="{% thumbnail idea.main_image 400 %}" alt="{{ idea.title }}" class="ep-catalog-media ep-catalog-media--idea w-full h-44 sm:h-52 lg:h-64 object-cover rounded-t-md" loading="lazy" width="400" height="256">
+                {% elif idea.get_display_image %}
+                    <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="ep-catalog-media ep-catalog-media--idea w-full h-44 sm:h-52 lg:h-64 object-cover rounded-t-md" loading="lazy">
                 {% else %}
-                    <img src="{{ MEDIA_URL }}default.jpg" alt="{{ idea.title }}" class="w-full h-64 object-cover">
+                    <img src="{% static 'images/extrapaints.jpg' %}" alt="{{ idea.title }}" class="ep-catalog-media ep-catalog-media--idea w-full h-44 sm:h-52 lg:h-64 object-cover rounded-t-md">
                 {% endif %}
             </a>
 
-            {% if user.is_authenticated %}
-            <button
-              class="save-idea-btn absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-all z-10"
-              data-idea-id="{{ idea.id }}"
-              data-is-saved="{{ idea.is_saved|yesno:'true,false' }}"
-              aria-label="Save inspiration idea"
-            >
-              <span class="heart-icon block">
-                {% if idea.is_saved %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                {% else %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                {% endif %}
-              </span>
-            </button>
-          {% endif %}
+            {% include "partials/save_favorite_btn.html" with kind="idea" item_id=idea.id is_saved=idea.is_saved %}
           </div>
 
-          <div class="p-5 flex flex-col flex-grow">
-            <a href="{{ idea.get_absolute_url }}" class="block text-xl font-semibold text-primary-900 hover:underline mb-2">{{ idea.title }}</a>
-            <p class="text-gray-600 text-sm mb-3">
+          <div class="ep-catalog-body p-3 sm:p-5 flex flex-col flex-grow">
+            <a href="{{ idea.get_absolute_url }}" class="ep-catalog-title block text-base sm:text-xl font-semibold text-primary-900 hover:underline mb-1 sm:mb-2">{{ idea.title }}</a>
+            <p class="ep-catalog-desc text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-3">
               {{ idea.description|truncatewords:20 }}
             </p>
-            <div class="flex flex-wrap gap-2 mt-auto pt-4">
+            <div class="flex flex-wrap gap-1 sm:gap-2 mt-auto pt-2 sm:pt-4">
               {% for tag in idea.tags.all %}
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
+                <span class="ep-catalog-tag inline-block px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md text-[10px] sm:text-xs font-medium bg-neutral-100 text-neutral-800">
                   {{ tag.name }}
                 </span>
               {% endfor %}
@@ -112,7 +109,7 @@
         {% if ideas|length == 0 and not search_query and not selected_category and not selected_tag %}
           {# No ideas in the database (initial state) #}
           <div class="col-span-full py-12 flex justify-center items-center h-full">
-            <div id="ideas-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+            <div id="ideas-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-lg mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-sparkles"><path d="M9.9 10.9L17.7 3.1"/><path d="M12.7 20.7L10.9 22.5"/><path d="M16 8l3 3"/><path d="M15 15l2 2"/><path d="M12 2v2"/><path d="M4 12H2"/><path d="M20 12h2"/><path d="M6 6L4 4"/></svg>
               <h3 class="text-xl font-semibold text-primary-900 mb-2">No Inspiration Yet</h3>
               <p class="text-gray-600">
@@ -123,7 +120,7 @@
         {% else %}
           {# No results found due to search or filter criteria #}
           <div class="col-span-full py-12">
-            <div id="ideas-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+            <div id="ideas-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-xl mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-frown"><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><circle cx="12" cy="12" r="10"/><path d="M15 9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/><path d="M9 9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/></svg>
               <h3 class="text-xl font-semibold text-primary-900 mb-2">Nothing Matches Your Search</h3>
               <p class="text-gray-600">
@@ -135,70 +132,75 @@
         {% endif %}
       {% endfor %}
     </div>
+    {% include "partials/pagination.html" %}
+    </div>
 
   </div>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const saveToggleUrl = "{% url 'save_idea_toggle' %}";
   const ideasGrid = document.getElementById('ideas-grid');
+  const filtersForm = document.getElementById('filters-form');
+  const paginationEl = document.getElementById('catalog-pagination');
+  const S = window.ExtraPaintsSkeletons;
+  const P = window.ExtraPaintsPagination;
 
-  // Helper to get the CSRF token from the form
-  function getCsrfToken() {
-    const csrfInput = document.querySelector('form [name="csrfmiddlewaretoken"]');
-    return csrfInput ? csrfInput.value : '';
+  async function fetchIdeas(url) {
+    if (S) S.showIdeaGrid(ideasGrid);
+    try {
+      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      renderIdeas(data.ideas);
+      if (P) P.update(paginationEl, data);
+    } catch (err) {
+      console.error(err);
+      ideasGrid.innerHTML = '<div class="col-span-full py-12 text-center text-red-600">Could not load ideas.</div>';
+    } finally {
+      if (S) S.clearBusy(ideasGrid);
+    }
   }
 
-  // --- AJAX SAVE/UNSAVE IDEA (Event Delegation) ---
-  if (ideasGrid) {
-    ideasGrid.addEventListener('click', async (e) => {
-      const button = e.target.closest('.save-idea-btn');
-      if (!button) return;
+  function renderIdeas(ideas) {
+    if (!ideas.length) {
+      ideasGrid.innerHTML = `<div class="col-span-full py-12"><div class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-xl mx-auto"><h3 class="text-xl font-semibold text-primary-900 mb-2">Nothing Matches</h3><p class="text-gray-600 mb-4">Try broadening your filters.</p><a href="${window.location.pathname}" class="inline-block px-6 py-2 bg-primary-900 text-white rounded text-sm">Clear filters</a></div></div>`;
+      return;
+    }
+    const heartSaved = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    const heartUnsaved = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    ideasGrid.innerHTML = ideas.map(idea => {
+      const tags = (idea.tags || []).map(t => `<span class="ep-catalog-tag inline-block px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md text-[10px] sm:text-xs font-medium bg-neutral-100 text-neutral-800">${t}</span>`).join('');
+      const saveBtn = `
+        <button type="button" class="ep-save-btn save-idea-btn absolute top-3 right-3 z-20 p-2 rounded-full bg-white shadow-md ring-1 ring-black/10 text-neutral-600 hover:text-red-600 hover:bg-red-50 transition-all" data-idea-id="${idea.id}" data-is-saved="${idea.is_saved ? 'true' : 'false'}" aria-label="Save idea to collection" title="Add to favorites"><span class="heart-icon block pointer-events-none">${idea.is_saved ? heartSaved : heartUnsaved}</span></button>`;
+      return `<div class="ep-catalog-card group bg-white rounded-md border border-neutral-200 hover:shadow transition-all relative flex flex-col">
+        <div class="relative"><a href="${idea.url}"><img src="${idea.image_url}" alt="${idea.title}" class="ep-catalog-media ep-catalog-media--idea w-full h-44 sm:h-52 lg:h-64 object-cover rounded-t-md" loading="lazy"></a>${saveBtn}</div>
+        <div class="ep-catalog-body p-3 sm:p-5 flex flex-col flex-grow"><a href="${idea.url}" class="ep-catalog-title block text-base sm:text-xl font-semibold text-primary-900 hover:underline mb-1 sm:mb-2">${idea.title}</a><p class="ep-catalog-desc text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-3">${idea.description_excerpt}</p><div class="flex flex-wrap gap-1 sm:gap-2 mt-auto pt-2 sm:pt-4">${tags}</div></div></div>`;
+    }).join('');
+    if (S) S.staggerChildren(ideasGrid);
+  }
 
+  if (filtersForm) {
+    filtersForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const ideaId = button.dataset.ideaId;
-      if (!ideaId) return;
+      const url = `${window.location.pathname}?${new URLSearchParams(new FormData(filtersForm)).toString()}`;
+      window.history.pushState({}, '', url);
+      fetchIdeas(url);
+    });
+    filtersForm.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const url = `${window.location.pathname}?${new URLSearchParams(new FormData(filtersForm)).toString()}`;
+        window.history.pushState({}, '', url);
+        fetchIdeas(url);
+      });
+    });
+  }
+  window.addEventListener('popstate', () => fetchIdeas(window.location.href));
 
-      button.disabled = true;
-
-      try {
-        const response = await fetch(saveToggleUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': getCsrfToken()
-          },
-          body: `idea_id=${ideaId}`
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-
-        if (data.status === 'success') {
-          const heartIcon = button.querySelector('.heart-icon');
-          const svgElement = heartIcon.querySelector('svg');
-
-          if (svgElement) {
-            if (data.is_saved) {
-              svgElement.setAttribute('fill', 'red');
-              svgElement.setAttribute('stroke', 'red');
-              button.dataset.isSaved = 'true';
-            } else {
-              svgElement.setAttribute('fill', 'none');
-              svgElement.setAttribute('stroke', 'currentColor');
-              button.dataset.isSaved = 'false';
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Failed to toggle save:', error);
-      } finally {
-        button.disabled = false;
-      }
+  if (P) {
+    P.bind(paginationEl, (url) => {
+      window.history.pushState({}, '', url);
+      fetchIdeas(url);
     });
   }
 

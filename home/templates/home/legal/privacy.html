@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy {{ page_title_suffix }}{% endblock %}
+{% block description %}How ExtraPaints collects, uses, and protects your personal information when you request quotations or contact our sales team.{% endblock %}
+
+{% block content %}
+<article class="container mx-auto max-w-3xl px-4 py-12 md:py-16 prose prose-neutral">
+  <h1>Privacy Policy</h1>
+  <p class="text-gray-600">Last updated: {% now "F Y" %}</p>
+  <p>{{ brand_name }} (“we”, “us”) respects your privacy. This policy explains how we handle information when you use our website, request quotations, or contact our sales team in Kenya.</p>
+  <h2>Information we collect</h2>
+  <ul>
+    <li>Contact details you provide (name, email, phone) on quote requests, contact forms, or account registration.</li>
+    <li>Project and product information you include in inquiry messages.</li>
+    <li>Technical data such as IP address and browser type for security and rate limiting.</li>
+  </ul>
+  <h2>How we use information</h2>
+  <ul>
+    <li>Prepare and respond to tailored paint quotations.</li>
+    <li>Provide technical and sales support to contractors and customers.</li>
+    <li>Improve our website and prevent abuse.</li>
+  </ul>
+  <h2>Sharing</h2>
+  <p>We do not sell personal data. We may share information with service providers (e.g. email delivery) solely to operate our business.</p>
+  <h2>Your rights</h2>
+  <p>Contact us at <a href="mailto:{{ business_email }}">{{ business_email }}</a> to request access, correction, or deletion of your data where applicable.</p>
+  <p><a href="{% url 'contact' %}">Contact sales</a> · <a href="{% url 'terms_conditions' %}">Terms &amp; Conditions</a></p>
+</article>
+{% endblock %}

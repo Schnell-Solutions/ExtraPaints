@@ -1,15 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Address
+from django.utils import timezone
+from .models import User, Address, AccountDeletionRequest, AuthOTP
 
 
 # --- Address Inline (for displaying addresses within the User Admin) ---
 class AddressInline(admin.TabularInline):
-    """
-    Displays the user's saved addresses directly within the User Admin page.
-    """
+    """Future distributor portal — not used in quote flow."""
     model = Address
-    extra = 1  # Number of empty forms to display
+    extra = 0
+    max_num = 5
+    classes = ('collapse',)
+    verbose_name = 'Future address (optional)'
+    verbose_name_plural = 'Future addresses (quote flow does not use these yet)'
     fields = (
         "label",
         "street_address",
@@ -86,30 +89,41 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
-# --- Address Admin ---
-@admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
-    """
-    Admin configuration for the Address model.
-    """
+@admin.register(AccountDeletionRequest)
+class AccountDeletionRequestAdmin(admin.ModelAdmin):
     list_display = (
-        "user",
-        "label",
-        "city",
-        "region",
-        "is_default",
+        'requested_at', 'email_snapshot', 'username_snapshot',
+        'status', 'user', 'ip_address',
     )
-    list_filter = ("country", "region", "is_default")
-
-    # Use autocomplete for the user ForeignKey for better performance
-    # when you have many users.
-    autocomplete_fields = ("user",)
-
-    search_fields = (
-        "user__username",
-        "user__email",
-        "label",
-        "street_address",
-        "city"
+    list_filter = ('status', 'requested_at')
+    search_fields = ('email_snapshot', 'username_snapshot', 'full_name_snapshot')
+    readonly_fields = (
+        'user', 'email_snapshot', 'username_snapshot', 'full_name_snapshot',
+        'reason', 'requested_at', 'ip_address',
     )
-    ordering = ("user__username", "-is_default", "label")
+    actions = ['mark_completed', 'mark_cancelled']
+
+    @admin.action(description='Mark selected as completed')
+    def mark_completed(self, request, queryset):
+        queryset.update(
+            status=AccountDeletionRequest.Status.COMPLETED,
+            processed_at=timezone.now(),
+        )
+
+    @admin.action(description='Mark selected as cancelled')
+    def mark_cancelled(self, request, queryset):
+        queryset.update(
+            status=AccountDeletionRequest.Status.CANCELLED,
+            processed_at=timezone.now(),
+        )
+
+
+@admin.register(AuthOTP)
+class AuthOTPAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'user', 'purpose', 'expires_at', 'attempts', 'is_used')
+    list_filter = ('purpose', 'is_used', 'created_at')
+    search_fields = ('user__email', 'user__username')
+    readonly_fields = ('user', 'purpose', 'code_hash', 'created_at', 'expires_at', 'attempts', 'is_used')
+
+
+# Address is reserved for a future distributor portal — manage via User inline only.

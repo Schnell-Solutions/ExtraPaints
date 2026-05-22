@@ -61,34 +61,50 @@ class QuoteList:
         from colors.models import Color
 
         item_keys = list(self.quote_list.keys())
+        if not item_keys:
+            return
+
+        payloads = []
         for item_key in item_keys:
             item_data = self.quote_list.get(item_key)
-            if not item_data:
+            if item_data:
+                payloads.append((item_key, item_data))
+
+        product_ids = {d['product_id'] for _, d in payloads}
+        color_ids = {d['color_id'] for _, d in payloads if d.get('color_id') is not None}
+        size_ids = {d['size_id'] for _, d in payloads if d.get('size_id') is not None}
+
+        products = {p.id: p for p in Product.objects.filter(id__in=product_ids)}
+        colors = {c.id: c for c in Color.objects.filter(id__in=color_ids)} if color_ids else {}
+        sizes = {s.id: s for s in Size.objects.filter(id__in=size_ids)} if size_ids else {}
+
+        for item_key, item_data in payloads:
+            product = products.get(item_data['product_id'])
+            if not product:
+                self.remove(item_key)
                 continue
 
-            try:
-                product = Product.objects.get(id=item_data['product_id'])
+            color = None
+            if item_data['color_id'] is not None:
+                color = colors.get(item_data['color_id'])
+                if not color:
+                    self.remove(item_key)
+                    continue
 
-                # Handle optional color
-                color = None
-                if item_data['color_id'] is not None:
-                    color = Color.objects.get(id=item_data['color_id'])
+            size = None
+            if item_data['size_id'] is not None:
+                size = sizes.get(item_data['size_id'])
+                if not size:
+                    self.remove(item_key)
+                    continue
 
-                # Handle optional size
-                size = None
-                if item_data['size_id'] is not None:
-                    size = Size.objects.get(id=item_data['size_id'])
-
-                item = {
-                    'key': item_key,
-                    'product': product,
-                    'color': color,
-                    'size': size,
-                    'quantity': item_data['quantity']
-                }
-                yield item
-            except (Product.DoesNotExist, Color.DoesNotExist, Size.DoesNotExist):
-                self.remove(item_key)
+            yield {
+                'key': item_key,
+                'product': product,
+                'color': color,
+                'size': size,
+                'quantity': item_data['quantity'],
+            }
 
     def __len__(self):
         """Returns the total number of items in the list."""

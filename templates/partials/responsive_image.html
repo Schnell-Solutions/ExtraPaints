@@ -1,0 +1,13 @@
+{% load seo %}
+{# Prefer explicit width/height to reduce CLS; lazy-load below-the-fold images #}
+{% if src %}
+<img
+  src="{{ src }}"
+  alt="{{ alt }}"
+  class="{{ css_class }}"
+  {% if width %}width="{{ width }}"{% endif %}
+  {% if height %}height="{{ height }}"{% endif %}
+  {% if lazy %}loading="lazy" decoding="async"{% else %}loading="eager" decoding="async" fetchpriority="high"{% endif %}
+  {% if sizes %}sizes="{{ sizes }}"{% endif %}
+>
+{% endif %}

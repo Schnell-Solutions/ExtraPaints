@@ -1,0 +1,53 @@
+{% if user.is_authenticated %}
+<div class="relative" id="account-menu-wrap">
+  <button
+    type="button"
+    id="account-menu-btn"
+    class="inline-flex items-center gap-2 pl-1 pr-2.5 py-1.5 rounded-md border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-primary-900 ep-focus-ring"
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="account-menu-dropdown"
+  >
+    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-900 text-white text-xs font-bold uppercase" aria-hidden="true">
+      {% with name=user.full_name|default:user.username %}
+        {{ name|slice:":1" }}
+      {% endwith %}
+    </span>
+    <span class="max-w-[7rem] truncate hidden lg:inline text-left">
+      {{ user.full_name|default:user.username }}
+    </span>
+    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-500 shrink-0" aria-hidden="true"></i>
+  </button>
+
+  <div
+    id="account-menu-dropdown"
+    class="hidden absolute right-0 mt-2 w-60 rounded-md border border-gray-200 bg-white shadow-lg py-1 z-[60]"
+    role="menu"
+  >
+    <div class="px-4 py-3 border-b border-gray-100">
+      <p class="text-sm font-semibold text-gray-900 truncate">{{ user.full_name|default:user.username }}</p>
+      <p class="text-xs text-gray-500 truncate mt-0.5">{{ user.email }}</p>
+    </div>
+    <a href="{% url 'profile' %}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-900" role="menuitem">
+      <i data-lucide="settings" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+      Account settings
+    </a>
+    <a href="{% url 'my_collection' %}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-900" role="menuitem">
+      <i data-lucide="heart" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+      My collection
+    </a>
+    <a href="{% url 'quote_detail' %}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-900" role="menuitem">
+      <i data-lucide="clipboard-list" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+      My quote list
+    </a>
+    <div class="border-t border-gray-100 my-1"></div>
+    <form method="post" action="{% url 'logout' %}" class="block" role="none">
+      {% csrf_token %}
+      <button type="submit" class="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 text-left" role="menuitem">
+        <i data-lucide="log-out" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+        Sign out
+      </button>
+    </form>
+  </div>
+</div>
+{% endif %}

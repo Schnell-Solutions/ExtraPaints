@@ -22,31 +22,8 @@ class ColorCollection(models.Model):
         super().save(*args, **kwargs)
 
 
-class Finish(models.Model):
-    """Paint finishes like Matte, Satin, Gloss."""
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
-class Surface(models.Model):
-    """Surface recommendations (walls, wood, metal, etc.)."""
-    name = models.CharField(max_length=50, unique=True)
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
 class RoomType(models.Model):
-    """Room or area recommendations."""
+    """Room or area recommendations (Color Psychology)."""
     name = models.CharField(max_length=50, unique=True)
 
     class Meta:
@@ -66,38 +43,36 @@ class ColorImage(models.Model):
 
 
 class Color(models.Model):
-    """Master table for available colors with detailed attributes."""
+    """Master table for available colors (Visual Attributes Only)."""
 
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=50, unique=True, help_text="e.g., OB-202")
     slug = models.SlugField(max_length=150, unique=True, blank=True)
 
+    # --- Visual Identifiers ---
     hex_code = models.CharField(max_length=7, blank=True, null=True, help_text="Optional HEX code for display")
     rgb_value = models.CharField(max_length=20, blank=True, null=True)
     cmyk_value = models.CharField(max_length=20, blank=True, null=True)
 
+    # --- Color Properties (Pigment Data) ---
     undertone = models.CharField(
         max_length=50,
         choices=[("warm", "Warm"), ("cool", "Cool"), ("neutral", "Neutral")],
         blank=True, null=True
     )
-    lrv = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, help_text="Light Reflectance Value")
+    lrv = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, help_text="Light Reflectance Value (0-100)")
     opacity_strength = models.CharField(
         max_length=50,
         choices=[("weak", "Weak"), ("medium", "Medium"), ("strong", "Strong")],
-        blank=True, null=True
+        blank=True, null=True,
+        help_text="Pigment coverage strength"
     )
     description = models.TextField(blank=True, null=True)
 
+    # --- Relationships ---
     collection = models.ForeignKey("ColorCollection", on_delete=models.SET_NULL, null=True, blank=True)
-    available_finishes = models.ManyToManyField("Finish", blank=True, related_name="colors")
-    recommended_surfaces = models.ManyToManyField("Surface", blank=True, related_name="colors")
     recommended_rooms = models.ManyToManyField("RoomType", blank=True, related_name="colors")
     inspiration_images = models.ManyToManyField("ColorImage", blank=True, related_name="colors")
-
-    coverage_per_liter = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    drying_time_hours = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    voc_level = models.CharField(max_length=50, blank=True, null=True)
 
     main_image = models.ImageField(upload_to="colors/swatches/", blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -114,16 +89,14 @@ class Color(models.Model):
         return f"{self.name} ({self.code})"
 
     def save(self, *args, **kwargs):
-        # Automatically generate slug if not set
         if not self.slug:
             base_slug = slugify(f"{self.name}-{self.code}")
             slug = base_slug
-            # Ensure uniqueness
             counter = 1
             while Color.objects.filter(slug=slug).exclude(pk=self.pk).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
-            self.slug = slug[:150]  # truncate safely
+            self.slug = slug[:150]
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -131,9 +104,7 @@ class Color(models.Model):
 
 
 class SavedColor(models.Model):
-    """
-    Stores colors that users have saved (favorites/bookmarks).
-    """
+    """Stores colors that users have saved (favorites/bookmarks)."""
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_colors"
     )

@@ -1,20 +1,30 @@
 {% extends "base.html" %}
+{% load static %}
+{% load seo %}
 
-{% block title %}Our Portfolio{% endblock %}
+{% block title %}Our Portfolio | ExtraPaints{% endblock %}
+{% block description %}See residential, commercial, and industrial projects completed with ExtraPaints products across Kenya.{% endblock %}
+{% block og_title %}Our Portfolio | ExtraPaints{% endblock %}
+{% block og_description %}Explore completed painting projects showcasing ExtraPaints quality across Kenya.{% endblock %}
+{% block twitter_title %}Our Portfolio | ExtraPaints{% endblock %}
+{% block twitter_description %}Completed painting projects with ExtraPaints across Kenya.{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
 
 {% block content %}
-<section class="py-8 md:px-12 md:py-12 bg-neutral-50 min-h-[1000px]">
-  <div class="container mx-auto px-4">
-    <div class="text-center mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-primary-900 mb-2">
-        Our Portfolio
-      </h1>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+<section class="section-pad ep-catalog-section lg:px-12 bg-neutral-50">
+  <div class="container mx-auto px-4 max-w-7xl">
+    {% include "partials/breadcrumbs.html" %}
+    <header class="ep-page-header ep-catalog-page-header mb-6 md:mb-8">
+      <h1 class="ep-page-title mb-2">Our Portfolio</h1>
+      <p class="ep-lead max-w-2xl">
         See how our products have transformed spaces, from cozy homes to large-scale commercial properties.
       </p>
-    </div>
+    </header>
 
-    <div class="mb-8 flex justify-center">
+    <div class="ep-catalog-filters mb-6 md:mb-8 flex flex-wrap justify-start gap-3 sm:gap-4 items-center text-left">
       <form method="get" class="flex flex-wrap gap-4 items-center">
         {% csrf_token %} <label for="type-filter" class="text-sm font-medium text-gray-700">Filter by type:</label>
 
@@ -23,7 +33,6 @@
             name="type"
             id="type-filter"
             class="pl-4 pr-10 py-2 border rounded text-sm text-primary-900 bg-white focus:outline-none focus:border-primary-900 appearance-none"
-            onchange="this.form.submit()"
           >
             <option value="">All Project Types</option>
             {% for value, display_name in project.PROJECT_TYPES %}
@@ -49,25 +58,28 @@
       </form>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="relative min-h-[280px]">
+    <div id="portfolio-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {% for project in projects %}
         <a href="{{ project.get_absolute_url }}" class="group block bg-white rounded-md border border-neutral-200 overflow-hidden transition-all duration-300 hover:shadow flex flex-col">
           <div class="h-60 w-full overflow-hidden">
-              {% if project.get_display_image %}
-                  <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full h-full object-cover rounded-t-md">
+              {% if project.featured_image %}
+                  <img src="{% thumbnail project.featured_image 400 %}" alt="{{ project.title }}" class="w-full h-full object-cover rounded-t-md" loading="lazy" width="400" height="300">
+              {% elif project.get_display_image %}
+                  <img src="{{ project.get_display_image }}" alt="{{ project.title }}" class="w-full h-full object-cover rounded-t-md" loading="lazy" width="400" height="300">
               {% else %}
-                  <img src="{{ MEDIA_URL }}default.jpg" alt="{{ project.title }}" class="w-full h-full object-cover">
+                  <img src="{% static 'images/extrapaints.jpg' %}" alt="{{ project.title }}" class="w-full h-full object-cover">
               {% endif %}
           </div>
 
-          <div class="p-5 flex flex-col flex-grow">
-            <span class="text-xs font-semibold uppercase tracking-wider text-primary-700 bg-primary-50 px-2 py-0.5 rounded">
+          <div class="ep-catalog-body p-3 sm:p-5 flex flex-col flex-grow">
+            <span class="ep-catalog-tag text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-primary-700 bg-primary-50 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded w-fit">
               {{ project.get_project_type_display }}
             </span>
-            <h3 class="text-xl font-semibold text-primary-900 mt-3 mb-2">
+            <h3 class="ep-catalog-title text-sm sm:text-xl font-semibold text-primary-900 mt-2 sm:mt-3 mb-1 sm:mb-2 line-clamp-2">
               {{ project.title }}
             </h3>
-            <p class="text-sm text-gray-600 mt-auto pt-4">
+            <p class="text-[10px] sm:text-sm text-gray-600 mt-auto pt-2 sm:pt-4 line-clamp-1">
               {{ project.location|default:"Location not specified" }}
             </p>
           </div>
@@ -77,7 +89,7 @@
         {% if projects|length == 0 and not selected_type %}
           {# No projects in the database (initial state) #}
           <div class="col-span-full py-12 flex justify-center items-center h-full">
-            <div id="portfolio-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-lg mx-auto">
+            <div id="portfolio-empty-state-initial" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-lg mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-gallery-horizontal-end"><path d="M7 2h13a2 2 0 0 1 2 2v13"/><path d="M17 17V7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
               <h3 class="text-xl font-semibold text-primary-900 mb-2">Portfolio Under Development</h3>
               <p class="text-gray-600">
@@ -88,7 +100,7 @@
         {% else %}
           {# No results found due to filter criteria #}
           <div class="col-span-full py-12">
-            <div id="portfolio-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 max-w-xl mx-auto">
+            <div id="portfolio-empty-state-filter" class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-xl mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 mx-auto text-gray-400 mb-3 lucide lucide-list-x"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="m19 10-2 2 2 2"/><path d="m19 14-2-2 2-2"/></svg>
               <h3 class="text-xl font-semibold text-primary-900 mb-2">No Projects Found</h3>
               <p class="text-gray-600">
@@ -100,12 +112,74 @@
         {% endif %}
       {% endfor %}
     </div>
+    {% include "partials/pagination.html" %}
+    </div>
 
   </div>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const portfolioGrid = document.getElementById('portfolio-grid');
+  const paginationEl = document.getElementById('catalog-pagination');
+  const typeFilter = document.getElementById('type-filter');
+  const filterForm = typeFilter ? typeFilter.closest('form') : null;
+  const S = window.ExtraPaintsSkeletons;
+  const P = window.ExtraPaintsPagination;
+
+  async function fetchProjects(url) {
+    if (S) S.showPortfolioGrid(portfolioGrid);
+    try {
+      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      renderProjects(data.projects);
+    } catch (err) {
+      console.error(err);
+      portfolioGrid.innerHTML = '<div class="col-span-full py-12 text-center text-red-600">Could not load projects.</div>';
+    } finally {
+      if (S) S.clearBusy(portfolioGrid);
+    }
+  }
+
+  function renderProjects(projects) {
+    if (!projects.length) {
+      portfolioGrid.innerHTML = `<div class="col-span-full py-12"><div class="text-center py-8 px-12 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 max-w-xl mx-auto"><h3 class="text-xl font-semibold text-primary-900 mb-2">No Projects Found</h3><a href="${window.location.pathname}" class="mt-4 inline-block px-6 py-2 bg-primary-900 text-white rounded text-sm">View all</a></div></div>`;
+      return;
+    }
+    portfolioGrid.innerHTML = projects.map(p => `
+      <a href="${p.url}" class="ep-catalog-card group block bg-white rounded-md border border-neutral-200 overflow-hidden transition-all duration-300 hover:shadow flex flex-col">
+        <div class="ep-catalog-media ep-catalog-media--portfolio h-32 sm:h-48 lg:h-60 w-full overflow-hidden"><img src="${p.image_url}" alt="${p.title}" class="w-full h-full object-cover rounded-t-md" loading="lazy"></div>
+        <div class="ep-catalog-body p-3 sm:p-5 flex flex-col flex-grow"><span class="ep-catalog-tag text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-primary-700 bg-primary-50 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded w-fit">${p.project_type}</span><h3 class="ep-catalog-title text-sm sm:text-xl font-semibold text-primary-900 mt-2 sm:mt-3 mb-1 sm:mb-2 line-clamp-2">${p.title}</h3><p class="text-[10px] sm:text-sm text-gray-600 mt-auto pt-2 sm:pt-4 line-clamp-1">${p.location || 'Location not specified'}</p></div>
+      </a>`).join('');
+    if (S) S.staggerChildren(portfolioGrid);
+  }
+
+  if (typeFilter && filterForm) {
+    typeFilter.addEventListener('change', () => {
+      const url = `${window.location.pathname}?${new URLSearchParams(new FormData(filterForm)).toString()}`;
+      window.history.pushState({}, '', url);
+      fetchProjects(url);
+    });
+    const clearLink = filterForm.querySelector('a');
+    if (clearLink && clearLink.textContent.trim() === 'Clear') {
+      clearLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        typeFilter.value = '';
+        window.history.pushState({}, '', window.location.pathname);
+        fetchProjects(window.location.pathname);
+      });
+    }
+  }
+  window.addEventListener('popstate', () => fetchProjects(window.location.href));
+
+  if (P) {
+    P.bind(paginationEl, (url) => {
+      window.history.pushState({}, '', url);
+      fetchProjects(url);
+    });
+  }
+
   // --- ANIMATE SELECT ARROWS ---
   document.querySelectorAll('.filter-select-wrapper').forEach(wrapper => {
     const select = wrapper.querySelector('select');

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify email | ExtraPaints{% endblock %}
+{% block description %}Enter your email verification code.{% endblock %}
+
+{% block content %}
+<section class="ep-auth-page">
+  <div class="ep-auth-container">
+    <h1 class="ep-page-title">Verify email</h1>
+    <p class="ep-auth-lead">
+      {% if masked_email %}
+        Enter the code sent to {{ masked_email }}.
+      {% else %}
+        Enter the 6-digit code from your email.
+      {% endif %}
+    </p>
+
+    {% include 'accounts/partials/_auth_messages.html' %}
+
+    {% if not has_session %}
+      <div class="ep-auth-alert ep-auth-alert--info mt-6" role="status">
+        <a href="{% url 'resend_verification' %}" class="font-semibold text-primary-900 underline">Request a new code</a>
+      </div>
+    {% else %}
+      <form method="post" class="ep-auth-form" novalidate>
+        {% csrf_token %}
+        {% include 'accounts/partials/_auth_field.html' with field=form.code %}
+        <p class="ep-auth-otp-hint">Expires in 15 minutes</p>
+        <button type="submit" class="ep-btn ep-btn-primary w-full mt-6 py-3">Verify</button>
+      </form>
+    {% endif %}
+
+    <p class="ep-auth-footer">
+      <a href="{% url 'resend_verification' %}">Resend code</a>
+      &middot;
+      <a href="{% url 'login' %}">Sign in</a>
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{% static 'js/auth-password-toggle.js' %}" defer></script>
+{% endblock %}

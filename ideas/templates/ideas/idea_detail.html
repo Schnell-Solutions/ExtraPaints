@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
+{% load seo %}
 
-{% block title %}{{ idea.title }} - Inspiration{% endblock %}
+{% block title %}{{ idea.title }} - Inspiration | ExtraPaints{% endblock %}
+{% block description %}{{ idea.description|striptags|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ idea.title }} - Inspiration | ExtraPaints{% endblock %}
+{% block og_description %}{{ idea.description|striptags|truncatechars:200 }}{% endblock %}
+{% block og_image %}{% if idea.main_image %}{% absolute_media request idea.main_image %}{% else %}{% absolute_static request 'images/extrapaints.jpg' %}{% endif %}{% endblock %}
+{% block twitter_title %}{{ idea.title }} - Inspiration | ExtraPaints{% endblock %}
+{% block twitter_description %}{{ idea.description|striptags|truncatechars:200 }}{% endblock %}
+{% block twitter_image %}{% if idea.main_image %}{% absolute_media request idea.main_image %}{% else %}{% absolute_static request 'images/extrapaints.jpg' %}{% endif %}{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
 
 {% block content %}
 <section class="py-8 md:py-12 md:px-12 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
+    {% include "partials/breadcrumbs.html" %}
 
     <div class="mb-6">
       <button
@@ -15,7 +28,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Inspiration
+          Go Back
       </button>
     </div>
 
@@ -23,48 +36,32 @@
       <span class="text-xs md:text-sm text-gray-500 uppercase tracking-wider mb-2 block">
         {{ idea.category.name|default:"General Idea" }}
       </span>
-      <h1 class="text-2xl md:text-3xl font-bold text-primary-900 mb-3 md:mb-4 leading-tight">
+      <h1 class="ep-section-title mb-3 md:mb-4 leading-tight">
         {{ idea.title }}
       </h1>
-      <p class="text-base md:text-lg text-gray-600 max-w-3xl leading-relaxed">
+      <p class="text-base md:ep-lead max-w-3xl leading-relaxed">
         {{ idea.description }}
       </p>
     </div>
 
     <div class="relative mb-8 md:mb-12">
-      <div class="w-full h-[250px] sm:h-[350px] md:h-[500px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+      <div class="w-full h-[250px] sm:h-[350px] md:h-[500px] rounded-md overflow-hidden border border-gray-200 bg-gray-50 relative">
           {% if idea.get_display_image %}
               <img src="{{ idea.get_display_image }}" alt="{{ idea.title }}" class="w-full h-full object-cover">
           {% else %}
-              <img src="{{ MEDIA_URL }}default.jpg" alt="{{ idea.title }}" class="w-full h-full object-cover opacity-50">
+              <img src="{% static 'images/extrapaints.jpg' %}" alt="{{ idea.title }}" class="w-full h-full object-cover opacity-50">
           {% endif %}
+          {% include "partials/save_favorite_btn.html" with kind="idea" item_id=idea.id is_saved=is_saved position="top-4 right-4" %}
       </div>
-
-      {% if user.is_authenticated %}
-      <button
-        class="save-idea-btn absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-neutral-400 hover:text-red-500 hover:bg-red-50 transition-all z-10"
-        data-idea-id="{{ idea.id }}"
-        data-is-saved="{{ is_saved|yesno:'true,false' }}"
-        aria-label="Save idea"
-      >
-        <span class="heart-icon block">
-          {% if is_saved %}
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          {% endif %}
-        </span>
-      </button>
-      {% endif %}
     </div>
 
     {% if idea.paint_colors.exists %}
     <div class="py-6 md:py-10 border-t border-gray-100">
-      <h2 class="text-xl md:text-2xl font-bold text-primary-900 mb-4 md:mb-6">Shop the Look</h2>
+      <h2 class="ep-section-title mb-4 md:mb-6">Shop the Look</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
         {% for color in idea.paint_colors.all %}
           <a href="{% url 'color_detail' color.slug %}" class="group block">
-            <div class="w-full h-20 md:h-24 rounded-lg shadow-sm border border-gray-200 transition-transform group-hover:scale-105" style="background-color: {{ color.hex_code|default:'#eee' }};"></div>
+            <div class="w-full h-20 md:h-24 rounded-md shadow-sm border border-gray-200 transition-transform group-hover:scale-105" style="background-color: {{ color.hex_code|default:'#eee' }};"></div>
             <p class="mt-2 md:mt-3 text-sm font-semibold text-gray-900 group-hover:text-primary-700 text-center truncate">
               {{ color.name }}
             </p>
@@ -77,11 +74,11 @@
 
     {% if idea.images.exists %}
     <div class="py-6 md:py-10 border-t border-gray-100">
-      <h3 class="text-xl md:text-2xl font-bold text-primary-900 mb-4 md:mb-6">Gallery</h3>
+      <h3 class="ep-section-title mb-4 md:mb-6">Gallery</h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {% for img in idea.images.all %}
           <div class="group">
-            <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm group-hover:shadow-md transition-all duration-300">
+            <div class="overflow-hidden rounded-md border border-gray-200 shadow-sm group-hover:shadow-md transition-all duration-300">
                 {% if img.image %}
                     <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Inspiration image' }}" class="w-full h-56 md:h-64 object-cover transform group-hover:scale-105 transition-transform duration-500">
                 {% else %}
@@ -117,10 +114,10 @@
 
     {% if related_ideas %}
     <div class="py-8 md:py-12 border-t border-gray-200 mt-4 md:mt-8">
-      <h2 class="text-xl md:text-2xl font-bold text-primary-900 mb-6 md:mb-8">You Might Also Like</h2>
+      <h2 class="ep-section-title mb-6 md:mb-8">You Might Also Like</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {% for related_idea in related_ideas %}
-          <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div class="group bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
             <a href="{{ related_idea.get_absolute_url }}" class="block relative h-48 overflow-hidden bg-gray-100">
                 {% if related_idea.get_display_image %}
                     <img src="{{ related_idea.get_display_image }}" alt="{{ related_idea.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -146,6 +143,8 @@
     </div>
     {% endif %}
 
+    {% include "partials/internal_links.html" with link_ideas=related_ideas section_title="Colors & related inspiration" %}
+
   </div>
 </section>
 
@@ -153,46 +152,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  const saveButton = document.querySelector('.save-idea-btn');
-  const getCsrfToken = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
-
-  if (saveButton) {
-    saveButton.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const ideaId = saveButton.dataset.ideaId;
-      if (!ideaId) return;
-
-      saveButton.disabled = true;
-
-      try {
-        const response = await fetch("{% url 'save_idea_toggle' %}", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': getCsrfToken()
-          },
-          body: `idea_id=${ideaId}`
-        });
-
-        const data = await response.json();
-
-        if (data.status === 'success') {
-          const heartIcon = saveButton.querySelector('.heart-icon');
-          if (data.is_saved) {
-            heartIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/></svg>';
-            saveButton.dataset.isSaved = 'true';
-          } else {
-            heartIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-            saveButton.dataset.isSaved = 'false';
-          }
-        }
-      } catch (error) {
-        console.error('Failed to toggle save:', error);
-      } finally {
-        saveButton.disabled = false;
-      }
-    });
-  }
 });
 </script>
 {% endblock %}

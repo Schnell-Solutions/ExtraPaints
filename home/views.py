@@ -1,13 +1,22 @@
-import json
+import logging
+import random
+import re
+
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
+from django.http import HttpResponse
 from django.contrib import messages
-from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+
+from core.forms import ContactForm, QuickInquiryForm
+from core.services.email import InquiryEmailService
+from core.services.guest_saves import guest_saved_ids
+from core.services.inquiry import confirm_to_customer, notify_sales
+from core.services.rate_limit import rate_limit
+
+logger = logging.getLogger(__name__)
 
 # --- Imported Models ---
 from colors.models import Color, SavedColor
@@ -15,92 +24,73 @@ from ideas.models import SavedIdea
 # NOTE: Ensure 'Category' here refers to your MainCategory model if you renamed it.
 # Based on your previous requests, it seems 'Category' is now the main one.
 from products.models import Product, Category, SubCategory, SavedProducts
+from home.catalog import build_category_filters, products_for_filter
 from .models import NewsletterSubscriber, Newsletter
 
 
-def index(request):
-    """
-    View for the homepage.
-    Fetches categories for filter buttons.
-    If a category has subcategories, it uses those for the filter buttons.
-    If it doesn't, it uses the main category itself.
-    """
-
-    # 1. Fetch all main categories with their subcategories pre-fetched
-    main_categories = Category.objects.prefetch_related('subcategories').order_by('name')
-
-    # 2. Build the list of filter names (mixed main and sub categories)
-    filter_names = []
-    # We also need a mapping to know which filter name corresponds to which actual DB lookup later
-    filter_map = {}
-
-    for main_cat in main_categories:
-        subs = main_cat.subcategories.all()
-        if subs.exists():
-            # If it has subcategories, add THEM to the filter list
-            for sub in subs:
-                filter_names.append(sub.name)
-                filter_map[sub.name] = {'type': 'sub', 'obj': sub}
-        else:
-            # If no subcategories, add the MAIN category to the list
-            filter_names.append(main_cat.name)
-            filter_map[main_cat.name] = {'type': 'main', 'obj': main_cat}
-
-    # Sort the combined list alphabetically for a neat display
-    filter_names.sort()
-
-    # 3. Get all active products
-    all_products = Product.objects.filter(is_active=True).select_related('category', 'subcategory')
-
-    # 4. Build product data dictionary based on our filter names
-    products_by_filter = {name: [] for name in filter_names}
-
-    for product in all_products:
-        # Determine which filter this product belongs to
-        filter_key = None
-        if product.subcategory:
-            # Try to match by subcategory name first
-            if product.subcategory.name in products_by_filter:
-                filter_key = product.subcategory.name
-        else:
-            # Fallback to main category name
-            if product.category.name in products_by_filter:
-                filter_key = product.category.name
-
-        # If we found a valid filter bucket for this product, add it
-        if filter_key:
-            image_url = product.main_image.url if product.main_image else f"https://placehold.co/400x400/f1f5f9/9ca3af?text={product.name.replace(' ', '+')}"
-            products_by_filter[filter_key].append({
-                'id': product.id,
-                'name': product.name,
-                'img': image_url,
-                'url': product.get_absolute_url()
-            })
-
-    # 5. Get "Most Loved" Colors
-    most_loved_colors = Color.objects.filter(is_active=True).order_by('?')[:8]
-
-    initial_color = Color.objects.filter(
+def _random_active_color_with_hex():
+    """Pick one random color without using ORDER BY RANDOM() (expensive at scale)."""
+    qs = Color.objects.filter(
         is_active=True,
-        hex_code__isnull=False
-    ).exclude(hex_code='').order_by('?').first()
+        hex_code__isnull=False,
+    ).exclude(hex_code='')
+    ids = list(qs.values_list('pk', flat=True)[:2500])
+    if not ids:
+        return None
+    return qs.filter(pk=random.choice(ids)).first()
+
+
+def robots_txt(request):
+    """Dynamic robots.txt so sitemap URL matches the deployed host or PUBLIC_SITE_URL."""
+    base = (getattr(settings, 'PUBLIC_SITE_URL', '') or '').rstrip('/')
+    if not base:
+        base = request.build_absolute_uri('/').rstrip('/')
+    body = (
+        'User-agent: *\n'
+        'Disallow: /admin/\n'
+        'Disallow: /accounts/\n'
+        'Disallow: /quote/\n'
+        'Disallow: /save-toggle/\n'
+        'Disallow: /ajax/\n'
+        'Disallow: /colors/save-toggle/\n'
+        'Disallow: /products/save-toggle/\n'
+        'Disallow: /ideas/save-toggle/\n'
+        f'Sitemap: {base}/sitemap.xml\n'
+    )
+    return HttpResponse(body, content_type='text/plain')
+
+
+def index(request):
+    """Homepage — category labels only; products load via AJAX to keep HTML payload small."""
+    filter_names, _filter_map = build_category_filters()
+
+    most_loved_colors = Color.objects.filter(is_active=True).order_by('-updated_at')[:8]
+    initial_color = _random_active_color_with_hex()
+    initial_category = filter_names[0] if filter_names else ''
 
     context = {
-        # Pass the mixed list of category/subcategory names for buttons
         'categories_json': filter_names,
-        # Pass the grouped product data keyed by those same names
+        'initial_category': initial_category,
         'hero_color': initial_color,
-        'products_json': products_by_filter,
         'most_loved_colors': most_loved_colors,
     }
     return render(request, 'home/index.html', context)
 
 
+def home_products_api(request):
+    """Return carousel products for one homepage category filter (cached client-side)."""
+    category = request.GET.get('category', '').strip()
+    filter_names, filter_map = build_category_filters()
+    if category not in filter_map:
+        return JsonResponse({'products': []})
+    return JsonResponse({
+        'category': category,
+        'products': products_for_filter(category, filter_map),
+    })
+
+
 def get_random_hero_color(request):
-    color = Color.objects.filter(
-        is_active=True,
-        hex_code__isnull=False
-    ).exclude(hex_code='').order_by('?').first()
+    color = _random_active_color_with_hex()
 
     if color:
         return JsonResponse({
@@ -112,91 +102,205 @@ def get_random_hero_color(request):
     return JsonResponse({'error': 'No colors found'}, status=404)
 
 
-@login_required
 def my_collection(request):
-    """
-    Displays all items saved by the current user.
-    """
-    saved_product_relations = SavedProducts.objects.filter(user=request.user) \
-        .select_related('product', 'product__category') \
-        .order_by('-saved_at')
+    """Saved items for signed-in users (database) or guests (session)."""
+    if request.user.is_authenticated:
+        saved_product_relations = SavedProducts.objects.filter(user=request.user) \
+            .select_related('product', 'product__category') \
+            .order_by('-saved_at')
+        products = []
+        for rel in saved_product_relations:
+            product = rel.product
+            product.is_saved = True
+            products.append(product)
 
-    products = []
-    for rel in saved_product_relations:
-        product = rel.product
-        product.is_saved = True
-        products.append(product)
+        saved_color_relations = SavedColor.objects.filter(user=request.user) \
+            .select_related('color') \
+            .order_by('-saved_at')
+        colors = []
+        for rel in saved_color_relations:
+            color = rel.color
+            color.is_saved = True
+            colors.append(color)
 
-    saved_color_relations = SavedColor.objects.filter(user=request.user) \
-        .select_related('color') \
-        .order_by('-saved_at')
+        saved_idea_relations = SavedIdea.objects.filter(user=request.user) \
+            .select_related('idea') \
+            .order_by('-saved_at')
+        ideas = []
+        for rel in saved_idea_relations:
+            idea = rel.idea
+            idea.is_saved = True
+            ideas.append(idea)
+    else:
+        product_ids = guest_saved_ids(request, 'product')
+        color_ids = guest_saved_ids(request, 'color')
+        idea_ids = guest_saved_ids(request, 'idea')
 
-    colors = []
-    for rel in saved_color_relations:
-        color = rel.color
-        color.is_saved = True
-        colors.append(color)
+        products = list(
+            Product.objects.filter(id__in=product_ids, is_active=True)
+            .select_related('category', 'subcategory')
+        )
+        for product in products:
+            product.is_saved = True
 
-    saved_idea_relations = SavedIdea.objects.filter(user=request.user) \
-        .select_related('idea') \
-        .order_by('-saved_at')
+        colors = list(Color.objects.filter(id__in=color_ids, is_active=True))
+        for color in colors:
+            color.is_saved = True
 
-    ideas = []
-    for rel in saved_idea_relations:
-        idea = rel.idea
-        idea.is_saved = True
-        ideas.append(idea)
+        from ideas.models import Idea
+        ideas = list(Idea.objects.filter(id__in=idea_ids, is_active=True).select_related('category'))
+        for idea in ideas:
+            idea.is_saved = True
 
     context = {
         'saved_products': products,
         'saved_colors': colors,
         'saved_ideas': ideas,
+        'is_guest_collection': not request.user.is_authenticated,
     }
     return render(request, 'home/my_collection.html', context)
 
 
 def about(request):
-    return render(request, "home/about.html")
+    from core.seo.breadcrumbs import build_breadcrumbs
+    from core.seo.helpers import schema_json_ld_blocks
+    from core.seo.schema import breadcrumb_list_json
+
+    breadcrumbs = build_breadcrumbs(request, ('About Us', None))
+    return render(request, 'home/about.html', {
+        'breadcrumbs': breadcrumbs,
+        'schema_json_ld_blocks': schema_json_ld_blocks(
+            breadcrumb_list_json(request, breadcrumbs),
+        ),
+    })
 
 
+@rate_limit('contact')
 def contact(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
+    from affiliates.services import (
+        process_referral_on_post,
+        record_referral_lead,
+        referral_email_line,
+        posted_referral_code,
+    )
 
-        subject = f"New Contact Message from {name}"
-        full_message = f"Sender Name: {name}\nSender Email: {email}\n\nMessage:\n{message}"
+    form = ContactForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            affiliate, referral_invalid = process_referral_on_post(request)
+            if referral_invalid:
+                return render(request, 'home/contact.html', {
+                    'form': form,
+                    'referral_invalid': True,
+                    'referral_value': posted_referral_code(request),
+                })
 
-        html_content = render_to_string('home/simple_branded_email.html', {
-            'subject': subject,
-            'content': full_message,
-            'site_name': 'ExtraPaints',
-        })
-
-        try:
-            msg = EmailMultiAlternatives(
-                subject,
-                full_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.SALES_TEAM_EMAIL],
+            cd = form.cleaned_data
+            phone_line = f"\nPhone: {cd['phone']}" if cd.get('phone') else ''
+            full_message = (
+                f"Sender Name: {cd['name']}\n"
+                f"Sender Email: {cd['email']}{phone_line}\n\n"
+                f"Message:\n{cd['message']}"
+                f"{referral_email_line(affiliate)}"
             )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send(fail_silently=False)
-            messages.success(request, "Your message has been sent successfully.")
-        except Exception as e:
-            print(f"Contact form email error: {e}")
-            messages.error(request, "An error occurred while sending your message.")
+            subject = f"New Contact Message from {cd['name']}"
+            if notify_sales(subject=subject, text_body=full_message):
+                record_referral_lead(
+                    affiliate=affiliate,
+                    lead_type='contact',
+                    customer_name=cd['name'],
+                    customer_email=cd['email'],
+                    customer_phone=cd.get('phone', ''),
+                    message_excerpt=(cd['message'] or '')[:500],
+                    request=request,
+                )
+                confirm_to_customer(
+                    email=cd['email'],
+                    subject='We received your message — ExtraPaints',
+                    template='home/customer_confirmation.html',
+                    context={
+                        'headline': 'Thank you for contacting us',
+                        'body': (
+                            'Our sales team has received your inquiry and will respond '
+                            'within one business day.'
+                        ),
+                        'plain_text': 'We received your message and will respond soon.',
+                    },
+                )
+                messages.success(
+                    request,
+                    'Your message was sent. Check your email for a confirmation — we typically respond within 24 hours.',
+                )
+            else:
+                messages.error(request, 'An error occurred while sending your message.')
+            return redirect('contact')
+        messages.error(request, 'Please correct the errors below.')
 
-        return redirect("contact")
-
-    return render(request, "home/contact.html")
+    return render(request, 'home/contact.html', {'form': form})
 
 
+@require_POST
+@rate_limit('quick_inquiry')
+def quick_inquiry(request):
+    from affiliates.services import (
+        process_referral_on_post,
+        record_referral_lead,
+        referral_email_line,
+        posted_referral_code,
+    )
+
+    form = QuickInquiryForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse(
+            {'status': 'error', 'message': 'Please fill in all required fields correctly.'},
+            status=400,
+        )
+
+    affiliate, referral_invalid = process_referral_on_post(request)
+    if referral_invalid:
+        return JsonResponse({
+            'status': 'referral_invalid',
+            'message': (
+                'The referral code entered could not be found. '
+                'You may continue without a referral code or correct the code.'
+            ),
+            'referral_value': posted_referral_code(request),
+        }, status=400)
+
+    cd = form.cleaned_data
+    ref = cd.get('project_reference') or 'Not specified'
+    full_message = (
+        f"Quick inquiry from: {cd['name']}\n"
+        f"Phone: {cd['phone']}\n"
+        f"Product / project: {ref}"
+        f"{referral_email_line(affiliate)}"
+    )
+    subject = f"Quick Inquiry from {cd['name']}"
+    if notify_sales(subject=subject, text_body=full_message):
+        record_referral_lead(
+            affiliate=affiliate,
+            lead_type='quick_inquiry',
+            customer_name=cd['name'],
+            customer_phone=cd['phone'],
+            message_excerpt=ref[:500],
+            request=request,
+        )
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Thanks {cd["name"]}! Our team will call you shortly. {request.build_absolute_uri("/")}',
+        })
+    return JsonResponse(
+        {'status': 'error', 'message': 'Could not send your inquiry. Please call us directly.'},
+        status=500,
+    )
+
+
+@rate_limit('live_search', limit=60, period=60, methods=('GET',))
 def live_search(request):
     """
     AJAX view for live global search.
     """
+    hex_ok = re.compile(r"^#[0-9A-Fa-f]{6}$")
     query = request.GET.get('q', '').strip()
     results = {'colors': [], 'products': []}
 
@@ -211,11 +315,14 @@ def live_search(request):
     )[:5]
 
     for color in color_queryset:
+        hx = (color.hex_code or "").strip()
+        if hx and not hex_ok.match(hx):
+            hx = ""
         results['colors'].append({
             'name': color.name,
             'code': color.code,
             'url': color.get_absolute_url(),
-            'hex_code': color.hex_code
+            'hex_code': hx,
         })
 
     product_queryset = Product.objects.filter(
@@ -241,7 +348,16 @@ def live_search(request):
     return JsonResponse(results, safe=False)
 
 
+def privacy_policy(request):
+    return render(request, 'home/legal/privacy.html')
+
+
+def terms_conditions(request):
+    return render(request, 'home/legal/terms.html')
+
+
 @require_POST
+@rate_limit('newsletter', limit=5, period=600)
 def subscribe_newsletter(request):
     email = request.POST.get('email', '').strip()
     if not email:
@@ -250,53 +366,16 @@ def subscribe_newsletter(request):
         subscriber, created = NewsletterSubscriber.objects.get_or_create(email=email)
         message = "Thanks for subscribing!" if created else "You are already subscribed."
         return JsonResponse({'status': 'success' if created else 'info', 'message': message})
-    except Exception as e:
-        print(f"Subscription error: {e}")
+    except Exception:
+        logger.exception('Newsletter subscription error')
         return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred.'}, status=500)
 
 
 # --- Email Sending Logic (Called by Admin Action) ---
 
 def send_newsletter_email(newsletter):
-    """
-    Function to dispatch the newsletter email to all subscribers.
-    """
-    subscribers = NewsletterSubscriber.objects.all()
-    recipient_list = [s.email for s in subscribers]
+    """Dispatch newsletter to subscribers in BCC batches."""
+    from core.services.newsletter import send_newsletter_batched
 
-    # 1. Prepare HTML Content (or use a template)
-    # NOTE: You need a template at 'home/newsletter_email.html' for this to work
-    html_content = render_to_string('home/newsletter_email.html', {
-        'subject': newsletter.subject,
-        'body': newsletter.body,
-        'site_name': 'Paint Company',  # Or settings.SITE_NAME
-    })
-
-    # 2. Prepare plain text fallback
-    text_content = f"{newsletter.subject}\n\n{newsletter.body}"
-
-    success_count = 0
-    error_count = 0
-
-    # Send the email
-    try:
-        # send_mail is simpler, but EmailMultiAlternatives supports HTML/Text
-        msg = EmailMultiAlternatives(
-            subject=newsletter.subject,
-            body=text_content,
-            from_email=settings.DEFAULT_FROM_EMAIL,  # Ensure this is set in settings.py
-            to=recipient_list,
-        )
-        msg.attach_alternative(html_content, "text/html")
-
-        # Django's mass email sending function
-        success_count = msg.send(fail_silently=False)
-        error_count = len(recipient_list) - success_count
-
-    except Exception as e:
-        # In a production app, you'd log this error
-        error_count = len(recipient_list)
-        print(f"Mass email sending failed: {e}")
-
-    return success_count, error_count
+    return send_newsletter_batched(newsletter)
 

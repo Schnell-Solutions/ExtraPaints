@@ -1,0 +1,18 @@
+{% if breadcrumbs %}
+<nav class="mb-6 text-sm text-gray-500" aria-label="Breadcrumb">
+  <ol class="flex flex-wrap items-center gap-1">
+    {% for crumb in breadcrumbs %}
+    <li class="flex items-center gap-1">
+      {% if not forloop.first %}
+      <span class="text-gray-300" aria-hidden="true">/</span>
+      {% endif %}
+      {% if crumb.url and not forloop.last %}
+      <a href="{{ crumb.url }}" class="hover:text-primary-900 hover:underline">{{ crumb.name }}</a>
+      {% else %}
+      <span class="{% if forloop.last %}text-primary-900 font-medium{% endif %}" {% if forloop.last %}aria-current="page"{% endif %}>{{ crumb.name }}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
+{% endif %}

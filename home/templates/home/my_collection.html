@@ -1,19 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}My Collection{% endblock %}
+{% block title %}My Collection | ExtraPaints{% endblock %}
+{% block description %}View your saved products, colors, and inspiration ideas in one place when signed in to ExtraPaints.{% endblock %}
+{% block og_title %}My Collection | ExtraPaints{% endblock %}
+{% block og_description %}Your saved products, colors, and ideas on ExtraPaints.{% endblock %}
+{% block twitter_title %}My Collection | ExtraPaints{% endblock %}
+{% block twitter_description %}Your saved ExtraPaints products, colors, and ideas.{% endblock %}
 
 {% block content %}
-<div id="collection-container" class="container mx-auto max-w-6xl px-4 lg:px-12 py-8 lg:py-12 min-h-screen">
+<div id="collection-container" class="container mx-auto max-w-6xl px-4 lg:px-12 py-8 lg:py-12">
 
     <header class="text-center mb-8 lg:mb-12">
-        <h1 class="text-3xl lg:text-4xl font-bold text-primary-900 mb-3">My Collection</h1>
-        <p class="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto pb-5 border-b border-gray-200">
+        <h1 class="ep-page-title mb-3">My Collection</h1>
+        <p class="text-base lg:ep-lead max-w-2xl mx-auto pb-5 border-b border-gray-200">
+            {% if is_guest_collection %}
+            Saved on this device — <a href="{% url 'register' %}" class="text-primary-800 font-medium hover:underline">create an account</a> to sync across devices.
+            {% else %}
             All your saved products, colors, and ideas in one place.
+            {% endif %}
         </p>
     </header>
 
-    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <section class="mb-12 bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden">
         <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
             <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
                 <i data-lucide="package" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
@@ -24,7 +33,7 @@
         <div class="p-4 lg:p-8">
             <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 {% if not saved_products %}hidden{% endif %}">
                 {% for product in saved_products %}
-                    <div id="item-product-{{ product.id }}" class="collection-item group flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
+                    <div id="item-product-{{ product.id }}" class="collection-item group flex flex-col h-full bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
                         <button
                             type="button"
                             class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
@@ -57,7 +66,7 @@
                                 </a>
                             </h3>
                             <a href="{% url 'product_detail' product.slug %}"
-                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-md text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -79,7 +88,7 @@
         </div>
     </section>
 
-    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <section class="mb-12 bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden">
         <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
             <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
                 <i data-lucide="palette" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
@@ -90,7 +99,7 @@
         <div class="p-4 lg:p-8">
             <div id="colors-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 {% if not saved_colors %}hidden{% endif %}">
                 {% for color in saved_colors %}
-                    <div id="item-color-{{ color.id }}" class="collection-item group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
+                    <div id="item-color-{{ color.id }}" class="collection-item group relative bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
                         <button
                             type="button"
                             class="js-remove-item absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
@@ -126,7 +135,7 @@
         </div>
     </section>
 
-    <section class="mb-12 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <section class="mb-12 bg-white rounded-md border border-gray-200 shadow-sm overflow-hidden">
         <div class="px-4 py-4 lg:px-8 lg:py-6 border-b border-gray-200 bg-gray-50/50">
             <h2 class="text-xl lg:text-2xl font-bold text-primary-900 flex items-center">
                 <i data-lucide="lightbulb" class="w-6 h-6 lg:w-7 lg:h-7 mr-3 text-primary-600"></i>
@@ -137,7 +146,7 @@
         <div class="p-4 lg:p-8">
             <div id="ideas-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 {% if not saved_ideas %}hidden{% endif %}">
                 {% for idea in saved_ideas %}
-                    <div id="item-idea-{{ idea.id }}" class="collection-item group flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
+                    <div id="item-idea-{{ idea.id }}" class="collection-item group flex flex-col h-full bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 relative">
                         <button
                             type="button"
                             class="js-remove-item absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100"
@@ -165,7 +174,7 @@
                                 </a>
                             </h3>
                             <a href="{% url 'idea_detail' idea.slug %}"
-                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-lg text-white bg-primary-900 hover:bg-primary-800 transition-colors">
+                               class="mt-auto w-full inline-flex justify-center items-center py-2 lg:py-2.5 px-4 text-sm font-bold rounded-md text-white bg-primary-900 hover:bg-primary-800 transition-colors">
                                 Read More
                             </a>
                         </div>

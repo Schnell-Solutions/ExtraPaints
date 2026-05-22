@@ -1,148 +1,56 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create account | ExtraPaints{% endblock %}
+{% block description %}Create an ExtraPaints account.{% endblock %}
 
 {% block content %}
-<section class="bg-neutral-50 flex justify-center pt-12 pb-[200px] sm:pb-[400px]">
-  <div class="w-full max-w-md bg-white p-6 sm:p-8 rounded border border-gray-200 mx-4">
-    <h2 class="text-2xl font-bold text-center text-gray-900 mb-6">Create an Account</h2>
+<section class="ep-auth-page">
+  <div class="ep-auth-container">
+    <h1 class="ep-page-title">Create account</h1>
+    <p class="ep-auth-lead">Save favorites and build quote lists for your projects.</p>
 
-    <!-- Django Messages Block -->
-    {% if messages %}
-        <div class="mb-4 space-y-2">
-            {% for message in messages %}
-                <div class="p-3 rounded border text-sm
-                    {% if message.tags == 'error' or message.tags == 'warning' %}
-                        bg-red-100 text-red-800 border-red-200
-                    {% elif message.tags == 'success' %}
-                        bg-green-100 text-green-800 border-green-200
-                    {% else %}
-                        bg-blue-100 text-blue-800 border-blue-200
-                    {% endif %}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
+    {% include 'accounts/partials/_auth_messages.html' %}
+
+    <form method="post" class="ep-auth-form" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="ep-auth-alert ep-auth-alert--error mb-4" role="alert">
+          {% for error in form.non_field_errors %}{{ error }}{% endfor %}
         </div>
-    {% endif %}
+      {% endif %}
 
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.username %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.full_name %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.email %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.phone %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.password1 %}
+      {% include 'accounts/partials/_auth_field.html' with field=form.password2 %}
 
-        {% if form.non_field_errors %}
-            <div class="p-3 bg-red-100 text-red-800 rounded border text-sm mb-2" role="alert">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
+      <div class="ep-auth-terms">
+        {{ form.accept_terms }}
+        <span>
+          I agree to the
+          <a href="{% url 'terms_conditions' %}" target="_blank" rel="noopener noreferrer">Terms</a>
+          and
+          <a href="{% url 'privacy_policy' %}" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+        </span>
+      </div>
+      {% if form.accept_terms.errors %}
+        <p class="ep-auth-field-error">{{ form.accept_terms.errors.0 }}</p>
+      {% endif %}
 
-        <!-- Username -->
-        <div>
-            <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Username"
-                   value="{{ form.username.value|default:'' }}"
-                   required>
-            {% if form.username.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.username.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Full Name -->
-        <div>
-            <input type="text" name="{{ form.full_name.name }}" id="{{ form.full_name.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Full Name"
-                   value="{{ form.full_name.value|default:'' }}"
-                   required>
-            {% if form.full_name.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.full_name.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Email -->
-        <div>
-            <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Email Address"
-                   value="{{ form.email.value|default:'' }}"
-                   required>
-            {% if form.email.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.email.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Phone -->
-        <div>
-            <input type="text" name="{{ form.phone.name }}" id="{{ form.phone.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Phone (Optional)"
-                   value="{{ form.phone.value|default:'' }}">
-            {% if form.phone.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.phone.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Password 1 -->
-        <div>
-            <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Password"
-                   required>
-            {% if form.password1.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.password1.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Password 2 -->
-        <div>
-            <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}"
-                   class="block w-full px-3 py-2 border border-gray-300 rounded placeholder-gray-500 focus:outline-none focus:border-gray-800 sm:text-base"
-                   placeholder="Confirm Password"
-                   required>
-            {% if form.password2.errors %}
-                <div class="mt-1 text-xs text-red-600">
-                    {% for error in form.password2.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Submit Button -->
-        <div>
-            <button type="submit" class="w-full py-2 px-4 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors">
-                Create Account
-            </button>
-        </div>
+      <button type="submit" class="ep-btn ep-btn-primary w-full mt-6 py-3">Create account</button>
     </form>
 
-    <p class="mt-6 text-center text-sm text-gray-600">
-        Already have an account?
-        <a href="{% url 'login' %}" class="text-gray-800 hover:text-gray-600 hover:underline font-medium transition-colors">
-            Login here
-        </a>
+    <p class="ep-auth-footer">
+      Have an account? <a href="{% url 'login' %}">Sign in</a>
     </p>
   </div>
 </section>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{% static 'js/auth-password-toggle.js' %}" defer></script>
 {% endblock %}

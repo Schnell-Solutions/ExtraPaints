@@ -1,13 +1,24 @@
-from django.shortcuts import render, get_object_or_404
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.conf import settings
+import logging
+
+from django.http import Http404
+from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.contrib import messages
-from products.models import Product, Size
-from colors.models import Color
+
+from affiliates.services import (
+    process_referral_on_post,
+    record_referral_lead,
+    referral_email_line,
+    posted_referral_code,
+)
+from core.forms import QuoteSubmitForm
+from core.services.inquiry import confirm_to_customer, notify_sales
+from core.services.quote_validation import QuoteItemValidationError, resolve_quote_line
+from core.services.rate_limit import rate_limit
 from .quote import QuoteList
+
+logger = logging.getLogger(__name__)
 
 
 @require_POST
@@ -17,13 +28,14 @@ def add_to_quote(request):
     try:
         product_id = request.POST.get('product_id')
         quantity = int(request.POST.get('quantity', 1))
-        color_id = request.POST.get('color_id')
-        size_id = request.POST.get('size_id')
+        color_id = request.POST.get('color_id') or None
+        size_id = request.POST.get('size_id') or None
 
-        product = get_object_or_404(Product, id=product_id)
-        color = get_object_or_404(Color, id=color_id) if color_id else None
-        size = get_object_or_404(Size, id=size_id) if size_id else None
-
+        product, color, size = resolve_quote_line(
+            product_id=product_id,
+            color_id=color_id,
+            size_id=size_id,
+        )
         quote_list.add(product=product, color=color, size=size, quantity=quantity)
 
         return JsonResponse({
@@ -32,67 +44,111 @@ def add_to_quote(request):
             'quote_item_count': len(quote_list)
         })
 
-    except Exception as e:
-        print(f"Error adding to quote: {e}")
+    except Http404:
+        raise
+    except QuoteItemValidationError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    except (ValueError, TypeError):
+        return JsonResponse({'status': 'error', 'message': 'Invalid quantity.'}, status=400)
+    except Exception:
+        logger.exception('Error adding item to quote')
         return JsonResponse(
             {'status': 'error', 'message': "Could not add item."},
             status=400)
 
 
+@rate_limit('quote_submit')
 def quote_detail(request):
     quote_list = QuoteList(request)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        message = request.POST.get('message')
+        form = QuoteSubmitForm(request.POST)
+        affiliate, referral_invalid = process_referral_on_post(request)
 
-        items_summary = ""
+        if referral_invalid:
+            return render(request, 'quote_request/quote_detail.html', {
+                'quote_list': quote_list,
+                'form': form,
+                'referral_invalid': True,
+                'referral_value': posted_referral_code(request),
+            })
+
+        if not form.is_valid():
+            messages.error(request, 'Please check your details and try again.')
+            return render(request, 'quote_request/quote_detail.html', {
+                'quote_list': quote_list,
+                'form': form,
+            })
+
+        if len(quote_list) == 0:
+            messages.warning(request, 'Add at least one product to your quote list before submitting.')
+            return render(request, 'quote_request/quote_detail.html', {
+                'quote_list': quote_list,
+                'form': form,
+            })
+
+        cd = form.cleaned_data
+        items_summary = ''
         for item in quote_list:
             details = []
             if item['color']:
                 details.append(item['color'].name)
             if item['size']:
                 details.append(item['size'].name)
-
-            details_str = f" ({', '.join(details)})" if details else ""
+            details_str = f" ({', '.join(details)})" if details else ''
             items_summary += f"- {item['product'].name}{details_str} x {item['quantity']}\n"
 
         full_quote_request = (
-            f"New Quote Request from: {name} ({email}, {phone})\n\n"
-            f"Message: {message}\n\n"
-            " ITEMS REQUESTED ------------------------------\n"
-            f" {items_summary}"
+            f"New Quote Request from: {cd['name']} ({cd['email']}, {cd['phone']})\n\n"
+            f"Message: {cd.get('message') or '(none)'}\n\n"
+            ' ITEMS REQUESTED ------------------------------\n'
+            f' {items_summary}'
+            f'{referral_email_line(affiliate)}'
         )
 
-        subject = 'New Quote Request'
-        html_content = render_to_string('quote_request/simple_branded_email.html', {
-            'subject': subject,
-            'content': full_quote_request,
-            'site_name': 'ExtraPaints',
+        subject = f"New Quote Request — {cd['name']}"
+        if notify_sales(
+            subject=subject,
+            text_body=full_quote_request,
+            html_template='quote_request/simple_branded_email.html',
+        ):
+            record_referral_lead(
+                affiliate=affiliate,
+                lead_type='quote',
+                customer_name=cd['name'],
+                customer_email=cd['email'],
+                customer_phone=cd['phone'],
+                message_excerpt=(cd.get('message') or '')[:500],
+                request=request,
+            )
+            confirm_to_customer(
+                email=cd['email'],
+                subject='Your quote request was received — ExtraPaints',
+                template='home/customer_confirmation.html',
+                context={
+                    'headline': 'Quote request received',
+                    'body': (
+                        'Our sales team is reviewing your items and will send a tailored quotation. '
+                        'We typically respond within 24 hours on business days.'
+                    ),
+                    'plain_text': 'We received your quote request and will respond within 24 hours.',
+                    'customer_name': cd['name'],
+                },
+            )
+            quote_list.clear()
+            request.session['quote_submitted_name'] = cd['name']
+            return render(request, 'quote_request/quote_submitted.html', {'customer_name': cd['name']})
+
+        messages.error(request, 'There was an error submitting your quote request. Please try again.')
+        return render(request, 'quote_request/quote_detail.html', {
+            'quote_list': quote_list,
+            'form': form,
         })
 
-        try:
-            msg = EmailMultiAlternatives(
-                subject,
-                full_quote_request,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.SALES_TEAM_EMAIL],
-            )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send(fail_silently=False)
-
-            quote_list.clear()
-            messages.success(request, "Your quote request was successfully sent! We will contact you soon.")
-            return render(request, 'quote_request/quote_submitted.html')
-
-        except Exception as e:
-            print(f"Quote request email error: {e}")
-            messages.error(request, "There was an error submitting your quote request. Please try again.")
-            return render(request, 'quote_request/quote_detail.html', {'quote_list': quote_list})
-
-    return render(request, 'quote_request/quote_detail.html', {'quote_list': quote_list})
+    return render(request, 'quote_request/quote_detail.html', {
+        'quote_list': quote_list,
+        'form': QuoteSubmitForm(),
+    })
 
 
 @require_POST

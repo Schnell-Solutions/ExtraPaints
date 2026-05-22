@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Paint Guides & Resources | ExtraPaints Kenya{% endblock %}
+{% block description %}Expert guides on exterior paint for Nairobi weather, wall preparation, eco-friendly coatings, and commercial paint supply in Kenya.{% endblock %}
+{% block og_description %}Professional paint guides for contractors and homeowners — ExtraPaints Kenya.{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-6xl px-4 py-10 md:py-14">
+  {% include "partials/breadcrumbs.html" %}
+
+  <header class="mb-10">
+    <h1 class="ep-page-title">Guides &amp; resources</h1>
+    <p class="mt-3 ep-lead max-w-3xl">
+      Practical advice for Kenyan projects — exterior systems, surface prep, finishes, and quotation tips from our supply team.
+    </p>
+  </header>
+
+  {% if featured_guides %}
+  <section class="mb-12">
+    <h2 class="ep-section-title mb-4">Featured</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {% for guide in featured_guides %}
+      <a href="{{ guide.get_absolute_url }}" class="block p-6 bg-white rounded-md border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all">
+        <span class="text-xs font-bold uppercase text-primary-700">{{ guide.get_guide_type_display }}</span>
+        <h3 class="ep-card-title mt-2">{{ guide.title }}</h3>
+        <p class="mt-2 text-sm text-gray-600 line-clamp-3">{{ guide.excerpt }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2 class="text-xl font-bold text-primary-900 mb-4">All guides</h2>
+    <div class="space-y-4">
+      {% for guide in guides %}
+      <article class="p-6 bg-white rounded-md border border-gray-200 hover:border-primary-200 transition-colors">
+        <a href="{{ guide.get_absolute_url }}" class="group">
+          <span class="text-xs font-bold uppercase text-primary-700">{{ guide.get_guide_type_display }}</span>
+          <h3 class="mt-1 text-xl font-semibold text-primary-900 group-hover:underline">{{ guide.title }}</h3>
+          <p class="mt-2 text-gray-600">{{ guide.excerpt }}</p>
+        </a>
+      </article>
+      {% empty %}
+      <p class="text-gray-500">Guides coming soon.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="mt-12 p-6 rounded-md bg-primary-50 border border-primary-100 text-center">
+    <p class="font-semibold text-primary-900">Need a tailored quotation?</p>
+    <a href="{% url 'quote_detail' %}" class="inline-flex mt-3 px-6 py-3 bg-primary-900 text-white rounded-md font-semibold hover:bg-primary-800">Get a quote</a>
+  </div>
+</div>
+{% endblock %}

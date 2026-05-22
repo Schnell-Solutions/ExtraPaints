@@ -1,13 +1,10 @@
 {% load static %}
-<div class="text-center p-4 border border-gray-300 rounded-xl bg-white">
-    <div class="w-28 h-28 mx-auto mb-4 overflow-hidden rounded-full
-            hover:rounded-xl
-            border-2 border-primary-900/40
-            transition-all duration-500 ease-in-out">
-        <img src="{% static image_url %}" alt="{{ name }}" class="w-full h-full object-cover">
+<article class="flex flex-col text-center p-5 md:p-6 rounded-md border border-neutral-200 bg-white shadow-sm hover:shadow-md transition-shadow h-full">
+    <div class="w-24 h-24 md:w-28 md:h-28 mx-auto mb-4 overflow-hidden rounded-full border-2 border-primary-200 shrink-0">
+        <img src="{% static image_url %}" alt="{{ name }}" class="w-full h-full object-cover" loading="lazy" width="112" height="112">
     </div>
 
-    <h4 class="text-lg font-bold text-primary-900 mb-1">{{ name }}</h4>
-    <p class="text-sm font-medium text-primary-900 uppercase tracking-wider mb-3">{{ title }}</p>
-    <p class="text-xs text-gray-500 italic">{{ bio }}</p>
-</div>
+    <h3 class="text-base md:text-lg font-bold text-primary-900 mb-1">{{ name }}</h3>
+    <p class="text-xs md:text-sm font-medium text-primary-800 uppercase tracking-wide mb-3">{{ title }}</p>
+    <p class="text-xs md:text-sm text-gray-600 leading-relaxed mt-auto">{{ bio }}</p>
+</article>

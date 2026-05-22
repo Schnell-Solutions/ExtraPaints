@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Request received | ExtraPaints{% endblock %}
+
+{% block content %}
+<section class="ep-auth-page">
+  <div class="ep-auth-container">
+    <h1 class="ep-page-title">Request received</h1>
+    <p class="ep-auth-lead">
+      Your account is deactivated and you&rsquo;ve been signed out. Check your email for next steps.
+    </p>
+    <a href="{% url 'home' %}" class="ep-btn ep-btn-primary inline-flex mt-8 px-8 py-3">Home</a>
+  </div>
+</section>
+{% endblock %}

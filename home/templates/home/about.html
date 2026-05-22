@@ -1,70 +1,112 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}About Us{% endblock %}
+{% block title %}About Us | ExtraPaints{% endblock %}
+{% block description %}Learn about ExtraPaints—Kenya’s trusted paint brand for affordable quality coatings and color inspiration since 2015.{% endblock %}
+{% block og_title %}About Us | ExtraPaints{% endblock %}
+{% block og_description %}Our mission, vision, and heritage delivering sustainable, innovative paint solutions in Kenya.{% endblock %}
+{% block twitter_title %}About Us | ExtraPaints{% endblock %}
+{% block twitter_description %}Learn about ExtraPaints and our commitment to quality paints in Kenya.{% endblock %}
+
+{% block schema %}
+{% include "partials/schema_json_ld.html" %}
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto max-w-6xl p-2 lg:px-12 py-8">
+<section class="section-pad lg:px-12 bg-neutral-50">
+  <div class="container mx-auto px-4 max-w-6xl">
 
-    <header class="text-center mb-12 max-w-4xl mx-auto">
-        <h1 class="mb-4 text-3xl md:text-4xl font-extrabold text-primary-900">
-            Our Story: The ExtraPaints Difference
-        </h1>
-        <p class="text-xl text-gray-600 border-b border-gray-300 pb-6 pt-2">
-            At <strong class="text-primary-900">ExtraPaints</strong>, we believe color changes everything. We provide premium-quality
-            paints, coatings, and finishes designed to protect and beautify your spaces.
-        </p>
+    {% include "partials/breadcrumbs.html" %}
+
+    <header class="mb-10 md:mb-12 max-w-3xl">
+      <h1 class="ep-page-title mb-3">
+        Our story: the ExtraPaints difference
+      </h1>
+      <p class="ep-lead">
+        At <strong class="text-primary-900">ExtraPaints</strong>, we believe color changes everything. Since {{ company_founded_year }}, we have supplied
+        affordable, professional paints and finishes for residential, commercial, and industrial projects across Kenya — with free delivery within Nairobi.
+      </p>
     </header>
 
-    <section class="mb-12">
-        <div class="flex flex-col md:flex-row items-stretch gap-10">
+    {% include "partials/trust_b2b.html" with bare=True %}
 
-            <div class="md:w-1/2 rounded-md">
-                <img src="{% static 'images/extrapaints.jpg' %}" alt="ExtraPaints" class="w-full h-auto border border-gray-300 rounded-md">
-            </div>
+    <section class="mb-12 md:mb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
-            <div class="md:w-1/2 flex flex-col justify-center space-y-6 p-6 border border-gray-300 rounded bg-white">
-                <h3 class="text-3xl font-bold text-primary-900 border-b pb-2 border-primary-200">Our Heritage</h3>
-                <p class="text-gray-700">
-                    Founded in 2020, ExtraPaints has grown into one of Kenya’s most trusted paint brands.
-                    We blend innovation, technology, and creativity to deliver colors that last and finishes that inspire.
-                </p>
-                <div class="space-y-4">
-                    <div class="border-l-4 border-primary-900 pl-4">
-                        <h4 class="text-lg font-semibold text-primary-900">Our Mission</h4>
-                        <p class="text-gray-600 text-sm">To deliver sustainable and innovative paint solutions that enhance beauty while caring for the planet.</p>
-                    </div>
-                    <div class="border-l-4 border-primary-900 pl-4">
-                        <h4 class="text-lg font-semibold text-primary-900">Our Vision</h4>
-                        <p class="text-gray-600 text-sm">To be Africa’s leading paint brand recognized for quality, innovation, and color inspiration.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="mb-12 md:mb-16 pt-8">
-        <h2 class=" text-3xl md:text-4xl font-bold text-center text-primary-900 mb-6 md:mb-10">Meet Our Leaders</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-
-            {% include "home/partials/team_card.html" with name="Wycliffe Atonya" title="Managing Director & Founder" bio="Provides strategic leadership and guides the company’s vision and growth." image_url="images/team/Wycliffe.png" %}
-
-            {% include "home/partials/team_card.html" with name="Henry Muli Matee" title="General Manager" bio="Oversees daily operations to ensure efficiency and business alignment." image_url="images/team/henry.png" %}
-
-            {% include "home/partials/team_card.html" with name="Richard Maingi" title="Sales & Marketing Manager" bio="Leads sales strategies to strengthen brand presence and market expansion." image_url="images/team/richard.png" %}
-
-            {% include "home/partials/team_card.html" with name="Lilian Ouko" title="Human Resource Manager" bio="Fosters a productive workplace culture and supports staff development." image_url="images/team/lilian.png" %}
-
+        <div class="order-2 lg:order-1">
+          <img
+            src="{% static 'images/extrapaints.jpg' %}"
+            alt="ExtraPaints showroom and products"
+            class="w-full h-auto rounded-md border border-neutral-200 shadow-sm object-cover aspect-[4/3] lg:aspect-auto"
+            loading="lazy"
+            width="600"
+            height="450"
+          >
         </div>
 
+        <div class="order-1 lg:order-2 space-y-6">
+          <div>
+            <h2 class="ep-section-title mb-4">Our heritage</h2>
+            <p class="text-gray-700 leading-relaxed">
+              Founded in {{ company_founded_year }}, ExtraPaints has grown into one of Kenya’s most trusted paint brands.
+              We blend innovation, technology, and value to deliver colors that last and finishes that inspire.
+            </p>
+          </div>
+          <div class="space-y-5">
+            <div class="border-l-4 border-primary-900 pl-4 md:pl-5">
+              <h3 class="text-lg font-semibold text-primary-900">Our mission</h3>
+              <p class="text-gray-600 text-sm md:text-base mt-1 leading-relaxed">
+                To deliver sustainable and innovative paint solutions that enhance beauty while caring for the planet.
+              </p>
+            </div>
+            <div class="border-l-4 border-primary-900 pl-4 md:pl-5">
+              <h3 class="text-lg font-semibold text-primary-900">Our vision</h3>
+              <p class="text-gray-600 text-sm md:text-base mt-1 leading-relaxed">
+                To be Africa’s leading paint brand recognized for quality, innovation, and color inspiration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <div class="text-center mt-12 py-10 border border-gray-300 rounded bg-primary-25">
-        <h4 class=" text-2xl md:text-3xl font-bold text-primary-900 mb-4">Ready to transform your space?</h4>
-        <p class="text-gray-600 mb-6">Explore our curated collections and professional-grade products.</p>
-        <a href="{% url 'product_list' %}" class="bg-primary-900 text-primary-50 px-8 py-3 rounded hover:bg-primary-800 transition-colors font-semibold">
-          Explore Our Products
-        </a>
-    </div>
-</div>
+    <section class="mb-12 md:mb-16">
+      <header class="mb-8 md:mb-10">
+        <h2 class="ep-section-title">Meet our leaders</h2>
+        <p class="text-gray-600 mt-2 max-w-2xl">The team behind our supply network, technical support, and customer partnerships.</p>
+      </header>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-6">
+
+        {% include "home/partials/team_card.html" with name="Wycliffe Atonya" title="Managing Director & Founder" bio="Provides strategic leadership and guides the company’s vision and growth." image_url="images/team/Wycliffe.png" %}
+
+        {% include "home/partials/team_card.html" with name="Henry Muli Matee" title="General Manager" bio="Oversees daily operations to ensure efficiency and business alignment." image_url="images/team/henry.png" %}
+
+        {% include "home/partials/team_card.html" with name="Richard Maingi" title="Sales & Marketing Manager" bio="Leads sales strategies to strengthen brand presence and market expansion." image_url="images/team/richard.png" %}
+
+        {% include "home/partials/team_card.html" with name="Lilian Ouko" title="Human Resource Manager" bio="Fosters a productive workplace culture and supports staff development." image_url="images/team/lilian.png" %}
+
+      </div>
+    </section>
+
+    <section class="rounded-md bg-primary-900 text-white px-6 py-10 md:px-10 md:py-12 text-center md:text-left">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 max-w-4xl md:max-w-none mx-auto">
+        <div class="md:max-w-xl">
+          <h2 class="text-xl md:text-2xl font-bold mb-2">Ready to transform your space?</h2>
+          <p class="text-primary-200 text-sm md:text-base leading-relaxed">
+            Explore our curated collections and request a tailored quotation from our sales team.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 shrink-0 justify-center md:justify-end">
+          <a href="{% url 'product_list' %}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-primary-900 rounded-md font-semibold hover:bg-primary-50 transition-colors text-sm md:text-base">
+            Explore products
+          </a>
+          <a href="{% url 'quote_detail' %}" class="inline-flex items-center justify-center px-6 py-3 border border-white/40 text-white rounded-md font-semibold hover:bg-white/10 transition-colors text-sm md:text-base">
+            Get a quote
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</section>
 {% endblock %}

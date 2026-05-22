@@ -1,53 +1,29 @@
 {% extends "base.html" %}
 {% load static %}
+{% load seo %}
 
-{% block title %}{{ product.name }} | Extra Paints{% endblock %}
+{% block title %}{{ product.name }} | ExtraPaints{% endblock %}
 
 {% block description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
 
-{% block og_title %}{{ product.name }}{% endblock %}
+{% block og_title %}{{ product.name }} | ExtraPaints{% endblock %}
 {% block og_description %}{{ product.description|striptags|truncatechars:200 }}{% endblock %}
-{% block og_image %}{% if product.main_image %}{{ product.main_image.url }}{% else %}{% static 'home/images/logo.png' %}{% endif %}{% endblock %}
+{% block og_image %}{% if product.main_image %}{% absolute_media request product.main_image %}{% else %}{% absolute_static request 'images/extrapaints.jpg' %}{% endif %}{% endblock %}
 
-{% block twitter_title %}{{ product.name }}{% endblock %}
+{% block twitter_title %}{{ product.name }} | ExtraPaints{% endblock %}
 {% block twitter_description %}{{ product.description|striptags|truncatechars:200 }}{% endblock %}
-{% block twitter_image %}{% if product.main_image %}{{ product.main_image.url }}{% else %}{% static 'home/images/logo.png' %}{% endif %}{% endblock %}
+{% block twitter_image %}{% if product.main_image %}{% absolute_media request product.main_image %}{% else %}{% absolute_static request 'images/extrapaints.jpg' %}{% endif %}{% endblock %}
 
 {% block schema %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "{{ product.name }}",
-  "image": [
-    "{% if product.main_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.url }}{% endif %}"
-  ],
-  "description": "{{ product.description|striptags|escapejs }}",
-  "sku": "{{ product.id }}",
-  "brand": {
-    "@type": "Brand",
-    "name": "ExtraPaints"
-  },
-  "category": "{{ product.category.name }}",
-  "offers": {
-    "@type": "Offer",
-    "availability": "https://schema.org/InStock",
-    "price": "0",
-    "priceCurrency": "KES",
-    "url": "{{ request.build_absolute_uri }}"
-  }
-}
-</script>
+{% include "partials/schema_json_ld.html" %}
 {% endblock %}
 
 {% block content %}
 <section class="py-8 lg:px-12 md:py-12 bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
+    {% include "partials/breadcrumbs.html" %}
     <div class="mb-6">
-      <button
-            onclick="goBack()"
-            class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
-        >
+      <button onclick="goBack()" class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -56,59 +32,109 @@
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
-      <div class="w-full h-[400px] md:h-[500px] lg:sticky lg:top-24">
-        <div class="relative w-full h-full rounded overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center">
+      <div class="w-full lg:sticky lg:top-24">
+        <div class="relative w-full aspect-square max-h-[500px] rounded-md overflow-hidden bg-neutral-50 flex items-center justify-center">
           {% if product.main_image %}
-            <img id="product-image" src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-4 mix-blend-multiply">
+            <img id="product-image" src="{% thumbnail product.main_image 600 %}" alt="{{ product.name }}" class="w-full h-full object-contain p-6 mix-blend-multiply" loading="eager" width="600" height="600">
           {% else %}
              <div class="text-neutral-300 flex flex-col items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span class="text-gray-400">No image available</span>
              </div>
           {% endif %}
 
-        {% if user.is_authenticated %}
-          <button
-              class="save-product-btn absolute top-4 right-4 text-neutral-400 hover:text-red-500 transition-all z-10 bg-white rounded-full p-2 shadow-sm"
-              data-product-id="{{ product.id }}"
-              data-is-saved="{{ is_saved|yesno:'true,false' }}"
-              aria-label="Save product"
-            >
-              <span class="heart-icon flex items-center justify-center">
-                {% if is_saved %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="red" stroke="red">
-                    <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074"/>
-                  </svg>
-                {% else %}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
-                {% endif %}
-              </span>
-            </button>
-        {% endif %}
+          {% include "partials/save_favorite_btn.html" with kind="product" item_id=product.id is_saved=is_saved position="top-4 right-4" %}
           </div>
       </div>
 
       <div class="flex flex-col">
-        <div class="mb-4">
-            <span class="text-xs font-bold uppercase tracking-widest text-primary-700 bg-primary-50 px-3 py-1 rounded-full">
-                {{ product.category.name }}
+        <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div class="text-xs font-bold uppercase tracking-widest text-primary-700 flex items-center flex-wrap">
+                <span>{{ product.category.name }}</span>
                 {% if product.subcategory %}
-                 <span class="text-neutral-400 mx-1">/</span> {{ product.subcategory.name }}
+                    <span class="text-neutral-300 mx-2">/</span>
+                    <span class="text-neutral-500">{{ product.subcategory.name }}</span>
                 {% endif %}
+            </div>
+
+            {% if product.finish %}
+                <span class="hidden sm:inline-block text-neutral-300">•</span>
+            {% endif %}
+
+            {% if product.finish %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-600 border border-neutral-200">
+                {{ product.finish.name }}
             </span>
+            {% endif %}
         </div>
 
-        <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-4 leading-tight">
+        <h1 class="ep-page-title text-neutral-900 mb-4 leading-tight">
           {{ product.name }}
         </h1>
 
         <div class="prose prose-neutral max-w-none text-neutral-600 mb-8">
           {{ product.description|linebreaks }}
         </div>
+
+        {% if product.coverage_rate or product.drying_time or product.coats_required %}
+        <div class="flex flex-wrap gap-x-8 gap-y-4 mb-8 bg-neutral-50 p-5 rounded-md">
+            {% if product.coverage_rate %}
+            <div class="flex flex-col min-w-[100px]">
+                <span class="text-xs text-neutral-500 uppercase tracking-wide font-bold mb-1">Coverage</span>
+                <span class="font-medium text-neutral-900">{{ product.coverage_rate }} m²/L</span>
+            </div>
+            {% endif %}
+            {% if product.coats_required %}
+            <div class="flex flex-col min-w-[100px]">
+                <span class="text-xs text-neutral-500 uppercase tracking-wide font-bold mb-1">Coats</span>
+                <span class="font-medium text-neutral-900">{{ product.coats_required }} Coats</span>
+            </div>
+            {% endif %}
+            {% if product.drying_time %}
+            <div class="flex flex-col min-w-[140px]">
+                <span class="text-xs text-neutral-500 uppercase tracking-wide font-bold mb-1">Drying Time</span>
+                <span class="font-medium text-neutral-900">{{ product.drying_time }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if surfaces %}
+        <div class="mb-6">
+            <h4 class="text-sm font-bold text-neutral-900 mb-2">Suitable Surfaces:</h4>
+            <div class="flex flex-wrap gap-2">
+                {% for surface in surfaces %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700">
+                    {{ surface.name }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if tools %}
+        <div class="mb-8">
+            <h4 class="text-sm font-bold text-neutral-900 mb-2">Tools Needed:</h4>
+            <div class="flex items-center space-x-4">
+                {% for tool in tools %}
+                <div class="flex flex-col items-center group" title="{{ tool.name }}">
+                    <div class="w-10 h-10 rounded-full bg-neutral-50 border border-neutral-200 flex items-center justify-center text-neutral-500 mb-1 overflow-hidden">
+                        {% if tool.icon %}
+                            <img src="{{ tool.icon.url }}" alt="{{ tool.name }}" class="w-6 h-6 object-contain opacity-70 group-hover:opacity-100 transition-opacity">
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        {% endif %}
+                    </div>
+                    <span class="text-[10px] uppercase font-semibold text-neutral-500">{{ tool.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         <form id="add-to-quote-form" method="POST" action="{% url 'quote_add' %}">
           {% csrf_token %}
@@ -120,28 +146,60 @@
           <div class="space-y-8 mb-10 border-t border-neutral-100 pt-8">
 
             {% if show_colors %}
-            <div id="color-section">
-              <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900 flex items-center">
-                Select Color
-                <span id="selected-color-name" class="font-normal ml-2 text-neutral-500 normal-case"></span>
-              </h3>
-              <div id="color-selector" class="flex flex-wrap gap-3">
-                {% for color in colors %}
-                  <button
-                    type="button"
-                    class="color-btn w-10 h-10 rounded-full border-2 border-transparent transition-all hover:scale-110 focus:outline-none shadow-sm"
-                    style="background-color: {{ color.hex_code|default:'#ccc' }};"
-                    data-color-name="{{ color.name }}"
-                    data-color-id="{{ color.id }}"
-                    title="{{ color.name }}"
-                  >
-                    <span class="sr-only">{{ color.name }}</span>
-                  </button>
-                {% empty %}
-                  <p class="text-neutral-500 text-sm italic">No colors currently available.</p>
-                {% endfor %}
-              </div>
-            </div>
+                <div id="color-section" class="bg-neutral-50 rounded-md p-4 border border-neutral-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-900 flex items-center">
+                            Select Color
+                            <span id="selected-color-name" class="font-normal ml-2 text-primary-700 normal-case"></span>
+                        </h3>
+
+                        <div class="relative w-full sm:w-56">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                id="color-search-input"
+                                placeholder="Find a shade..."
+                                class="w-full pl-9 pr-4 py-2 text-sm bg-white border border-neutral-300 rounded-md shadow-sm hover:border-primary-900 focus:border-primary-900 outline-none transition-colors"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <div id="color-selector" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-[160px] overflow-y-auto p-2">
+                            {% for color in colors %}
+                            <button
+                                type="button"
+                                class="color-btn ep-focus-ring group relative w-full aspect-square rounded-full ring-1 ring-inset ring-neutral-200 shadow-sm hover:scale-110 transition-transform"
+                                style="background-color: {{ color.hex_code|default:'#ccc' }};"
+                                data-color-name="{{ color.name }}"
+                                data-color-id="{{ color.id }}"
+                                title="{{ color.name }}"
+                            >
+                                <span class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity check-icon bg-black/10 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white drop-shadow-md" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <span class="sr-only">{{ color.name }}</span>
+                            </button>
+                            {% empty %}
+                                <p class="col-span-full text-neutral-500 text-sm italic">No colors currently available.</p>
+                            {% endfor %}
+                        </div>
+
+                        <div id="no-colors-msg" class="hidden mt-4">
+                            <div class="text-center py-6 px-8 border-2 border-dashed border-neutral-200 rounded-md bg-white/50 max-w-sm mx-auto">
+                                <p class="text-neutral-500 font-medium text-sm">
+                                    No color matches "<span id="search-term-display" class="font-bold text-neutral-700"></span>"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
 
             {% if show_sizes %}
@@ -154,7 +212,7 @@
                   {% for size in sizes %}
                       <button
                         type="button"
-                        class="size-btn min-w-[3rem] px-4 py-2 border-2 border-neutral-200 rounded-md text-sm font-medium text-neutral-700 transition-all hover:border-neutral-400 focus:outline-none disabled:opacity-50 disabled:bg-neutral-50 disabled:cursor-not-allowed"
+                        class="size-btn ep-focus-ring min-w-[3rem] px-4 py-2 border border-neutral-200 rounded-md text-sm font-medium text-neutral-700 bg-white transition-all hover:border-primary-900 hover:text-primary-900 disabled:opacity-50 disabled:bg-neutral-50 disabled:cursor-not-allowed"
                         data-size-name="{{ size.name }}"
                         data-size-id="{{ size.id }}" >
                         {{ size.name }}
@@ -168,15 +226,15 @@
 
             <div>
               <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-neutral-900">Quantity</h3>
-              <div class="flex items-center max-w-[8rem] border-2 border-neutral-200 rounded-md">
-                  <button type="button" id="qty-minus" class="px-3 py-2 text-neutral-500 hover:focus:ring-[#cfd8ff] transition-colors rounded-l-md">
+              <div class="flex items-center max-w-[8rem] border border-neutral-200 rounded-md bg-white">
+                  <button type="button" id="qty-minus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-50 hover:text-primary-900 transition-colors rounded-l-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                     </svg>
                   </button>
                   <input type="number" id="quantity-input" name="visible_quantity" value="1" min="1"
-                         class="w-full text-center border-0 focus:ring-0 text-neutral-900 font-medium py-2 appearance-none [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 ps-1">
-                  <button type="button" id="qty-plus" class="px-3 py-2 text-neutral-500 hover:focus:ring-[#cfd8ff] transition-colors rounded-r-md">
+                         class="w-full text-center border-0 focus:ring-0 text-neutral-900 font-medium py-2 appearance-none [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0 ps-1 bg-transparent">
+                  <button type="button" id="qty-plus" class="px-3 py-2 text-neutral-500 hover:bg-neutral-50 hover:text-primary-900 transition-colors rounded-r-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -197,7 +255,14 @@
               </svg>
               Add to Quote List
             </button>
+            <a href="{% url 'quote_detail' %}" class="w-full sm:w-auto px-6 py-4 border-2 border-primary-900 text-primary-900 rounded-md text-base font-semibold hover:bg-primary-50 transition-colors flex items-center justify-center text-center">
+              View quote list
+            </a>
           </div>
+          <p class="text-sm text-neutral-500 mt-3 flex items-center gap-1.5">
+            <i data-lucide="info" class="w-4 h-4 shrink-0" aria-hidden="true"></i>
+            Prices are quoted by our sales team — {{ response_time_label|lower }}.
+          </p>
 
         </form>
       </div>
@@ -205,10 +270,10 @@
 
     {% if product.safety_documents.exists %}
     <div class="mt-20 border-t border-neutral-200 pt-12">
-      <h2 class="text-2xl font-bold text-neutral-900 mb-8">Documents & Downloads</h2>
+      <h2 class="ep-section-title text-neutral-900 mb-8">Documents & Downloads</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {% for doc in product.safety_documents.all %}
-        <a href="{{ doc.file.url }}" target="_blank" class="group flex items-start p-4 rounded-lg border border-neutral-200 hover:border-primary-900 hover:shadow-md transition-all bg-white">
+        <a href="{{ doc.file.url }}" target="_blank" class="group flex items-start p-4 rounded-md border border-neutral-200 hover:border-primary-900 hover:shadow-md transition-all bg-white">
           <div class="mr-4 p-3 bg-primary-50 text-primary-700 rounded-md group-hover:bg-primary-800 group-hover:text-white transition-colors">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -223,18 +288,74 @@
       </div>
     </div>
     {% endif %}
+
+    {% if related_products %}
+    <div class="mt-20 border-t border-neutral-200 pt-12">
+      <h2 class="ep-section-title text-neutral-900 mb-8">Related Products</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for rp in related_products %}
+        <a href="{{ rp.get_absolute_url }}" class="group block border border-neutral-100 rounded-md overflow-hidden hover:shadow-lg transition-shadow bg-white">
+            <div class="aspect-square bg-neutral-50 flex items-center justify-center p-4">
+               {% if rp.main_image %}
+                 <img src="{{ rp.main_image.url }}" alt="{{ rp.name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform">
+               {% else %}
+                 <span class="text-neutral-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                 </span>
+               {% endif %}
+            </div>
+            <div class="p-4">
+                <p class="text-xs text-neutral-500 uppercase font-bold mb-1">{{ rp.category.name }}</p>
+                <h3 class="text-neutral-900 font-semibold group-hover:text-primary-900 transition-colors">{{ rp.name }}</h3>
+            </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if other_products_needed %}
+    <div class="mt-12 border-t border-neutral-200 pt-12">
+      <h2 class="ep-section-title text-neutral-900 mb-8">You May Also Need</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for op in other_products_needed %}
+        <a href="{{ op.get_absolute_url }}" class="group block border border-neutral-100 rounded-md overflow-hidden hover:shadow-lg transition-shadow bg-white">
+            <div class="aspect-square bg-neutral-50 flex items-center justify-center p-4">
+               {% if op.main_image %}
+                 <img src="{{ op.main_image.url }}" alt="{{ op.name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform">
+               {% else %}
+                 <span class="text-neutral-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                 </span>
+               {% endif %}
+            </div>
+            <div class="p-4">
+                <p class="text-xs text-neutral-500 uppercase font-bold mb-1">{{ op.category.name }}</p>
+                <h3 class="text-neutral-900 font-semibold group-hover:text-primary-900 transition-colors">{{ op.name }}</h3>
+            </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% include "partials/internal_links.html" with section_title="Related colors, projects & guides" %}
+    {% include "partials/faq_section.html" %}
+
   </div>
 </section>
-
-{% if show_colors and show_sizes %}
-    {{ color_availability_json|json_script:"color-availability-map" }}
-    {{ size_availability_json|json_script:"size-availability-map" }}
-{% endif %}
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const colorSelector = document.getElementById("color-selector");
   const sizeSelector = document.getElementById("size-selector");
+  const colorSearchInput = document.getElementById("color-search-input");
+  const noColorsMsg = document.getElementById("no-colors-msg");
+  const searchTermDisplay = document.getElementById("search-term-display");
 
   const isColorRequired = !!colorSelector;
   const isSizeRequired = !!sizeSelector;
@@ -286,6 +407,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (formQuantityInput) formQuantityInput.value = selectedQuantity;
   }
 
+  if (colorSearchInput && colorSelector) {
+      colorSearchInput.addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase().trim();
+          let hasVisibleColors = false;
+
+          colorBtns.forEach(btn => {
+              const colorName = btn.dataset.colorName.toLowerCase();
+              if (colorName.includes(searchTerm)) {
+                  btn.classList.remove("hidden");
+                  hasVisibleColors = true;
+              } else {
+                  btn.classList.add("hidden");
+              }
+          });
+
+          if (!hasVisibleColors) {
+              noColorsMsg.classList.remove("hidden");
+              if(searchTermDisplay) searchTermDisplay.textContent = searchTerm;
+              colorSelector.classList.add("hidden");
+          } else {
+              noColorsMsg.classList.add("hidden");
+              colorSelector.classList.remove("hidden");
+          }
+      });
+  }
+
   if (colorSelector) {
       colorSelector.addEventListener("click", (e) => {
           const btn = e.target.closest(".color-btn");
@@ -294,8 +441,14 @@ document.addEventListener("DOMContentLoaded", () => {
           selectedColorId = btn.dataset.colorId;
 
           if (selectedColorNameEl) selectedColorNameEl.textContent = `: ${btn.dataset.colorName}`;
-          colorBtns.forEach(b => b.classList.remove("ring-2", "ring-primary-900", "ring-offset-1"));
-          btn.classList.add("ring-2", "ring-primary-900", "ring-offset-1");
+
+          colorBtns.forEach(b => {
+              b.classList.remove("ring-4", "ring-primary-100", "scale-110", "z-10");
+              b.querySelector('.check-icon').classList.add("opacity-0");
+          });
+
+          btn.classList.add("ring-4", "ring-primary-100", "scale-110", "z-10");
+          btn.querySelector('.check-icon').classList.remove("opacity-0");
 
           updateUI();
       });
@@ -309,8 +462,17 @@ document.addEventListener("DOMContentLoaded", () => {
           selectedSizeId = btn.dataset.sizeId;
 
           if (selectedSizeNameEl) selectedSizeNameEl.textContent = `: ${btn.dataset.sizeName}`;
-          sizeBtns.forEach(b => b.classList.remove("bg-primary-900", "text-white", "border-primary-900"));
-          btn.classList.add("bg-primary-900", "text-white", "border-primary-900");
+
+          const ACTIVE_CLASSES = ['bg-primary-900', 'text-white', 'border-primary-900'];
+          const INACTIVE_CLASSES = ['bg-white', 'text-neutral-700', 'border-neutral-200', 'hover:border-primary-900', 'hover:text-primary-900'];
+
+          sizeBtns.forEach(b => {
+              b.classList.remove(...ACTIVE_CLASSES);
+              b.classList.add(...INACTIVE_CLASSES);
+          });
+
+          btn.classList.remove(...INACTIVE_CLASSES);
+          btn.classList.add(...ACTIVE_CLASSES);
 
           updateUI();
       });
@@ -367,37 +529,6 @@ document.addEventListener("DOMContentLoaded", () => {
           updateUI();
       }, 2000);
   });
-
-  if (saveProductBtn) {
-      saveProductBtn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const productId = saveProductBtn.dataset.productId;
-          const csrfToken = addToQuoteForm.querySelector('[name=csrfmiddlewaretoken]').value;
-          saveProductBtn.disabled = true;
-
-          try {
-              const res = await fetch("{% url 'save_product_toggle' %}", {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
-                 body: `product_id=${productId}`
-              });
-              const data = await res.json();
-              if (data.status === 'success') {
-                 const svg = saveProductBtn.querySelector('svg');
-                 if (data.is_saved) {
-                     svg.setAttribute('fill', 'red');
-                     svg.setAttribute('stroke', 'red');
-                     saveProductBtn.dataset.isSaved = 'true';
-                 } else {
-                     svg.setAttribute('fill', 'none');
-                     svg.setAttribute('stroke', 'currentColor');
-                     saveProductBtn.dataset.isSaved = 'false';
-                 }
-              }
-          } catch(err) { console.error(err); }
-          finally { saveProductBtn.disabled = false; }
-      });
-  }
 
   if (isColorRequired && !selectedColorId) {
       const firstColor = colorSelector.querySelector('.color-btn:not(:disabled)');
