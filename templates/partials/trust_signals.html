@@ -1,4 +1,17 @@
 {# B2B trust strip — include near forms and conversion CTAs #}
+{% if compact %}
+<div class="rounded-md border border-primary-100 bg-primary-50/80 px-3 py-2.5 text-xs text-primary-900">
+  <p class="font-semibold flex items-center gap-1.5 mb-1.5">
+    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-primary-700 shrink-0" aria-hidden="true"></i>
+    {{ response_time_label }}
+  </p>
+  <p class="text-primary-800/90 leading-snug">
+    <a href="{{ business_whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium">WhatsApp {{ business_whatsapp_display }}</a>
+    <span class="text-primary-600/80"> · </span>
+    <a href="tel:{{ business_phone_primary }}" class="hover:underline">{{ business_phone_primary }}</a>
+  </p>
+</div>
+{% else %}
 <div class="rounded-md border border-primary-100 bg-primary-50/80 p-5 text-sm text-primary-900">
   <p class="font-semibold flex items-center gap-2 mb-3">
     <i data-lucide="shield-check" class="w-4 h-4 text-primary-700" aria-hidden="true"></i>
@@ -23,12 +36,9 @@
       <span>{{ showroom_nairobi }}{% if showroom_eldoret %} · {{ showroom_eldoret }}{% endif %}</span>
     </li>
     <li class="flex items-start gap-2">
-      <i data-lucide="truck" class="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true"></i>
-      <span>Free delivery on orders within Nairobi.</span>
-    </li>
-    <li class="flex items-start gap-2">
       <i data-lucide="briefcase" class="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true"></i>
       <span>Tailored quotations for contractors, distributors &amp; project teams — no online checkout.</span>
     </li>
   </ul>
 </div>
+{% endif %}

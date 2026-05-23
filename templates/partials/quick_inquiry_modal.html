@@ -8,7 +8,7 @@
     </div>
 
     <form id="quick-inquiry-form" class="flex flex-col flex-1 min-h-0" novalidate data-action="{% url 'quick_inquiry' %}">
-      <div class="ep-quick-inquiry-body flex-1 overflow-y-auto overscroll-contain min-h-0 px-5 py-4 space-y-4">
+      <div class="ep-quick-inquiry-body flex-1 overflow-y-auto overscroll-contain min-h-0 px-5 py-3 space-y-3">
         {% csrf_token %}
         <p class="text-sm text-gray-600">No account needed. Our sales team will call you back.</p>
         <div>
@@ -30,19 +30,19 @@
             <button type="button" id="qi-fix-referral" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">Back to form</button>
           </div>
         </div>
-        {% include "partials/referral_field.html" with field_id="qi-referral" modal_input=True %}
+        {% include "partials/referral_field.html" with field_id="qi-referral" modal_input=True compact=True %}
         <div class="ep-honeypot-wrap" aria-hidden="true">
           <label for="qi-website">Website</label>
           <input type="text" id="qi-website" name="website" tabindex="-1" autocomplete="off" class="ep-honeypot">
         </div>
       </div>
 
-      <div class="ep-quick-inquiry-footer shrink-0 border-t border-gray-100 px-5 py-4 space-y-3 bg-white">
+      <div class="ep-quick-inquiry-footer shrink-0 border-t border-gray-100 px-5 py-3 space-y-2 bg-white">
         <p id="quick-inquiry-message" class="text-sm hidden"></p>
-        <button type="submit" id="quick-inquiry-submit" class="w-full bg-primary-900 text-white py-3 rounded-md font-semibold hover:bg-primary-800 transition-colors">
+        <button type="submit" id="quick-inquiry-submit" class="w-full bg-primary-900 text-white py-2.5 rounded-md font-semibold hover:bg-primary-800 transition-colors">
           Send inquiry
         </button>
-        {% include "partials/trust_signals.html" %}
+        {% include "partials/trust_signals.html" with compact=True %}
       </div>
     </form>
   </div>

@@ -21,7 +21,8 @@
     {% include "partials/breadcrumbs.html" %}
     <div class="mb-6">
           <button
-                onclick="goBack()"
+                type="button"
+                onclick="goBack('{% url 'portfolio_list' %}')"
                 class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +74,7 @@
 
                 <div class="w-12 h-12 flex-shrink-0 bg-gray-50 rounded-md overflow-hidden border border-gray-100 flex items-center justify-center">
                     {% if product.main_image %}
-                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-1 mix-blend-multiply opacity-90 group-hover:opacity-100 transition-opacity">
+                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-1 opacity-90 group-hover:opacity-100 transition-opacity">
                     {% else %}
                         <div class="text-gray-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

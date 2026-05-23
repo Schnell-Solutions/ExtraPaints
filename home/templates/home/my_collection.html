@@ -44,9 +44,9 @@
                             <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
 
-                        <a href="{% url 'product_detail' product.slug %}" class="block relative h-48 lg:h-56 overflow-hidden bg-gray-100">
+                        <a href="{% url 'product_detail' product.slug %}" class="block relative h-48 lg:h-56 overflow-hidden bg-neutral-50">
                             {% if product.main_image %}
-                                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
+                                <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105">
                             {% else %}
                                 <div class="w-full h-full flex items-center justify-center text-gray-300">
                                     <i data-lucide="image-off" class="w-12 h-12"></i>

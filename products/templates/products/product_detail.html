@@ -23,7 +23,7 @@
   <div class="container mx-auto px-4 max-w-6xl">
     {% include "partials/breadcrumbs.html" %}
     <div class="mb-6">
-      <button onclick="goBack()" class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none">
+      <button type="button" onclick="goBack('{% url 'product_list' %}')" class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -35,7 +35,7 @@
       <div class="w-full lg:sticky lg:top-24">
         <div class="relative w-full aspect-square max-h-[500px] rounded-md overflow-hidden bg-neutral-50 flex items-center justify-center">
           {% if product.main_image %}
-            <img id="product-image" src="{% thumbnail product.main_image 600 %}" alt="{{ product.name }}" class="w-full h-full object-contain p-6 mix-blend-multiply" loading="eager" width="600" height="600">
+            <img id="product-image" src="{% thumbnail product.main_image 600 %}" alt="{{ product.name }}" class="w-full h-full object-contain p-6" loading="eager" width="600" height="600">
           {% else %}
              <div class="text-neutral-300 flex flex-col items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -297,7 +297,7 @@
         <a href="{{ rp.get_absolute_url }}" class="group block border border-neutral-100 rounded-md overflow-hidden hover:shadow-lg transition-shadow bg-white">
             <div class="aspect-square bg-neutral-50 flex items-center justify-center p-4">
                {% if rp.main_image %}
-                 <img src="{{ rp.main_image.url }}" alt="{{ rp.name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform">
+                 <img src="{{ rp.main_image.url }}" alt="{{ rp.name }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform">
                {% else %}
                  <span class="text-neutral-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -324,7 +324,7 @@
         <a href="{{ op.get_absolute_url }}" class="group block border border-neutral-100 rounded-md overflow-hidden hover:shadow-lg transition-shadow bg-white">
             <div class="aspect-square bg-neutral-50 flex items-center justify-center p-4">
                {% if op.main_image %}
-                 <img src="{{ op.main_image.url }}" alt="{{ op.name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform">
+                 <img src="{{ op.main_image.url }}" alt="{{ op.name }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform">
                {% else %}
                  <span class="text-neutral-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">

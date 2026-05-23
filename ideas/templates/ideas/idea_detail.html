@@ -22,7 +22,8 @@
 
     <div class="mb-6">
       <button
-          onclick="goBack()"
+          type="button"
+          onclick="goBack('{% url 'idea_list' %}')"
           class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
       >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

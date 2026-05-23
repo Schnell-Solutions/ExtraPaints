@@ -161,7 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const filtersForm = document.getElementById('filters-form');
   const searchForm = document.getElementById('search-form');
   const colorsGrid = document.getElementById('colors-grid');
+  const paginationEl = document.getElementById('catalog-pagination');
   const S = window.ExtraPaintsSkeletons;
+  const P = window.ExtraPaintsPagination;
   const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '{{ csrf_token }}';
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -265,7 +267,21 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchColors(url);
   });
 
-  window.addEventListener('popstate', () => fetchColors(window.location.href));
+  function syncFiltersFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q') || '';
+      document.getElementById('search-input').value = q;
+      document.getElementById('hidden-search-q').value = q;
+      filtersForm.querySelector('[name="undertone"]').value = params.get('undertone') || '';
+      filtersForm.querySelector('[name="collection"]').value = params.get('collection') || '';
+      filtersForm.querySelector('[name="room"]').value = params.get('room') || '';
+      filtersForm.querySelector('[name="sort"]').value = params.get('sort') || 'name';
+  }
+
+  window.addEventListener('popstate', () => {
+      syncFiltersFromUrl();
+      fetchColors(window.location.href);
+  });
 
   if (P) {
     P.bind(paginationEl, (url) => {

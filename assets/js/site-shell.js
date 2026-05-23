@@ -149,13 +149,25 @@
     }
   });
 
-  window.goBack = function goBack() {
-    const hasHistory =
-      document.referrer && document.referrer.indexOf(window.location.host) !== -1;
-    if (hasHistory) {
-      history.back();
-    } else {
-      window.location.href = '/';
+  window.goBack = function goBack(fallbackUrl) {
+    const fallback =
+      fallbackUrl ||
+      document.querySelector('[data-back-fallback]')?.getAttribute('href') ||
+      '/';
+
+    try {
+      const ref = document.referrer;
+      if (ref) {
+        const refOrigin = new URL(ref).origin;
+        if (refOrigin === window.location.origin) {
+          history.back();
+          return;
+        }
+      }
+    } catch (err) {
+      /* ignore invalid referrer */
     }
+
+    window.location.href = fallback;
   };
 })();

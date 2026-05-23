@@ -22,7 +22,8 @@
 
   <div class="mb-6">
       <button
-            onclick="goBack()"
+            type="button"
+            onclick="goBack('{% url 'color_list' %}')"
             class="group inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-900 transition-colors focus:outline-none"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +149,7 @@
 </div>
 
 <div id="drawer-panel"
-     class="ep-color-drawer-panel fixed top-0 right-0 h-full w-full max-w-md bg-white z-[999] shadow-2xl flex flex-col"
+     class="ep-color-drawer-panel hidden fixed top-0 right-0 h-full w-full max-w-md bg-white z-[999] shadow-2xl flex flex-col"
      role="dialog"
      aria-modal="true"
      aria-labelledby="drawer-title"
@@ -226,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (isOpen) {
           drawer.overlay.classList.remove('hidden');
+          drawer.panel.classList.remove('hidden');
           drawer.overlay.setAttribute('aria-hidden', 'false');
           drawer.panel.setAttribute('aria-hidden', 'false');
           requestAnimationFrame(() => {
@@ -245,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const onPanelClosed = (e) => {
               if (e.target !== drawer.panel || e.propertyName !== 'transform') return;
               drawer.panel.removeEventListener('transitionend', onPanelClosed);
+              drawer.panel.classList.add('hidden');
               drawer.overlay.classList.add('hidden');
               drawer.overlay.setAttribute('aria-hidden', 'true');
           };
@@ -257,6 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (drawer.overlay) drawer.overlay.addEventListener('click', () => toggleDrawer(false));
 
   if (drawer.filter) drawer.filter.addEventListener('change', loadProducts);
+
+  document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawerIsOpen) toggleDrawer(false);
+  });
 
   async function loadProducts() {
       if (Skel) {
@@ -319,8 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <div class="product-card-drawer bg-white border border-gray-200 rounded-md p-4 shadow-sm transition-all" data-product-id="${product.id}">
             <div class="flex gap-4">
-              <div class="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-md border border-gray-200 overflow-hidden">
-                  <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-contain p-1 mix-blend-multiply">
+              <div class="w-20 h-20 flex-shrink-0 bg-neutral-50 rounded-md border border-gray-200 overflow-hidden">
+                  <img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-contain p-1">
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-semibold text-gray-900 leading-tight">${product.name}</p>

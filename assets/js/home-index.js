@@ -260,7 +260,7 @@
 
             <a href="${product.url}" class="block h-full w-full">
 
-              <img src="${product.img}" alt="${product.name}" width="400" height="300" class="w-full h-full object-contain p-6 mix-blend-multiply transition-transform duration-500 group-hover:scale-110" loading="lazy" decoding="async">
+              <img src="${product.img}" alt="${product.name}" width="400" height="300" class="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110" loading="lazy" decoding="async">
 
             </a>
 

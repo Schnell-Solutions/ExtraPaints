@@ -24,7 +24,8 @@ def thumbnail_url(file_field, *, width=400, quality=82):
         return file_field.url
 
     ext = '.webp'
-    digest = hashlib.sha256(f'{original_path}:{width}:{quality}'.encode()).hexdigest()[:16]
+    # v2: preserve alpha channel so PNG product art stays transparent in WebP thumbs
+    digest = hashlib.sha256(f'{original_path}:{width}:{quality}:alpha-v2'.encode()).hexdigest()[:16]
     thumb_dir = Path(settings.MEDIA_ROOT) / 'thumbs' / str(width)
     thumb_dir.mkdir(parents=True, exist_ok=True)
     thumb_path = thumb_dir / f'{digest}{ext}'
@@ -40,10 +41,21 @@ def thumbnail_url(file_field, *, width=400, quality=82):
 
     try:
         with Image.open(original_path) as img:
-            img = img.convert('RGB')
+            has_alpha = (
+                img.mode in ('RGBA', 'LA')
+                or (img.mode == 'P' and 'transparency' in img.info)
+            )
             w_percent = width / float(img.size[0])
-            height = int(float(img.size[1]) * w_percent)
-            img = img.resize((width, height), Image.Resampling.LANCZOS)
+            height = max(1, int(float(img.size[1]) * w_percent))
+            resample = Image.Resampling.LANCZOS
+
+            if has_alpha:
+                img = img.convert('RGBA')
+                img = img.resize((width, height), resample)
+            else:
+                img = img.convert('RGB')
+                img = img.resize((width, height), resample)
+
             buffer = BytesIO()
             img.save(buffer, format='WEBP', quality=quality, method=6)
             thumb_path.write_bytes(buffer.getvalue())

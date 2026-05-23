@@ -195,7 +195,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-  window.addEventListener('popstate', () => fetchIdeas(window.location.href));
+  function syncFiltersFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      filtersForm.querySelector('[name="category"]').value = params.get('category') || '';
+      filtersForm.querySelector('[name="tag"]').value = params.get('tag') || '';
+      filtersForm.querySelector('[name="sort"]').value = params.get('sort') || 'newest';
+      const qInput = filtersForm.querySelector('[name="q"]');
+      if (qInput) qInput.value = params.get('q') || '';
+  }
+
+  window.addEventListener('popstate', () => {
+      syncFiltersFromUrl();
+      fetchIdeas(window.location.href);
+  });
 
   if (P) {
     P.bind(paginationEl, (url) => {

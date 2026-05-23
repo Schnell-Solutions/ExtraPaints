@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error('Network error');
       const data = await res.json();
       renderProjects(data.projects);
+      if (P) P.update(paginationEl, data);
     } catch (err) {
       console.error(err);
       portfolioGrid.innerHTML = '<div class="col-span-full py-12 text-center text-red-600">Could not load projects.</div>';
@@ -171,7 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
-  window.addEventListener('popstate', () => fetchProjects(window.location.href));
+  window.addEventListener('popstate', () => {
+      if (typeFilter) {
+          const params = new URLSearchParams(window.location.search);
+          typeFilter.value = params.get('type') || '';
+      }
+      fetchProjects(window.location.href);
+  });
 
   if (P) {
     P.bind(paginationEl, (url) => {

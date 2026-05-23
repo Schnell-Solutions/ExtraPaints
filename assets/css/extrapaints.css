@@ -507,9 +507,14 @@ body.ep-modal-open {
   transform: translate3d(100%, 0, 0);
   transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
+  pointer-events: none;
 }
 .ep-color-drawer-panel.is-open {
   transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+.ep-color-drawer-overlay:not(.is-visible) {
+  pointer-events: none;
 }
 body.ep-drawer-scroll-lock {
   overflow: hidden;
@@ -970,4 +975,28 @@ body.ep-drawer-scroll-lock {
   color: #060024;
   background: rgba(6, 0, 36, 0.06);
   border-radius: 0.375rem;
+}
+
+/* Site footer — tighter vertical rhythm on mobile */
+@media (max-width: 767px) {
+  .ep-site-footer > .container {
+    padding-top: 2.5rem;
+    padding-bottom: 1rem;
+  }
+  .ep-site-footer .grid {
+    gap: 2rem;
+  }
+  .ep-site-footer h4.ep-card-title {
+    margin-bottom: 0.75rem;
+  }
+  .ep-site-footer ul.space-y-3 {
+    gap: 0.5rem;
+  }
+  .ep-site-footer ul.space-y-3 > li + li {
+    margin-top: 0.5rem;
+  }
+  .ep-site-footer .border-t.border-primary-800 {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+  }
 }

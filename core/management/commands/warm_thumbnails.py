@@ -12,9 +12,24 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--width', type=int, default=400, help='Thumbnail width in pixels')
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help='Delete existing thumbs for this width before regenerating (e.g. after alpha fix)',
+        )
 
     def handle(self, *args, **options):
         width = options['width']
+        if options['force']:
+            from pathlib import Path
+            from django.conf import settings
+
+            thumb_dir = Path(settings.MEDIA_ROOT) / 'thumbs' / str(width)
+            if thumb_dir.exists():
+                for path in thumb_dir.glob('*.webp'):
+                    path.unlink()
+                self.stdout.write(self.style.WARNING(f'Cleared {thumb_dir}'))
+
         count = 0
         for product in Product.objects.exclude(main_image='').iterator():
             if product.main_image:
