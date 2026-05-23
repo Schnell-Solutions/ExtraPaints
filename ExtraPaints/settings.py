@@ -423,12 +423,14 @@ _csp_styles = ["'self'", 'https://fonts.googleapis.com']
 if USE_TAILWIND_CDN:
     _csp_scripts.extend(["'unsafe-inline'", 'https://cdn.tailwindcss.com'])
     _csp_styles.extend(["'unsafe-inline'", 'https://cdn.tailwindcss.com'])
-# Production compiled CSS: no unsafe-inline for scripts/styles (nonce covers JSON-LD)
+# Production: scripts use nonce; color swatches need inline style="background-color:#hex"
+_csp_style_attr = ["'unsafe-inline'"] if not USE_TAILWIND_CDN else []
 
 CSP_DIRECTIVES = [
     "default-src 'self'",
     f"script-src {' '.join(_csp_scripts)}",
     f"style-src {' '.join(_csp_styles)}",
+    *([f"style-src-attr {' '.join(_csp_style_attr)}"] if _csp_style_attr else []),
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https: blob:",
     "connect-src 'self'",
