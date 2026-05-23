@@ -1,0 +1,8 @@
+# Only commit catalog + users + newsletter CSVs (not sessions/admin noise)
+django_*.csv
+auth_*.csv
+ideas_*.csv
+portfolio_*.csv
+accounts_address.csv
+accounts_user_groups.csv
+accounts_user_user_permissions.csv
