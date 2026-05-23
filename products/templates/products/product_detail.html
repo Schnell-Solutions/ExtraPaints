@@ -349,7 +349,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener("DOMContentLoaded", () => {
   const colorSelector = document.getElementById("color-selector");
   const sizeSelector = document.getElementById("size-selector");

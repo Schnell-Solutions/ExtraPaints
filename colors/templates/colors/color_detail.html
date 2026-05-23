@@ -191,7 +191,7 @@
     </div>
 </div>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener('DOMContentLoaded', () => {
   const COLOR_ID = {{ color.id }};
   const URLS = {

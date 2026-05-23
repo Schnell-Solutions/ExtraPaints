@@ -177,7 +177,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener('DOMContentLoaded', () => {
   const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '{{ csrf_token }}';
   const gridContainer = document.getElementById('products-grid');

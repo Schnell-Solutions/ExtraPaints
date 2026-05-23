@@ -5,6 +5,11 @@ from io import BytesIO
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
+
+
+def _catalog_placeholder_url():
+    return staticfiles_storage.url('images/extrapaints.jpg')
 
 
 def thumbnail_url(file_field, *, width=400, quality=82):
@@ -13,15 +18,18 @@ def thumbnail_url(file_field, *, width=400, quality=82):
     Falls back to original URL if Pillow is unavailable or processing fails.
     """
     if not file_field:
-        return ''
+        return _catalog_placeholder_url()
 
     try:
         original_path = Path(file_field.path)
     except (ValueError, AttributeError):
-        return file_field.url
+        try:
+            return file_field.url
+        except ValueError:
+            return _catalog_placeholder_url()
 
     if not original_path.exists():
-        return file_field.url
+        return _catalog_placeholder_url()
 
     ext = '.webp'
     # v2: preserve alpha channel so PNG product art stays transparent in WebP thumbs
@@ -37,7 +45,7 @@ def thumbnail_url(file_field, *, width=400, quality=82):
     try:
         from PIL import Image
     except ImportError:
-        return file_field.url
+        return file_field.url if original_path.exists() else _catalog_placeholder_url()
 
     try:
         with Image.open(original_path) as img:
@@ -61,7 +69,7 @@ def thumbnail_url(file_field, *, width=400, quality=82):
             thumb_path.write_bytes(buffer.getvalue())
         return thumb_url
     except Exception:
-        return file_field.url
+        return file_field.url if original_path.exists() else _catalog_placeholder_url()
 
 
 def thumbnail_for_image_url(image_url, *, width=400):

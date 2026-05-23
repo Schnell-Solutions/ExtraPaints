@@ -28,7 +28,7 @@
 
     {% if use_tailwind_cdn %}
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
         tailwind.config = {
             theme: {
                 extend: {

@@ -192,7 +192,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {

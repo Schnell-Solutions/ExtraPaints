@@ -37,16 +37,18 @@ def json_ld_script(json_string):
 @register.simple_tag
 def thumbnail(field, width=400):
     """Optimized image URL for templates."""
-    if not field:
-        return ''
     try:
         from core.images import thumbnail_url
         return thumbnail_url(field, width=int(width))
     except Exception:
+        if not field:
+            from core.images import _catalog_placeholder_url
+            return _catalog_placeholder_url()
         try:
             return field.url
         except ValueError:
-            return ''
+            from core.images import _catalog_placeholder_url
+            return _catalog_placeholder_url()
 
 
 @register.inclusion_tag('partials/responsive_image.html')

@@ -156,7 +156,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener('DOMContentLoaded', () => {
   const filtersForm = document.getElementById('filters-form');
   const searchForm = document.getElementById('search-form');

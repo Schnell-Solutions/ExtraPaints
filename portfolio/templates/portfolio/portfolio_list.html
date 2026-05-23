@@ -118,7 +118,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener('DOMContentLoaded', () => {
   const portfolioGrid = document.getElementById('portfolio-grid');
   const paginationEl = document.getElementById('catalog-pagination');

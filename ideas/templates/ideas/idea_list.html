@@ -138,7 +138,7 @@
   </div>
 </section>
 
-<script>
+<script{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>
 document.addEventListener('DOMContentLoaded', () => {
   const ideasGrid = document.getElementById('ideas-grid');
   const filtersForm = document.getElementById('filters-form');
