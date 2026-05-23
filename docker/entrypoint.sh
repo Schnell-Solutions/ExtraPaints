@@ -3,6 +3,9 @@ set -e
 
 # Named volumes may be root-owned on first run; ensure app can write static/media/logs.
 chown -R app:app /app/static /app/media /app/logs 2>/dev/null || true
+# Host bind mounts (MEDIA_HOST_PATH) keep host ownership; ensure thumbs are writable.
+mkdir -p /app/media/thumbs
+chmod -R a+rwX /app/media/thumbs 2>/dev/null || true
 
 echo "Waiting for database..."
 python <<'PY'
