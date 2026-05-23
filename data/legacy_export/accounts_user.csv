@@ -1,0 +1,11 @@
+id,password,last_login,is_superuser,username,first_name,last_name,email,is_staff,is_active,date_joined,role,full_name,phone,profile_image,is_email_verified,is_phone_verified
+1,pbkdf2_sha256$1000000$4rUiNKoWL0nEizVuaNxtke$B/WN7fwKIuu0POHrZ2q49JWS7RJw8vBm5piA3vu+oN0=,2026-03-04 09:20:24.737180,1,james,,,jamesmatatamule@gmail.com,1,1,2025-12-28 15:08:26.457646,CUSTOMER,James Matata,+254743113141,,0,0
+2,pbkdf2_sha256$1000000$u3I0yQ28Oxv2CaUrFLYzt7$LHu+bO47EFeug2zVMtop6dSFSzYJ+JVUmfnyyf9haJQ=,,0,fnfOzvSR,,,testing@example.com,0,0,2026-01-28 22:39:04.161430,CUSTOMER,fnfOzvSR,555-666-0606,,0,0
+3,pbkdf2_sha256$1000000$NlFGc19tOPDHx91vw9J8WQ$Cn7JKdptn8RIRm39Eu/Atb7vhg/4yzUM3a9OgjdwVx4=,,0,fnfOzvSRJmlua5Q9,,,testing@example.com,0,0,2026-01-28 22:43:14.989136,CUSTOMER,fnfOzvSR,555-666-0606,,0,0
+4,pbkdf2_sha256$1000000$VfX8lLWagIYrpSKt6AzY9d$ZJInb9WMk5R1cvZfeKvU4PsjrJ/0KXe6rqb46aLu9gw=,,0,@@Us5D8,,,testing@example.com,0,0,2026-01-28 22:43:31.853372,CUSTOMER,fnfOzvSR,555-666-0606,,0,0
+5,pbkdf2_sha256$1000000$b6GW8CWJ4QaGruKtv1bvvP$XVEhcWQZMUeRkTavX74/DVBcVWkrHwmyT60DrAz71iw=,2026-05-13 13:44:26.854584,1,dennis,,,sales@extrapaints.co.ke,1,1,2026-03-04 09:09:30.771540,CUSTOMER,Dennis Adalla,,,1,1
+6,pbkdf2_sha256$1000000$zM12LjIGqo2l8Ttmjx6iQC$fCtyumh4iQkQf2juYb5fIRsgaLOsGQq0Zlnz7vKR540=,,0,jpuvtwivzm,,,izykgnnr@immenseignite.info,0,0,2026-04-25 14:13:28.638687,CUSTOMER,zxfplpgtfn,+1-242-993-1446,,0,0
+7,pbkdf2_sha256$1000000$UTPyPJ8HdKF38nkfXLrfEx$kgqi+FNHIiBy1ybDqSnaEAOzi5VVFcRY6RBmugpyAHA=,,0,JOSEPH.NGERERI,,,ngereri.joseph@gmail.com,0,0,2026-04-27 17:51:46.243199,CUSTOMER,Joseph Kariuki Ngereri,0727359758,,0,0
+8,pbkdf2_sha256$1000000$Gk6gFFekhDy2Hn39w40L5g$pVtwaEtGbjbrOZCY2pj2GFTG8ci5ls7lM65X37qZpAw=,,0,JOE.NGERERI,,,ngereri.joseph@gmail.com,0,0,2026-04-27 17:52:57.398952,CUSTOMER,Joseph Kariuki Ngereri,0727359758,,0,0
+9,pbkdf2_sha256$1000000$I14ULM7U3P3e2szka7MJ3A$cw68RzZeNLRs6jnhPB47DZ+GcJFZnc57cKbrA/HhGQM=,,0,kkitabu@gmail.com,,,kkitabu@gmail.com,0,0,2026-05-07 13:18:07.148562,CUSTOMER,Benson Kariuki Kitabu,0722331704,,0,0
+10,pbkdf2_sha256$1000000$Egn5qv3hXNDUM2tvcDwIIJ$sTBUTjs6kF0Am7H8P4p0Jj6r2o1SSMdEdhaHIGA3BvI=,,0,jznlrgvynt,,,jdlnwprw@immenseignite.info,0,0,2026-05-18 02:31:22.230521,CUSTOMER,mlrvhfmzqp,+1-198-421-6837,,0,0

@@ -1,0 +1,9 @@
+id,name,slug,category_id
+1,Gloss Finishes,gloss-finishes,12
+2,Emulsions (Interior),emulsions-interior,12
+3,Exterior Finishes,exterior-finishes,12
+4,Undercoats & Primers,undercoats-primers,13
+5,Solvents & Fillers,solvents-fillers,13
+6,Floor Paints,floor-paints,14
+7,Wood Finishes,wood-finishes,14
+8,Textured Finishes,textured-finishes,14
