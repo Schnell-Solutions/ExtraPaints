@@ -64,6 +64,11 @@ def conversion_context(request):
         'business_email': cfg.get('email', getattr(settings, 'BUSINESS_EMAIL', 'info@extrapaints.co.ke')),
         'business_whatsapp_url': f'https://wa.me/{whatsapp_number}',
         'business_whatsapp_display': format_whatsapp_display(whatsapp_number),
+        'whatsapp_prefill_message': getattr(
+            settings,
+            'WHATSAPP_PREFILL_MESSAGE',
+            'Hello, I would like to inquire about ExtraPaints products.',
+        ),
         'company_founded_year': founded_year,
         'company_years_experience': company_years_experience(date.today()),
         'company_projects_count': '3,000+',
