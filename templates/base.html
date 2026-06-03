@@ -49,6 +49,7 @@
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" crossorigin="anonymous" defer></script>
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'images/extrapaints.jpg' %}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="{% static 'css/extrapaints.css' %}?v={{ static_version }}">
@@ -57,6 +58,7 @@
     <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ organization_json_ld|safe }}</script>
     <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ local_business_json_ld|safe }}</script>
     <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ website_search_json_ld|safe }}</script>
+    <script type="application/ld+json"{% if csp_nonce %} nonce="{{ csp_nonce }}"{% endif %}>{{ site_navigation_json_ld|safe }}</script>
 
     {% block styles %}{% endblock %}
 </head>

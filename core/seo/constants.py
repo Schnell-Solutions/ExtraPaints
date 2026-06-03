@@ -2,8 +2,8 @@
 
 DEFAULT_SITE_TITLE = 'ExtraPaints | Professional Paint Supply & Quotes — Nairobi, Kenya'
 DEFAULT_META_DESCRIPTION = (
-    'ExtraPaints supplies interior, exterior, and commercial coatings in Nairobi and Kenya. '
-    'Request tailored quotations for contractors, distributors, and project teams.'
+    'ExtraPaints — professional paint supply in Nairobi and Kenya. Browse interior and exterior '
+    'products, explore our color library, read guides, and request tailored quotations for your project.'
 )
 DEFAULT_OG_DESCRIPTION = (
     'B2B paint supply, color systems, and custom quotations for commercial and residential '

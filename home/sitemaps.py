@@ -9,20 +9,36 @@ from portfolio.models import PortfolioProject
 
 class StaticViewSitemap(Sitemap):
     """
-    Maps the static pages like Home, About, Contact.
+    Maps static pages like Home, About, Contact.
+    Priority tiers help crawlers discover sitelink candidate pages.
     """
-    priority = 0.5
     changefreq = 'monthly'
+
+    _PRIORITY = {
+        'home': 1.0,
+        'product_list': 0.95,
+        'color_list': 0.9,
+        'contact': 0.85,
+        'about': 0.85,
+        'guide_list': 0.8,
+        'portfolio_list': 0.75,
+        'idea_list': 0.75,
+        'privacy_policy': 0.3,
+        'terms_conditions': 0.3,
+    }
 
     def items(self):
         return [
-            'home', 'about', 'contact', 'color_list', 'product_list',
-            'portfolio_list', 'idea_list', 'guide_list',
+            'home', 'product_list', 'color_list', 'contact', 'about',
+            'guide_list', 'portfolio_list', 'idea_list',
             'privacy_policy', 'terms_conditions',
         ]
 
     def location(self, item):
         return reverse(item)
+
+    def priority(self, item):
+        return self._PRIORITY.get(item, 0.5)
 
 class ProductSitemap(Sitemap):
     changefreq = "weekly"

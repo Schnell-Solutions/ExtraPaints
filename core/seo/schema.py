@@ -72,11 +72,16 @@ def website_search_json(request):
         '@type': 'WebSite',
         '@id': f'{root}/#website',
         'name': 'ExtraPaints',
+        'alternateName': ['Extra Paints', 'ExtraPaints Kenya'],
         'url': root,
+        'inLanguage': 'en-KE',
         'description': (
-            'Professional paint supply and quotation services in Nairobi and Kenya.'
+            'Professional paint supply and quotation services in Nairobi and Kenya — '
+            'products, colors, guides, and tailored B2B quotes.'
         ),
-        'publisher': {'@id': f'{root}/#localbusiness'},
+        'publisher': {'@id': f'{root}/#organization'},
+        'about': {'@id': f'{root}/#localbusiness'},
+        'hasPart': {'@id': f'{root}/#primary-navigation'},
         'potentialAction': {
             '@type': 'SearchAction',
             'target': {
@@ -92,14 +97,51 @@ def website_search_json(request):
 def organization_json(request):
     root = _public_root(request)
     cfg = _local_settings()
+    logo_url = cfg.get('logo') or f'{root}/static/images/extrapaints.jpg'
     data = {
         '@context': 'https://schema.org',
         '@type': 'Organization',
         '@id': f'{root}/#organization',
         'name': cfg.get('name', 'ExtraPaints'),
         'url': root,
-        'logo': cfg.get('logo') or f'{root}/static/images/extrapaints.jpg',
+        'logo': {
+            '@type': 'ImageObject',
+            'url': logo_url,
+            'width': 512,
+            'height': 512,
+        },
+        'image': logo_url,
         'sameAs': cfg.get('same_as', []),
+    }
+    return json.dumps(data, ensure_ascii=False)
+
+
+def site_navigation_json(request):
+    """ItemList of SiteNavigationElement — signals key sub-pages for rich results."""
+    from .navigation import primary_nav_links
+
+    root = _public_root(request)
+    elements = []
+    for index, link in enumerate(primary_nav_links(request), start=1):
+        elements.append(
+            {
+                '@type': 'ListItem',
+                'position': index,
+                'item': {
+                    '@type': 'SiteNavigationElement',
+                    'name': link['name'],
+                    'description': link['description'],
+                    'url': link['url'],
+                },
+            }
+        )
+    data = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        '@id': f'{root}/#primary-navigation',
+        'name': 'ExtraPaints main sections',
+        'description': 'Key pages for products, colors, quotations, and project support.',
+        'itemListElement': elements,
     }
     return json.dumps(data, ensure_ascii=False)
 

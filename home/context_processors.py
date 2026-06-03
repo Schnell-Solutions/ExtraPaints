@@ -16,7 +16,13 @@ from core.seo.constants import (
     DEFAULT_SITE_TITLE,
     NOINDEX_URL_NAMES,
 )
-from core.seo.schema import local_business_json, organization_json, website_search_json
+from core.seo.navigation import primary_nav_links
+from core.seo.schema import (
+    local_business_json,
+    organization_json,
+    site_navigation_json,
+    website_search_json,
+)
 
 
 def media_url(request):
@@ -129,4 +135,6 @@ def seo_context(request):
         'local_business_json_ld': local_business_json(request),
         'website_search_json_ld': website_search_json(request),
         'organization_json_ld': organization_json(request),
+        'site_navigation_json_ld': site_navigation_json(request),
+        'site_primary_nav': primary_nav_links(request),
     }

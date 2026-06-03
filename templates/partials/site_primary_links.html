@@ -1,0 +1,37 @@
+{# Homepage quick links — mirrors primary nav for users and crawlers (sitelink-style). #}
+<section class="py-12 md:py-16 bg-white border-y border-neutral-200" aria-labelledby="site-primary-links-heading">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <header class="mb-8 md:mb-10 max-w-2xl">
+      <h2 id="site-primary-links-heading" class="ep-section-title text-neutral-900">
+        Explore ExtraPaints
+      </h2>
+      <p class="mt-2 ep-lead text-neutral-600">
+        Products, colors, quotations, and resources for contractors and project teams across Kenya.
+      </p>
+    </header>
+    <nav aria-label="Primary site sections">
+      <ul class="divide-y divide-neutral-200 rounded-md border border-neutral-200 bg-neutral-50/50 overflow-hidden">
+        {% for link in site_primary_nav %}
+        <li>
+          <a
+            href="{{ link.path }}"
+            class="group flex items-center justify-between gap-4 px-5 py-4 md:px-6 md:py-5 bg-white hover:bg-primary-50/60 transition-colors"
+          >
+            <span class="min-w-0">
+              <span class="block text-base font-semibold text-primary-900 group-hover:text-primary-800">
+                {{ link.name }}
+              </span>
+              <span class="block mt-0.5 text-sm text-neutral-600 leading-snug">
+                {{ link.description }}
+              </span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-neutral-400 group-hover:text-primary-800 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</section>

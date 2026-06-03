@@ -3,7 +3,7 @@ import json
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from core.seo.schema import local_business_json, website_search_json
+from core.seo.schema import local_business_json, site_navigation_json, website_search_json
 from guides.models import Guide
 
 
@@ -27,6 +27,22 @@ class SeoInfrastructureTests(TestCase):
         data = json.loads(website_search_json(request))
         self.assertEqual(data['@type'], 'WebSite')
         self.assertEqual(data['potentialAction']['@type'], 'SearchAction')
+        self.assertEqual(data['hasPart']['@id'], data['@id'].replace('#website', '#primary-navigation'))
+
+    def test_site_navigation_json(self):
+        request = Client().get('/').wsgi_request
+        data = json.loads(site_navigation_json(request))
+        self.assertEqual(data['@type'], 'ItemList')
+        self.assertGreaterEqual(len(data['itemListElement']), 5)
+        first = data['itemListElement'][0]['item']
+        self.assertEqual(first['@type'], 'SiteNavigationElement')
+        self.assertIn('/products/', first['url'])
+
+    def test_home_includes_primary_nav_section(self):
+        response = Client().get(reverse('home'))
+        self.assertContains(response, 'Explore ExtraPaints', status_code=200)
+        self.assertContains(response, 'SiteNavigationElement', status_code=200)
+        self.assertContains(response, 'Paint products', status_code=200)
 
     def test_login_page_noindex(self):
         response = Client().get(reverse('login'))
