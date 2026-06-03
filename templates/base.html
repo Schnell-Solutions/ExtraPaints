@@ -160,8 +160,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    {% include "partials/whatsapp_float.html" %}
-
     <footer class="ep-site-footer bg-primary-900 text-primary-50 shrink-0">
         <div class="container mx-auto max-w-6xl px-4 py-16 pb-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -266,5 +264,7 @@
     <script src="{% static 'js/live-search.js' %}" defer></script>
     <script src="{% static 'js/site-shell.js' %}" defer></script>
     {% block page_scripts %}{% endblock %}
+
+    {% include "partials/whatsapp_float.html" %}
 </body>
 </html>

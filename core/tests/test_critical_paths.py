@@ -22,6 +22,14 @@ class RobotsAndSitemapTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'urlset', status_code=200)
 
+    def test_whatsapp_float_on_public_pages(self):
+        for url_name in ('home', 'about', 'product_list', 'color_list'):
+            response = Client().get(reverse(url_name))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, 'id="ep-whatsapp-float"')
+            self.assertContains(response, 'class="ep-whatsapp-float"')
+            self.assertContains(response, 'wa.me/')
+
 
 class QuoteFlowTests(TestCase):
     def setUp(self):

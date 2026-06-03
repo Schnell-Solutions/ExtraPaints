@@ -440,7 +440,7 @@ CSP_DIRECTIVES = [
     "form-action 'self'",
 ]
 
-STATIC_VERSION = os.getenv('STATIC_VERSION', '1')
+STATIC_VERSION = os.getenv('STATIC_VERSION', '2')
 
 # ----------------------------------------------------------------------
 
