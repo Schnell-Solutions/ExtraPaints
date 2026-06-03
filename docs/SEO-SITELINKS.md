@@ -6,10 +6,9 @@ The indented sub-links under a main Google result (like the ChatGPT example) are
 
 | Change | Purpose |
 |--------|---------|
-| **ItemList + SiteNavigationElement** JSON-LD (`#primary-navigation`) | Tells Google which sub-pages matter: Products, Colors, Contact, About, Guides, Portfolio |
+| **ItemList + SiteNavigationElement** JSON-LD (`#primary-navigation`) | Tells Google which sub-pages matter (invisible in page HTML) |
 | **WebSite** schema with `hasPart`, `alternateName`, `inLanguage` | Links homepage entity to navigation and brand names |
 | **Organization** logo as `ImageObject` | Supports brand icon/favicon in results |
-| **Homepage “Explore ExtraPaints”** section | Visible sitelink-style links for users + crawlers |
 | **Sitemap priorities** | Higher priority for product/color/contact/about pages |
 | **Rich meta descriptions** | Better main-result snippet text |
 

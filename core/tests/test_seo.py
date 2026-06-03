@@ -38,11 +38,10 @@ class SeoInfrastructureTests(TestCase):
         self.assertEqual(first['@type'], 'SiteNavigationElement')
         self.assertIn('/products/', first['url'])
 
-    def test_home_includes_primary_nav_section(self):
+    def test_home_includes_sitelink_navigation_schema(self):
         response = Client().get(reverse('home'))
-        self.assertContains(response, 'Explore ExtraPaints', status_code=200)
         self.assertContains(response, 'SiteNavigationElement', status_code=200)
-        self.assertContains(response, 'Paint products', status_code=200)
+        self.assertContains(response, '#primary-navigation', status_code=200)
 
     def test_login_page_noindex(self):
         response = Client().get(reverse('login'))

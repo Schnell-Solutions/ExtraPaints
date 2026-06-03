@@ -1001,60 +1001,53 @@ body.ep-drawer-scroll-lock {
   }
 }
 
-/* Floating WhatsApp (wa.me) — fixed right; sits above footer, below modals/drawers */
+/* Floating WhatsApp — square button, fixed right, above page bottom edge */
 .ep-whatsapp-float {
   position: fixed;
   right: max(1.25rem, env(safe-area-inset-right, 0px));
-  bottom: max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.5rem));
+  bottom: max(3rem, calc(env(safe-area-inset-bottom, 0px) + 2.25rem));
   z-index: 9990;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 9999px;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.375rem;
   background-color: #25d366;
   color: #fff;
   text-decoration: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  animation: ep-whatsapp-float-pulse 2.5s ease-in-out infinite;
-}
-@keyframes ep-whatsapp-float-pulse {
-  0%, 100% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22); }
-  50% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), 0 0 0 8px rgba(37, 211, 102, 0.25); }
 }
 .ep-whatsapp-float:hover {
   background-color: #20bd5a;
-  transform: scale(1.06);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
-  animation: none;
+  transform: scale(1.04);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.26);
 }
 .ep-whatsapp-float:focus-visible {
   outline: 2px solid #060024;
   outline-offset: 3px;
 }
 .ep-whatsapp-float__icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.625rem;
+  height: 1.625rem;
   flex-shrink: 0;
 }
 @media (min-width: 768px) {
   .ep-whatsapp-float {
     right: max(1.5rem, env(safe-area-inset-right, 0px));
-    bottom: max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1.5rem));
-    width: 3.75rem;
-    height: 3.75rem;
+    bottom: max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));
+    width: 3.5rem;
+    height: 3.5rem;
   }
   .ep-whatsapp-float__icon {
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .ep-whatsapp-float {
     transition: none;
-    animation: none;
   }
   .ep-whatsapp-float:hover {
     transform: none;
