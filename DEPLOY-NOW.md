@@ -1,5 +1,7 @@
 # Deploy now (empty database, keep media + email) — data later
 
+> **Full operations guide:** see [docs/OPERATIONS-GUIDE.md](docs/OPERATIONS-GUIDE.md) for updates, backups, SSL, DNS, and redeploy options.
+
 Use this plan when you want the **new site live first** and will add catalog/users **later**.
 
 ---

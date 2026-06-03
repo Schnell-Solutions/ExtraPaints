@@ -1,5 +1,7 @@
 # Fresh production setup (keep backups, clean server)
 
+> **Full operations guide:** see [docs/OPERATIONS-GUIDE.md](docs/OPERATIONS-GUIDE.md)
+
 Use this when you want a **clean, professional** install at `/home/james/extrapaints` with **Git + Docker**, while **keeping** `/home/james/backups/`.
 
 **Never delete:** `/home/james/backups/`

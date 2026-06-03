@@ -1,5 +1,7 @@
 # Production upgrade (keep existing database + media)
 
+> **Full operations guide:** see [docs/OPERATIONS-GUIDE.md](docs/OPERATIONS-GUIDE.md)
+
 Use this when you already copied old production data and want to **update the code** without wiping DB or uploads.
 
 ---
