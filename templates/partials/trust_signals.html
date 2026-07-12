@@ -8,7 +8,7 @@
   <p class="text-primary-800/90 leading-snug">
     <a href="{{ business_whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium">WhatsApp {{ business_whatsapp_display }}</a>
     <span class="text-primary-600/80"> · </span>
-    <a href="tel:{{ business_phone_primary }}" class="hover:underline">{{ business_phone_primary }}</a>
+    <a href="tel:{{ business_phone_primary }}" class="hover:underline">{{ business_phone_display }}</a>
   </p>
 </div>
 {% else %}
@@ -25,10 +25,7 @@
     <li class="flex items-start gap-2">
       <i data-lucide="phone" class="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true"></i>
       <span>
-        <a href="tel:{{ business_phone_primary }}" class="hover:underline">{{ business_phone_primary }}</a>
-        {% if business_phone_secondary %}
-        · <a href="tel:{{ business_phone_secondary }}" class="hover:underline">{{ business_phone_secondary }}</a>
-        {% endif %}
+        <a href="tel:{{ business_phone_primary }}" class="hover:underline">{{ business_phone_display }}</a>
       </span>
     </li>
     <li class="flex items-start gap-2">

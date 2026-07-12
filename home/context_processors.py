@@ -8,6 +8,7 @@ from core.brand import (
     BRAND_NAME,
     PAGE_TITLE_SUFFIX,
     company_years_experience,
+    format_kenya_phone_local,
     format_whatsapp_display,
 )
 from core.seo.constants import (
@@ -58,15 +59,14 @@ def site_settings(request):
 def conversion_context(request):
     """Business contact details and B2B conversion copy used sitewide."""
     cfg = getattr(settings, 'SEO_LOCAL_BUSINESS', {})
-    primary_phone = cfg.get('telephone', [getattr(settings, 'BUSINESS_PHONE_PRIMARY', '+254729086036')])
-    if isinstance(primary_phone, list):
-        primary_phone = primary_phone[0] if primary_phone else '+254729086036'
-    secondary = getattr(settings, 'BUSINESS_PHONE_SECONDARY', '+254725752908')
-    whatsapp_number = getattr(settings, 'BUSINESS_WHATSAPP', '254750422863')
+    phone_e164 = getattr(settings, 'BUSINESS_PHONE_PRIMARY', '+254725752908')
+    whatsapp_number = getattr(settings, 'BUSINESS_WHATSAPP', '254725752908')
+    phone_display = format_kenya_phone_local(phone_e164)
     founded_year = getattr(settings, 'COMPANY_FOUNDED_YEAR', 2015)
     return {
-        'business_phone_primary': primary_phone,
-        'business_phone_secondary': secondary,
+        'business_phone_primary': phone_e164,
+        'business_phone_display': phone_display,
+        'business_phone_secondary': '',
         'business_email': cfg.get('email', getattr(settings, 'BUSINESS_EMAIL', 'info@extrapaints.co.ke')),
         'business_whatsapp_url': f'https://wa.me/{whatsapp_number}',
         'business_whatsapp_display': format_whatsapp_display(whatsapp_number),
@@ -97,6 +97,10 @@ def conversion_context(request):
         'social_instagram': os.getenv(
             'SOCIAL_INSTAGRAM',
             'https://www.instagram.com/extrapaints400/',
+        ),
+        'social_tiktok': os.getenv(
+            'SOCIAL_TIKTOK',
+            'https://www.tiktok.com/@extrapaints400',
         ),
     }
 

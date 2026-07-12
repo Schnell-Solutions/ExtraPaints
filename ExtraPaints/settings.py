@@ -293,9 +293,9 @@ ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'jamesmatata@schnell.solutions')
 # ----------------------------------------------------------------------
 # SEO & local business (structured data, footer, contact)
 # ----------------------------------------------------------------------
-BUSINESS_PHONE_PRIMARY = os.getenv('BUSINESS_PHONE_PRIMARY', '+254729086036')
-BUSINESS_PHONE_SECONDARY = os.getenv('BUSINESS_PHONE_SECONDARY', '+254725752908')
-BUSINESS_WHATSAPP = os.getenv('BUSINESS_WHATSAPP', '254750422863')
+BUSINESS_PHONE_PRIMARY = os.getenv('BUSINESS_PHONE_PRIMARY', '+254725752908')
+BUSINESS_PHONE_SECONDARY = os.getenv('BUSINESS_PHONE_SECONDARY', '')
+BUSINESS_WHATSAPP = os.getenv('BUSINESS_WHATSAPP', '254725752908')
 COMPANY_FOUNDED_YEAR = int(os.getenv('COMPANY_FOUNDED_YEAR', '2015'))
 BUSINESS_EMAIL = os.getenv('BUSINESS_EMAIL', 'info@extrapaints.co.ke')
 QUOTE_RESPONSE_SLA = os.getenv('QUOTE_RESPONSE_SLA', 'Response within 24 hours')
@@ -328,6 +328,7 @@ SEO_LOCAL_BUSINESS = {
             os.getenv('SOCIAL_FACEBOOK', 'https://web.facebook.com/extrapaints.ke'),
             os.getenv('SOCIAL_LINKEDIN', 'https://www.linkedin.com/in/extrapaints-ltd-b5a2283a3'),
             os.getenv('SOCIAL_INSTAGRAM', 'https://www.instagram.com/extrapaints400/'),
+            os.getenv('SOCIAL_TIKTOK', 'https://www.tiktok.com/@extrapaints400'),
         ] if u
     ],
     'opening_hours': [
