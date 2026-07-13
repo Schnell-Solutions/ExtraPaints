@@ -44,7 +44,7 @@
         };
     </script>
     {% else %}
-    <link rel="stylesheet" href="{% static 'css/tailwind.compiled.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind.compiled.css' %}?v={{ static_version }}">
     {% endif %}
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" crossorigin="anonymous" defer></script>
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
@@ -129,7 +129,7 @@
                     </button>
                     <a href="{% url 'quote_detail' %}" class="relative p-2 cursor-pointer hover:bg-primary-200 rounded-full ep-focus-ring" title="Quote list" aria-label="View quote list">
                         <i data-lucide="clipboard-list" class="w-6 h-6" aria-hidden="true"></i>
-                        <span id="navbar-quote-count-mobile" class="js-navbar-quote-count absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] px-0.5 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">{{ quote_list|length }}</span>
+                        <span id="navbar-quote-count-mobile" class="js-navbar-quote-count absolute top-0 right-0 min-w-[1.15rem] h-[1.15rem] px-1 bg-red-600 text-white text-[0.7rem] leading-none font-bold rounded-full flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">{{ quote_list|length }}</span>
                     </a>
                     <button id="mobile-menu-button" type="button" class="p-2 cursor-pointer hover:bg-primary-200 rounded-full ep-focus-ring" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav-panel">
                         <i data-lucide="menu" class="w-6 h-6" aria-hidden="true"></i>
