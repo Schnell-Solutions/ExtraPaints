@@ -211,11 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
       list: document.getElementById('drawer-product-list'),
   };
 
-  const navbarCounts = {
-      desktop: document.getElementById("navbar-quote-count-desktop"),
-      mobile: document.getElementById("navbar-quote-count-mobile")
-  };
-
   const DRAWER_HEART_SAVED = '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   const DRAWER_HEART_UNSAVED = '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
 
@@ -418,8 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
               if (typeof lucide !== 'undefined') lucide.createIcons();
               btn.classList.replace('bg-primary-900', 'bg-green-600');
 
-              [navbarCounts.desktop, navbarCounts.mobile].forEach(el => {
-                  if (el) { el.textContent = data.quote_item_count; el.classList.remove('hidden'); }
+              document.querySelectorAll('.js-navbar-quote-count').forEach(el => {
+                  el.textContent = data.quote_item_count;
+                  el.classList.toggle('hidden', !data.quote_item_count);
               });
           } else {
               throw new Error(data.message);

@@ -374,8 +374,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedSizeIdInput = document.getElementById("selected-size-id");
   const formQuantityInput = document.getElementById("form-quantity");
 
-  const navbarQuoteCountDesktop = document.getElementById("navbar-quote-count-desktop");
-  const navbarQuoteCountMobile = document.getElementById("navbar-quote-count-mobile");
   const saveProductBtn = document.querySelector(".save-product-btn");
 
   let selectedColorId = null;
@@ -513,8 +511,10 @@ document.addEventListener("DOMContentLoaded", () => {
           if (data.status === "success") {
               addToQuoteBtn.innerHTML = `<i data-lucide="check" class="inline-block w-4 h-4 mr-1"></i> Added!`;
               if (typeof lucide !== 'undefined') lucide.createIcons();
-              if (navbarQuoteCountDesktop) { navbarQuoteCountDesktop.textContent = data.quote_item_count; navbarQuoteCountDesktop.classList.remove("hidden"); }
-              if (navbarQuoteCountMobile) { navbarQuoteCountMobile.textContent = data.quote_item_count; navbarQuoteCountMobile.classList.remove("hidden"); }
+              document.querySelectorAll(".js-navbar-quote-count").forEach((el) => {
+                  el.textContent = data.quote_item_count;
+                  el.classList.toggle("hidden", !data.quote_item_count);
+              });
           } else {
               addToQuoteBtn.innerHTML = `Error!`;
           }

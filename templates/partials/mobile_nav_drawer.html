@@ -93,6 +93,7 @@
           <a href="{% url 'quote_detail' %}" data-close-mobile-nav class="ep-mobile-nav-link ep-mobile-nav-link--more">
             <i data-lucide="file-text" class="ep-mobile-nav-link-icon" aria-hidden="true"></i>
             Get a Quote
+            <span id="navbar-quote-count-drawer" class="js-navbar-quote-count ml-auto min-w-[1.25rem] h-5 px-1.5 bg-red-600 text-white text-xs font-bold rounded-full inline-flex items-center justify-center {% if quote_list|length == 0 %}hidden{% endif %}">{{ quote_list|length }}</span>
           </a>
         </li>
         <li>

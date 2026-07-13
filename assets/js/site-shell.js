@@ -96,6 +96,17 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && isOpen) setOpen(false);
     });
+
+    // Close the drawer if the viewport grows to desktop width (nav switches at lg = 1024px).
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const handleBreakpoint = (e) => {
+      if (e.matches && isOpen) setOpen(false);
+    };
+    if (typeof desktopQuery.addEventListener === 'function') {
+      desktopQuery.addEventListener('change', handleBreakpoint);
+    } else if (typeof desktopQuery.addListener === 'function') {
+      desktopQuery.addListener(handleBreakpoint);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {

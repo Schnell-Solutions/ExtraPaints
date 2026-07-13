@@ -246,6 +246,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
+                document.querySelectorAll('.js-navbar-quote-count').forEach(el => {
+                    el.textContent = data.quote_item_count;
+                    el.classList.toggle('hidden', !data.quote_item_count);
+                });
                 const row = document.getElementById(`item-row-${itemKey}`);
                 if (row) {
                     row.style.opacity = '0';
